@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/login_state.dart' as $js;
 
@@ -23,16 +22,14 @@ class ChromeLoginState {
 
   /// Gets the type of the profile the extension is in.
   Future<ProfileType> getProfileType() async {
-    var $res = await promiseToFuture<$js.ProfileType>(
-        $js.chrome.loginState.getProfileType());
-    return ProfileType.fromJS($res);
+    var $res = await $js.chrome.loginState.getProfileType().toDart;
+    return ProfileType.fromJS($res as $js.ProfileType);
   }
 
   /// Gets the current session state.
   Future<SessionState> getSessionState() async {
-    var $res = await promiseToFuture<$js.SessionState>(
-        $js.chrome.loginState.getSessionState());
-    return SessionState.fromJS($res);
+    var $res = await $js.chrome.loginState.getSessionState().toDart;
+    return SessionState.fromJS($res as $js.SessionState);
   }
 
   /// Dispatched when the session state changes. `sessionState`

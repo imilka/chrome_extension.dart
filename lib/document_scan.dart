@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'dart:typed_data';
 import 'src/internal_helpers.dart';
 import 'src/js/document_scan.dart' as $js;
@@ -27,9 +27,8 @@ class ChromeDocumentScan {
   /// |options| : Object containing scan parameters.
   /// |callback| : Called with the result and data from the scan.
   Future<ScanResults> scan(ScanOptions options) async {
-    var $res = await promiseToFuture<$js.ScanResults>(
-        $js.chrome.documentScan.scan(options.toJS));
-    return ScanResults.fromJS($res);
+    var $res = await $js.chrome.documentScan.scan(options.toJS).toDart;
+    return ScanResults.fromJS($res as $js.ScanResults);
   }
 
   /// Gets the list of available scanners.  On success, the list will be
@@ -38,9 +37,8 @@ class ChromeDocumentScan {
   /// should be returned.
   /// |callback| : Called with the result and list of scanners.
   Future<GetScannerListResponse> getScannerList(DeviceFilter filter) async {
-    var $res = await promiseToFuture<$js.GetScannerListResponse>(
-        $js.chrome.documentScan.getScannerList(filter.toJS));
-    return GetScannerListResponse.fromJS($res);
+    var $res = await $js.chrome.documentScan.getScannerList(filter.toJS).toDart;
+    return GetScannerListResponse.fromJS($res as $js.GetScannerListResponse);
   }
 
   /// Opens a scanner for exclusive access.  On success, the response containing
@@ -49,9 +47,8 @@ class ChromeDocumentScan {
   /// indicating which scanner should be opened.
   /// |callback| : Called with the result.
   Future<OpenScannerResponse> openScanner(String scannerId) async {
-    var $res = await promiseToFuture<$js.OpenScannerResponse>(
-        $js.chrome.documentScan.openScanner(scannerId));
-    return OpenScannerResponse.fromJS($res);
+    var $res = await $js.chrome.documentScan.openScanner(scannerId).toDart;
+    return OpenScannerResponse.fromJS($res as $js.OpenScannerResponse);
   }
 
   /// Gets the group names and member options from a scanner handle previously
@@ -60,9 +57,9 @@ class ChromeDocumentScan {
   /// `openScanner`.
   /// |callback| : Called with the result.
   Future<GetOptionGroupsResponse> getOptionGroups(String scannerHandle) async {
-    var $res = await promiseToFuture<$js.GetOptionGroupsResponse>(
-        $js.chrome.documentScan.getOptionGroups(scannerHandle));
-    return GetOptionGroupsResponse.fromJS($res);
+    var $res =
+        await $js.chrome.documentScan.getOptionGroups(scannerHandle).toDart;
+    return GetOptionGroupsResponse.fromJS($res as $js.GetOptionGroupsResponse);
   }
 
   /// Closes a previously opened scanner handle.  A response indicating the
@@ -73,9 +70,8 @@ class ChromeDocumentScan {
   /// `openScanner`.
   /// |callback| : Called with the result.
   Future<CloseScannerResponse> closeScanner(String scannerHandle) async {
-    var $res = await promiseToFuture<$js.CloseScannerResponse>(
-        $js.chrome.documentScan.closeScanner(scannerHandle));
-    return CloseScannerResponse.fromJS($res);
+    var $res = await $js.chrome.documentScan.closeScanner(scannerHandle).toDart;
+    return CloseScannerResponse.fromJS($res as $js.CloseScannerResponse);
   }
 
   /// Sends the list of new option values in `options` as a bundle
@@ -92,12 +88,13 @@ class ChromeDocumentScan {
     String scannerHandle,
     List<OptionSetting> options,
   ) async {
-    var $res = await promiseToFuture<$js.SetOptionsResponse>(
-        $js.chrome.documentScan.setOptions(
-      scannerHandle,
-      options.toJSArray((e) => e.toJS),
-    ));
-    return SetOptionsResponse.fromJS($res);
+    var $res = await $js.chrome.documentScan
+        .setOptions(
+          scannerHandle,
+          options.toJSArray((e) => e.toJS),
+        )
+        .toDart;
+    return SetOptionsResponse.fromJS($res as $js.SetOptionsResponse);
   }
 
   /// Starts a scan using a previously opened scanner handle.  A response
@@ -114,12 +111,13 @@ class ChromeDocumentScan {
     String scannerHandle,
     StartScanOptions options,
   ) async {
-    var $res = await promiseToFuture<$js.StartScanResponse>(
-        $js.chrome.documentScan.startScan(
-      scannerHandle,
-      options.toJS,
-    ));
-    return StartScanResponse.fromJS($res);
+    var $res = await $js.chrome.documentScan
+        .startScan(
+          scannerHandle,
+          options.toJS,
+        )
+        .toDart;
+    return StartScanResponse.fromJS($res as $js.StartScanResponse);
   }
 
   /// Cancels a scan that was previously started using `startScan`.
@@ -128,9 +126,8 @@ class ChromeDocumentScan {
   /// `startScan`.
   /// |callback| : Called with the result.
   Future<CancelScanResponse> cancelScan(String job) async {
-    var $res = await promiseToFuture<$js.CancelScanResponse>(
-        $js.chrome.documentScan.cancelScan(job));
-    return CancelScanResponse.fromJS($res);
+    var $res = await $js.chrome.documentScan.cancelScan(job).toDart;
+    return CancelScanResponse.fromJS($res as $js.CancelScanResponse);
   }
 
   /// Reads the next chunk of available image data from an active job handle.
@@ -149,9 +146,8 @@ class ChromeDocumentScan {
   /// `startScan`.
   /// |callback| : Called with the result.
   Future<ReadScanDataResponse> readScanData(String job) async {
-    var $res = await promiseToFuture<$js.ReadScanDataResponse>(
-        $js.chrome.documentScan.readScanData(job));
-    return ReadScanDataResponse.fromJS($res);
+    var $res = await $js.chrome.documentScan.readScanData(job).toDart;
+    return ReadScanDataResponse.fromJS($res as $js.ReadScanDataResponse);
   }
 }
 

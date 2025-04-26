@@ -425,13 +425,8 @@ class DartApiGenerator extends _GeneratorBase {
     }
 
     var resultVariable = r'$res';
-    var callJsExpression = refer('promiseToFuture', 'dart:js_util').call([
-      referTo.call(callParameters)
-    ], {}, [
-      asyncReturn.jsCallback.positionalParameters.firstOrNull?.type
-              .jsTypeReferencedFromDart ??
-          refer('void')
-    ]).awaited;
+    var callJsExpression =
+        referTo.call(callParameters).property('toDart').awaited;
 
     if (jsReturnType != null) {
       return Block.of([

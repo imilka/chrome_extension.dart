@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/system_display.dart' as $js;
 import 'system.dart';
@@ -27,9 +26,9 @@ class ChromeSystemDisplay {
   /// |flags|: Options affecting how the information is returned.
   /// |callback|: The callback to invoke with the results.
   Future<List<DisplayUnitInfo>> getInfo(GetInfoFlags? flags) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.system.display.getInfo(flags?.toJS));
-    return $res.toDart
+    var $res = await $js.chrome.system.display.getInfo(flags?.toJS).toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.DisplayUnitInfo>()
         .map((e) => DisplayUnitInfo.fromJS(e))
         .toList();
@@ -39,9 +38,9 @@ class ChromeSystemDisplay {
   /// NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
   /// |callback|: The callback to invoke with the results.
   Future<List<DisplayLayout>> getDisplayLayout() async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.system.display.getDisplayLayout());
-    return $res.toDart
+    var $res = await $js.chrome.system.display.getDisplayLayout().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.DisplayLayout>()
         .map((e) => DisplayLayout.fromJS(e))
         .toList();
@@ -62,10 +61,12 @@ class ChromeSystemDisplay {
     String id,
     DisplayProperties info,
   ) async {
-    await promiseToFuture<void>($js.chrome.system.display.setDisplayProperties(
-      id,
-      info.toJS,
-    ));
+    await $js.chrome.system.display
+        .setDisplayProperties(
+          id,
+          info.toJS,
+        )
+        .toDart;
   }
 
   /// Set the layout for all displays. Any display not included will use the
@@ -79,8 +80,9 @@ class ChromeSystemDisplay {
   ///     whether the function succeeded, [runtime.lastError] should be
   ///     queried.
   Future<void> setDisplayLayout(List<DisplayLayout> layouts) async {
-    await promiseToFuture<void>($js.chrome.system.display
-        .setDisplayLayout(layouts.toJSArray((e) => e.toJS)));
+    await $js.chrome.system.display
+        .setDisplayLayout(layouts.toJSArray((e) => e.toJS))
+        .toDart;
   }
 
   /// Enables/disables the unified desktop feature. If enabled while mirroring
@@ -140,9 +142,9 @@ class ChromeSystemDisplay {
   ///      calibration has ended. The argument of the callback informs if the
   ///      calibration was a success or not.
   Future<bool> showNativeTouchCalibration(String id) async {
-    var $res = await promiseToFuture<bool>(
-        $js.chrome.system.display.showNativeTouchCalibration(id));
-    return $res;
+    var $res =
+        await $js.chrome.system.display.showNativeTouchCalibration(id).toDart;
+    return $res as bool;
   }
 
   /// Starts custom touch calibration for a display. This should be called when
@@ -189,8 +191,7 @@ class ChromeSystemDisplay {
   ///     whether the function succeeded, [runtime.lastError] should be
   ///     queried.
   Future<void> setMirrorMode(MirrorModeInfo info) async {
-    await promiseToFuture<void>(
-        $js.chrome.system.display.setMirrorMode(info.toJS));
+    await $js.chrome.system.display.setMirrorMode(info.toJS).toDart;
   }
 
   /// Fired when anything changes to the display configuration.

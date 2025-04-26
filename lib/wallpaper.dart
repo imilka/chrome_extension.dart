@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'dart:typed_data';
 import 'src/internal_helpers.dart';
 import 'src/js/wallpaper.dart' as $js;
@@ -24,9 +24,8 @@ class ChromeWallpaper {
   /// Sets wallpaper to the image at _url_ or _wallpaperData_ with the specified
   /// _layout_
   Future<ByteBuffer?> setWallpaper(SetWallpaperDetails details) async {
-    var $res = await promiseToFuture<JSArrayBuffer?>(
-        $js.chrome.wallpaper.setWallpaper(details.toJS));
-    return $res?.toDart;
+    var $res = await $js.chrome.wallpaper.setWallpaper(details.toJS).toDart;
+    return ($res as JSArrayBuffer?)?.toDart;
   }
 }
 

@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'extension_types.dart';
 import 'src/internal_helpers.dart';
 import 'src/js/web_request.dart' as $js;
@@ -26,7 +26,7 @@ class ChromeWebRequest {
   /// changed to prevent incorrect handling due to caching. This function call
   /// is expensive. Don't call it often.
   Future<void> handlerBehaviorChanged() async {
-    await promiseToFuture<void>($js.chrome.webRequest.handlerBehaviorChanged());
+    await $js.chrome.webRequest.handlerBehaviorChanged().toDart;
   }
 
   /// The maximum number of times that `handlerBehaviorChanged` can be called

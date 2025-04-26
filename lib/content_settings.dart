@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/content_settings.dart' as $js;
 
@@ -459,25 +458,24 @@ class ContentSetting {
 
   /// Clear all content setting rules set by this extension.
   Future<void> clear(ClearDetails details) async {
-    await promiseToFuture<void>(_wrapped.clear(details.toJS));
+    await _wrapped.clear(details.toJS).toDart;
   }
 
   /// Gets the current content setting for a given pair of URLs.
   Future<GetCallbackDetails> get(GetDetails details) async {
-    var $res = await promiseToFuture<$js.GetCallbackDetails>(
-        _wrapped.get(details.toJS));
-    return GetCallbackDetails.fromJS($res);
+    var $res = await _wrapped.get(details.toJS).toDart;
+    return GetCallbackDetails.fromJS($res as $js.GetCallbackDetails);
   }
 
   /// Applies a new content setting rule.
   Future<void> set(SetDetails details) async {
-    await promiseToFuture<void>(_wrapped.set(details.toJS));
+    await _wrapped.set(details.toJS).toDart;
   }
 
   Future<List<ResourceIdentifier>?> getResourceIdentifiers() async {
-    var $res =
-        await promiseToFuture<JSArray?>(_wrapped.getResourceIdentifiers());
-    return $res?.toDart
+    var $res = await _wrapped.getResourceIdentifiers().toDart;
+    return ($res as JSArray?)
+        ?.toDart
         .cast<$js.ResourceIdentifier>()
         .map((e) => ResourceIdentifier.fromJS(e))
         .toList();

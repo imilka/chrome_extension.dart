@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/offscreen.dart' as $js;
 
@@ -25,14 +25,13 @@ class ChromeOffscreen {
   /// |callback|: Invoked when the offscreen document is created and has
   /// completed its initial page load.
   Future<void> createDocument(CreateParameters parameters) async {
-    await promiseToFuture<void>(
-        $js.chrome.offscreen.createDocument(parameters.toJS));
+    await $js.chrome.offscreen.createDocument(parameters.toJS).toDart;
   }
 
   /// Closes the currently-open offscreen document for the extension.
   /// |callback|: Invoked when the offscreen document has been closed.
   Future<void> closeDocument() async {
-    await promiseToFuture<void>($js.chrome.offscreen.closeDocument());
+    await $js.chrome.offscreen.closeDocument().toDart;
   }
 
   /// Determines whether the extension has an active document.
@@ -43,8 +42,8 @@ class ChromeOffscreen {
   /// |callback|: Invoked with the result of whether the extension has an
   /// active offscreen document.
   Future<bool> hasDocument() async {
-    var $res = await promiseToFuture<bool>($js.chrome.offscreen.hasDocument());
-    return $res;
+    var $res = await $js.chrome.offscreen.hasDocument().toDart;
+    return $res as bool;
   }
 }
 
@@ -141,20 +140,21 @@ class CreateParameters {
     /// user.
     required String justification,
   }) : _wrapped = $js.CreateParameters(
-          reasons: reasons.toJSArray((e) => e.toJS),
-          url: url,
-          justification: justification,
-        );
+         reasons: reasons.toJSArray((e) => e.toJS),
+         url: url,
+         justification: justification,
+       );
 
   final $js.CreateParameters _wrapped;
 
   $js.CreateParameters get toJS => _wrapped;
 
   /// The reason(s) the extension is creating the offscreen document.
-  List<Reason> get reasons => _wrapped.reasons.toDart
-      .cast<$js.Reason>()
-      .map((e) => Reason.fromJS(e))
-      .toList();
+  List<Reason> get reasons =>
+      _wrapped.reasons.toDart
+          .cast<$js.Reason>()
+          .map((e) => Reason.fromJS(e))
+          .toList();
 
   set reasons(List<Reason> v) {
     _wrapped.reasons = v.toJSArray((e) => e.toJS);

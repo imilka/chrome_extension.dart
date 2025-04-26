@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/types.dart' as $js;
 
@@ -82,23 +82,22 @@ class ChromeSetting {
   /// Gets the value of a setting.
   /// [details] Which setting to consider.
   Future<GetCallbackDetails> get(GetDetails details) async {
-    var $res = await promiseToFuture<$js.GetCallbackDetails>(
-        _wrapped.get(details.toJS));
-    return GetCallbackDetails.fromJS($res);
+    var $res = await _wrapped.get(details.toJS).toDart;
+    return GetCallbackDetails.fromJS($res as $js.GetCallbackDetails);
   }
 
   /// Sets the value of a setting.
   /// [details] Which setting to change.
   /// [returns] Called at the completion of the set operation.
   Future<void> set(SetDetails details) async {
-    await promiseToFuture<void>(_wrapped.set(details.toJS));
+    await _wrapped.set(details.toJS).toDart;
   }
 
   /// Clears the setting, restoring any default value.
   /// [details] Which setting to clear.
   /// [returns] Called at the completion of the clear operation.
   Future<void> clear(ClearDetails details) async {
-    await promiseToFuture<void>(_wrapped.clear(details.toJS));
+    await _wrapped.clear(details.toJS).toDart;
   }
 
   /// Fired after the setting changes.

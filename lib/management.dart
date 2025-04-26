@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/management.dart' as $js;
 
@@ -25,8 +25,9 @@ class ChromeManagement {
 
   /// Returns a list of information about installed extensions and apps.
   Future<List<ExtensionInfo>> getAll() async {
-    var $res = await promiseToFuture<JSArray>($js.chrome.management.getAll());
-    return $res.toDart
+    var $res = await $js.chrome.management.getAll().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.ExtensionInfo>()
         .map((e) => ExtensionInfo.fromJS(e))
         .toList();
@@ -36,18 +37,16 @@ class ChromeManagement {
   /// the given ID.
   /// [id] The ID from an item of [management.ExtensionInfo].
   Future<ExtensionInfo> get(String id) async {
-    var $res =
-        await promiseToFuture<$js.ExtensionInfo>($js.chrome.management.get(id));
-    return ExtensionInfo.fromJS($res);
+    var $res = await $js.chrome.management.get(id).toDart;
+    return ExtensionInfo.fromJS($res as $js.ExtensionInfo);
   }
 
   /// Returns information about the calling extension, app, or theme. Note: This
   /// function can be used without requesting the 'management' permission in the
   /// manifest.
   Future<ExtensionInfo> getSelf() async {
-    var $res = await promiseToFuture<$js.ExtensionInfo>(
-        $js.chrome.management.getSelf());
-    return ExtensionInfo.fromJS($res);
+    var $res = await $js.chrome.management.getSelf().toDart;
+    return ExtensionInfo.fromJS($res as $js.ExtensionInfo);
   }
 
   /// Returns a list of [permission
@@ -55,9 +54,8 @@ class ChromeManagement {
   /// id.
   /// [id] The ID of an already installed extension.
   Future<List<String>> getPermissionWarningsById(String id) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.management.getPermissionWarningsById(id));
-    return $res.toDart.cast<String>().map((e) => e).toList();
+    var $res = await $js.chrome.management.getPermissionWarningsById(id).toDart;
+    return ($res as JSArray).toDart.cast<String>().map((e) => e).toList();
   }
 
   /// Returns a list of [permission
@@ -67,9 +65,10 @@ class ChromeManagement {
   /// [manifestStr] Extension manifest JSON string.
   Future<List<String>> getPermissionWarningsByManifest(
       String manifestStr) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.management.getPermissionWarningsByManifest(manifestStr));
-    return $res.toDart.cast<String>().map((e) => e).toList();
+    var $res = await $js.chrome.management
+        .getPermissionWarningsByManifest(manifestStr)
+        .toDart;
+    return ($res as JSArray).toDart.cast<String>().map((e) => e).toList();
   }
 
   /// Enables or disables an app or extension. In most cases this function must
@@ -82,10 +81,12 @@ class ChromeManagement {
     String id,
     bool enabled,
   ) async {
-    await promiseToFuture<void>($js.chrome.management.setEnabled(
-      id,
-      enabled,
-    ));
+    await $js.chrome.management
+        .setEnabled(
+          id,
+          enabled,
+        )
+        .toDart;
   }
 
   /// Uninstalls a currently installed app or extension. Note: This function
@@ -98,10 +99,12 @@ class ChromeManagement {
     String id,
     UninstallOptions? options,
   ) async {
-    await promiseToFuture<void>($js.chrome.management.uninstall(
-      id,
-      options?.toJS,
-    ));
+    await $js.chrome.management
+        .uninstall(
+          id,
+          options?.toJS,
+        )
+        .toDart;
   }
 
   /// Uninstalls the calling extension. Note: This function can be used without
@@ -109,14 +112,13 @@ class ChromeManagement {
   /// not work in managed environments when the user is not allowed to uninstall
   /// the specified extension/app.
   Future<void> uninstallSelf(UninstallOptions? options) async {
-    await promiseToFuture<void>(
-        $js.chrome.management.uninstallSelf(options?.toJS));
+    await $js.chrome.management.uninstallSelf(options?.toJS).toDart;
   }
 
   /// Launches an application.
   /// [id] The extension id of the application.
   Future<void> launchApp(String id) async {
-    await promiseToFuture<void>($js.chrome.management.launchApp(id));
+    await $js.chrome.management.launchApp(id).toDart;
   }
 
   /// Display options to create shortcuts for an app. On Mac, only packaged app
@@ -124,7 +126,7 @@ class ChromeManagement {
   /// [id] This should be the id from an app item of
   /// [management.ExtensionInfo].
   Future<void> createAppShortcut(String id) async {
-    await promiseToFuture<void>($js.chrome.management.createAppShortcut(id));
+    await $js.chrome.management.createAppShortcut(id).toDart;
   }
 
   /// Set the launch type of an app.
@@ -137,10 +139,12 @@ class ChromeManagement {
     String id,
     LaunchType launchType,
   ) async {
-    await promiseToFuture<void>($js.chrome.management.setLaunchType(
-      id,
-      launchType.toJS,
-    ));
+    await $js.chrome.management
+        .setLaunchType(
+          id,
+          launchType.toJS,
+        )
+        .toDart;
   }
 
   /// Generate an app for a URL. Returns the generated bookmark app.
@@ -151,19 +155,19 @@ class ChromeManagement {
     String url,
     String title,
   ) async {
-    var $res = await promiseToFuture<$js.ExtensionInfo>(
-        $js.chrome.management.generateAppForLink(
-      url,
-      title,
-    ));
-    return ExtensionInfo.fromJS($res);
+    var $res = await $js.chrome.management
+        .generateAppForLink(
+          url,
+          title,
+        )
+        .toDart;
+    return ExtensionInfo.fromJS($res as $js.ExtensionInfo);
   }
 
   /// Launches the replacement_web_app specified in the manifest. Prompts the
   /// user to install if not already installed.
   Future<void> installReplacementWebApp() async {
-    await promiseToFuture<void>(
-        $js.chrome.management.installReplacementWebApp());
+    await $js.chrome.management.installReplacementWebApp().toDart;
   }
 
   /// Fired when an app or extension has been installed.

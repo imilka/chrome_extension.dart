@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/cookies.dart' as $js;
 
@@ -26,9 +25,8 @@ class ChromeCookies {
   /// be returned. For cookies with the same path length, the cookie with the
   /// earliest creation time will be returned.
   Future<Cookie?> get(CookieDetails details) async {
-    var $res = await promiseToFuture<$js.Cookie?>(
-        $js.chrome.cookies.get(details.toJS));
-    return $res?.let(Cookie.fromJS);
+    var $res = await $js.chrome.cookies.get(details.toJS).toDart;
+    return ($res as $js.Cookie?)?.let(Cookie.fromJS);
   }
 
   /// Retrieves all cookies from a single cookie store that match the given
@@ -38,32 +36,34 @@ class ChromeCookies {
   /// cookies for domains that the extension has host permissions to.
   /// [details] Information to filter the cookies being retrieved.
   Future<List<Cookie>> getAll(GetAllDetails details) async {
-    var $res =
-        await promiseToFuture<JSArray>($js.chrome.cookies.getAll(details.toJS));
-    return $res.toDart.cast<$js.Cookie>().map((e) => Cookie.fromJS(e)).toList();
+    var $res = await $js.chrome.cookies.getAll(details.toJS).toDart;
+    return ($res as JSArray)
+        .toDart
+        .cast<$js.Cookie>()
+        .map((e) => Cookie.fromJS(e))
+        .toList();
   }
 
   /// Sets a cookie with the given cookie data; may overwrite equivalent cookies
   /// if they exist.
   /// [details] Details about the cookie being set.
   Future<Cookie?> set(SetDetails details) async {
-    var $res = await promiseToFuture<$js.Cookie?>(
-        $js.chrome.cookies.set(details.toJS));
-    return $res?.let(Cookie.fromJS);
+    var $res = await $js.chrome.cookies.set(details.toJS).toDart;
+    return ($res as $js.Cookie?)?.let(Cookie.fromJS);
   }
 
   /// Deletes a cookie by name.
   Future<RemoveCallbackDetails?> remove(CookieDetails details) async {
-    var $res = await promiseToFuture<$js.RemoveCallbackDetails?>(
-        $js.chrome.cookies.remove(details.toJS));
-    return $res?.let(RemoveCallbackDetails.fromJS);
+    var $res = await $js.chrome.cookies.remove(details.toJS).toDart;
+    return ($res as $js.RemoveCallbackDetails?)
+        ?.let(RemoveCallbackDetails.fromJS);
   }
 
   /// Lists all existing cookie stores.
   Future<List<CookieStore>> getAllCookieStores() async {
-    var $res =
-        await promiseToFuture<JSArray>($js.chrome.cookies.getAllCookieStores());
-    return $res.toDart
+    var $res = await $js.chrome.cookies.getAllCookieStores().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.CookieStore>()
         .map((e) => CookieStore.fromJS(e))
         .toList();

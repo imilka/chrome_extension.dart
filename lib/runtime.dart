@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/runtime.dart' as $js;
 import 'tabs.dart';
@@ -29,9 +28,8 @@ class ChromeRuntime {
   /// the system will ensure it is loaded before calling the callback. If there
   /// is no background page, an error is set.
   Future<JSObject?> getBackgroundPage() async {
-    var $res = await promiseToFuture<JSObject?>(
-        $js.chrome.runtime.getBackgroundPage());
-    return $res;
+    var $res = await $js.chrome.runtime.getBackgroundPage().toDart;
+    return $res as JSObject?;
   }
 
   /// Open your Extension's options page, if possible.
@@ -45,7 +43,7 @@ class ChromeRuntime {
   /// If your Extension does not declare an options page, or Chrome failed to
   /// create one for some other reason, the callback will set [lastError].
   Future<void> openOptionsPage() async {
-    await promiseToFuture<void>($js.chrome.runtime.openOptionsPage());
+    await $js.chrome.runtime.openOptionsPage().toDart;
   }
 
   /// Returns details about the app or extension from the manifest. The object
@@ -74,7 +72,7 @@ class ChromeRuntime {
   /// [returns] Called when the uninstall URL is set. If the given URL is
   /// invalid, [runtime.lastError] will be set.
   Future<void> setUninstallURL(String url) async {
-    await promiseToFuture<void>($js.chrome.runtime.setUninstallURL(url));
+    await $js.chrome.runtime.setUninstallURL(url).toDart;
   }
 
   /// Reloads the app or extension. This method is not supported in kiosk mode.
@@ -101,9 +99,9 @@ class ChromeRuntime {
   /// function will return the two properties as separate arguments passed to
   /// the callback.
   Future<RequestUpdateCheckCallbackResult> requestUpdateCheck() async {
-    var $res = await promiseToFuture<$js.RequestUpdateCheckCallbackResult>(
-        $js.chrome.runtime.requestUpdateCheck());
-    return RequestUpdateCheckCallbackResult.fromJS($res);
+    var $res = await $js.chrome.runtime.requestUpdateCheck().toDart;
+    return RequestUpdateCheckCallbackResult.fromJS(
+        $res as $js.RequestUpdateCheckCallbackResult);
   }
 
   /// Restart the ChromeOS device when the app runs in kiosk mode. Otherwise,
@@ -122,7 +120,7 @@ class ChromeRuntime {
   /// [returns] A callback to be invoked when a restart request was
   /// successfully rescheduled.
   Future<void> restartAfterDelay(int seconds) async {
-    await promiseToFuture<void>($js.chrome.runtime.restartAfterDelay(seconds));
+    await $js.chrome.runtime.restartAfterDelay(seconds).toDart;
   }
 
   /// Attempts to connect listeners within an extension/app (such as the
@@ -177,12 +175,14 @@ class ChromeRuntime {
     Object message,
     SendMessageOptions? options,
   ) async {
-    var $res = await promiseToFuture<JSAny?>($js.chrome.runtime.sendMessage(
-      extensionId,
-      message.jsify()!,
-      options?.toJS,
-    ));
-    return $res?.dartify();
+    var $res = await $js.chrome.runtime
+        .sendMessage(
+          extensionId,
+          message.jsify()!,
+          options?.toJS,
+        )
+        .toDart;
+    return ($res as JSAny?)?.dartify();
   }
 
   /// Send a single message to a native application.
@@ -192,38 +192,36 @@ class ChromeRuntime {
     String application,
     Map message,
   ) async {
-    var $res =
-        await promiseToFuture<JSAny>($js.chrome.runtime.sendNativeMessage(
-      application,
-      message.jsify()!,
-    ));
-    return $res.toDartMap();
+    var $res = await $js.chrome.runtime
+        .sendNativeMessage(
+          application,
+          message.jsify()!,
+        )
+        .toDart;
+    return ($res as JSAny).toDartMap();
   }
 
   /// Returns information about the current platform.
   /// [returns] Called with results
   Future<PlatformInfo> getPlatformInfo() async {
-    var $res = await promiseToFuture<$js.PlatformInfo>(
-        $js.chrome.runtime.getPlatformInfo());
-    return PlatformInfo.fromJS($res);
+    var $res = await $js.chrome.runtime.getPlatformInfo().toDart;
+    return PlatformInfo.fromJS($res as $js.PlatformInfo);
   }
 
   /// Returns a DirectoryEntry for the package directory.
   Future<JSObject> getPackageDirectoryEntry() async {
-    var $res = await promiseToFuture<JSObject>(
-        $js.chrome.runtime.getPackageDirectoryEntry());
-    return $res;
+    var $res = await $js.chrome.runtime.getPackageDirectoryEntry().toDart;
+    return $res as JSObject;
   }
 
-  /// Fetches information about active contexts associated with this extension
-  /// [filter] A filter to find matching contexts. A context matches if it
-  /// matches all specified fields in the filter. Any unspecified field in the
-  /// filter matches all contexts.
+  /// Returns information about the contexts that currently make up the
+  /// extension.
+  /// [filter] A filter to find specific extension contexts.
   /// [returns] Invoked with the matching contexts, if any.
   Future<List<ExtensionContext>> getContexts(ContextFilter filter) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.runtime.getContexts(filter.toJS));
-    return $res.toDart
+    var $res = await $js.chrome.runtime.getContexts(filter.toJS).toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.ExtensionContext>()
         .map((e) => ExtensionContext.fromJS(e))
         .toList();

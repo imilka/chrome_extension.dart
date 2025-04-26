@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/omnibox.dart' as $js;
 
@@ -40,8 +40,7 @@ class ChromeOmnibox {
   /// [suggestion] A partial SuggestResult object, without the 'content'
   /// parameter.
   Future<void> setDefaultSuggestion(DefaultSuggestResult suggestion) async {
-    await promiseToFuture<void>(
-        $js.chrome.omnibox.setDefaultSuggestion(suggestion.toJS));
+    await $js.chrome.omnibox.setDefaultSuggestion(suggestion.toJS).toDart;
   }
 
   /// User has started a keyword input session by typing the extension's

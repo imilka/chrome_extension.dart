@@ -3,11 +3,15 @@ version: 0.4.0
 description: A library for accessing the `chrome.*` APIs available in Chrome extensions.
 homepage: https://github.com/xvrh/chrome_extension.dart
 environment:
-  sdk: '^3.5.0'
+  sdk: '>=3.7.0 <4.0.0'
 
 funding:
   - https://www.buymeacoffee.com/xvrh
   - https://github.com/sponsors/xvrh
+
+dependencies:
+  js: ^0.6.7
+  web: '>=0.5.0 <2.0.0'
 
 dev_dependencies:
   analyzer:
@@ -34,5 +38,4 @@ dev_dependencies:
   shelf_router:
   shelf_static:
   test:
-  web:
   yaml:

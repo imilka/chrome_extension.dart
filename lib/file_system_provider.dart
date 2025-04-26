@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'dart:typed_data';
 import 'src/internal_helpers.dart';
 import 'src/js/file_system_provider.dart' as $js;
@@ -36,8 +35,7 @@ class ChromeFileSystemProvider {
   /// In case of an error, [runtime.lastError] will be set with a
   /// corresponding error code.
   Future<void> mount(MountOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.fileSystemProvider.mount(options.toJS));
+    await $js.chrome.fileSystemProvider.mount(options.toJS).toDart;
   }
 
   /// Unmounts a file system with the given `fileSystemId`. It
@@ -48,15 +46,13 @@ class ChromeFileSystemProvider {
   /// In case of an error, [runtime.lastError] will be set with a
   /// corresponding error code.
   Future<void> unmount(UnmountOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.fileSystemProvider.unmount(options.toJS));
+    await $js.chrome.fileSystemProvider.unmount(options.toJS).toDart;
   }
 
   /// Returns all file systems mounted by the extension.
   Future<List<FileSystemInfo>> getAll() async {
-    var $res =
-        await promiseToFuture<JSArray>($js.chrome.fileSystemProvider.getAll());
-    return $res.toDart
+    var $res = await $js.chrome.fileSystemProvider.getAll().toDart;
+    return ($res as List<dynamic>)
         .cast<$js.FileSystemInfo>()
         .map((e) => FileSystemInfo.fromJS(e))
         .toList();
@@ -65,9 +61,8 @@ class ChromeFileSystemProvider {
   /// Returns information about a file system with the passed
   /// `fileSystemId`.
   Future<FileSystemInfo> get(String fileSystemId) async {
-    var $res = await promiseToFuture<$js.FileSystemInfo>(
-        $js.chrome.fileSystemProvider.get(fileSystemId));
-    return FileSystemInfo.fromJS($res);
+    var $res = await $js.chrome.fileSystemProvider.get(fileSystemId).toDart;
+    return FileSystemInfo.fromJS($res as $js.FileSystemInfo);
   }
 
   /// Notifies about changes in the watched directory at
@@ -100,8 +95,7 @@ class ChromeFileSystemProvider {
   /// In case of an error, [runtime.lastError] will be set
   /// will a corresponding error code.
   Future<void> notify(NotifyOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.fileSystemProvider.notify(options.toJS));
+    await $js.chrome.fileSystemProvider.notify(options.toJS).toDart;
   }
 
   /// Raised when unmounting for the file system with the

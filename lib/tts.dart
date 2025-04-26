@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/tts.dart' as $js;
 
@@ -36,10 +35,12 @@ class ChromeTts {
     String utterance,
     TtsOptions? options,
   ) async {
-    await promiseToFuture<void>($js.chrome.tts.speak(
-      utterance,
-      options?.toJS,
-    ));
+    await $js.chrome.tts
+        .speak(
+          utterance,
+          options?.toJS,
+        )
+        .toDart;
   }
 
   /// Stops any current speech and flushes the queue of any pending utterances.
@@ -64,14 +65,15 @@ class ChromeTts {
   /// is true whenever the system speech engine is speaking, even if the speech
   /// wasn't initiated by Chrome.
   Future<bool> isSpeaking() async {
-    var $res = await promiseToFuture<bool>($js.chrome.tts.isSpeaking());
-    return $res;
+    var $res = await $js.chrome.tts.isSpeaking().toDart;
+    return $res as bool;
   }
 
   /// Gets an array of all available voices.
   Future<List<TtsVoice>> getVoices() async {
-    var $res = await promiseToFuture<JSArray>($js.chrome.tts.getVoices());
-    return $res.toDart
+    var $res = await $js.chrome.tts.getVoices().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.TtsVoice>()
         .map((e) => TtsVoice.fromJS(e))
         .toList();

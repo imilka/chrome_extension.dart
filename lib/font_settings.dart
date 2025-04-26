@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/font_settings.dart' as $js;
 
@@ -22,27 +21,25 @@ class ChromeFontSettings {
 
   /// Clears the font set by this extension, if any.
   Future<void> clearFont(ClearFontDetails details) async {
-    await promiseToFuture<void>(
-        $js.chrome.fontSettings.clearFont(details.toJS));
+    await $js.chrome.fontSettings.clearFont(details.toJS).toDart;
   }
 
   /// Gets the font for a given script and generic font family.
   Future<GetFontCallbackDetails> getFont(GetFontDetails details) async {
-    var $res = await promiseToFuture<$js.GetFontCallbackDetails>(
-        $js.chrome.fontSettings.getFont(details.toJS));
-    return GetFontCallbackDetails.fromJS($res);
+    var $res = await $js.chrome.fontSettings.getFont(details.toJS).toDart;
+    return GetFontCallbackDetails.fromJS($res as $js.GetFontCallbackDetails);
   }
 
   /// Sets the font for a given script and generic font family.
   Future<void> setFont(SetFontDetails details) async {
-    await promiseToFuture<void>($js.chrome.fontSettings.setFont(details.toJS));
+    await $js.chrome.fontSettings.setFont(details.toJS).toDart;
   }
 
   /// Gets a list of fonts on the system.
   Future<List<FontName>> getFontList() async {
-    var $res =
-        await promiseToFuture<JSArray>($js.chrome.fontSettings.getFontList());
-    return $res.toDart
+    var $res = await $js.chrome.fontSettings.getFontList().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.FontName>()
         .map((e) => FontName.fromJS(e))
         .toList();
@@ -52,71 +49,70 @@ class ChromeFontSettings {
   /// [details] This parameter is currently unused.
   Future<void> clearDefaultFontSize(
       ClearDefaultFontSizeDetails? details) async {
-    await promiseToFuture<void>(
-        $js.chrome.fontSettings.clearDefaultFontSize(details?.toJS));
+    await $js.chrome.fontSettings.clearDefaultFontSize(details?.toJS).toDart;
   }
 
   /// Gets the default font size.
   /// [details] This parameter is currently unused.
   Future<GetDefaultFontSizeCallbackDetails> getDefaultFontSize(
       GetDefaultFontSizeDetails? details) async {
-    var $res = await promiseToFuture<$js.GetDefaultFontSizeCallbackDetails>(
-        $js.chrome.fontSettings.getDefaultFontSize(details?.toJS));
-    return GetDefaultFontSizeCallbackDetails.fromJS($res);
+    var $res =
+        await $js.chrome.fontSettings.getDefaultFontSize(details?.toJS).toDart;
+    return GetDefaultFontSizeCallbackDetails.fromJS(
+        $res as $js.GetDefaultFontSizeCallbackDetails);
   }
 
   /// Sets the default font size.
   Future<void> setDefaultFontSize(SetDefaultFontSizeDetails details) async {
-    await promiseToFuture<void>(
-        $js.chrome.fontSettings.setDefaultFontSize(details.toJS));
+    await $js.chrome.fontSettings.setDefaultFontSize(details.toJS).toDart;
   }
 
   /// Clears the default fixed font size set by this extension, if any.
   /// [details] This parameter is currently unused.
   Future<void> clearDefaultFixedFontSize(
       ClearDefaultFixedFontSizeDetails? details) async {
-    await promiseToFuture<void>(
-        $js.chrome.fontSettings.clearDefaultFixedFontSize(details?.toJS));
+    await $js.chrome.fontSettings
+        .clearDefaultFixedFontSize(details?.toJS)
+        .toDart;
   }
 
   /// Gets the default size for fixed width fonts.
   /// [details] This parameter is currently unused.
   Future<GetDefaultFixedFontSizeCallbackDetails> getDefaultFixedFontSize(
       GetDefaultFixedFontSizeDetails? details) async {
-    var $res =
-        await promiseToFuture<$js.GetDefaultFixedFontSizeCallbackDetails>(
-            $js.chrome.fontSettings.getDefaultFixedFontSize(details?.toJS));
-    return GetDefaultFixedFontSizeCallbackDetails.fromJS($res);
+    var $res = await $js.chrome.fontSettings
+        .getDefaultFixedFontSize(details?.toJS)
+        .toDart;
+    return GetDefaultFixedFontSizeCallbackDetails.fromJS(
+        $res as $js.GetDefaultFixedFontSizeCallbackDetails);
   }
 
   /// Sets the default size for fixed width fonts.
   Future<void> setDefaultFixedFontSize(
       SetDefaultFixedFontSizeDetails details) async {
-    await promiseToFuture<void>(
-        $js.chrome.fontSettings.setDefaultFixedFontSize(details.toJS));
+    await $js.chrome.fontSettings.setDefaultFixedFontSize(details.toJS).toDart;
   }
 
   /// Clears the minimum font size set by this extension, if any.
   /// [details] This parameter is currently unused.
   Future<void> clearMinimumFontSize(
       ClearMinimumFontSizeDetails? details) async {
-    await promiseToFuture<void>(
-        $js.chrome.fontSettings.clearMinimumFontSize(details?.toJS));
+    await $js.chrome.fontSettings.clearMinimumFontSize(details?.toJS).toDart;
   }
 
   /// Gets the minimum font size.
   /// [details] This parameter is currently unused.
   Future<GetMinimumFontSizeCallbackDetails> getMinimumFontSize(
       GetMinimumFontSizeDetails? details) async {
-    var $res = await promiseToFuture<$js.GetMinimumFontSizeCallbackDetails>(
-        $js.chrome.fontSettings.getMinimumFontSize(details?.toJS));
-    return GetMinimumFontSizeCallbackDetails.fromJS($res);
+    var $res =
+        await $js.chrome.fontSettings.getMinimumFontSize(details?.toJS).toDart;
+    return GetMinimumFontSizeCallbackDetails.fromJS(
+        $res as $js.GetMinimumFontSizeCallbackDetails);
   }
 
   /// Sets the minimum font size.
   Future<void> setMinimumFontSize(SetMinimumFontSizeDetails details) async {
-    await promiseToFuture<void>(
-        $js.chrome.fontSettings.setMinimumFontSize(details.toJS));
+    await $js.chrome.fontSettings.setMinimumFontSize(details.toJS).toDart;
   }
 
   /// Fired when a font setting changes.

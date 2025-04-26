@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/system_network.dart' as $js;
 import 'system.dart';
@@ -13,7 +13,7 @@ export 'system.dart' show ChromeSystem, ChromeSystemExtension;
 final _systemNetwork = ChromeSystemNetwork._();
 
 extension ChromeSystemNetworkExtension on ChromeSystem {
-  /// Use the `chrome.system.network` API.
+  /// Use the `system.network` API to query network interfaces.
   ChromeSystemNetwork get network => _systemNetwork;
 }
 
@@ -24,13 +24,13 @@ class ChromeSystemNetwork {
       $js.chrome.systemNullable?.networkNullable != null && alwaysTrue;
 
   /// Retrieves information about local adapters on this system.
+  ///
   /// |callback| : Called when local adapter information is available.
   Future<List<NetworkInterface>> getNetworkInterfaces() async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.system.network.getNetworkInterfaces());
-    return $res.toDart
-        .cast<$js.NetworkInterface>()
-        .map((e) => NetworkInterface.fromJS(e))
+    var $res = await $js.chrome.system.network.getNetworkInterfaces().toDart;
+    return ($res as JSArray)
+        .toDart
+        .map((e) => NetworkInterface.fromJS(e as $js.NetworkInterface))
         .toList();
   }
 }

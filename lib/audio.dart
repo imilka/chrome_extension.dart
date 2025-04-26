@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/audio.dart' as $js;
 
@@ -29,9 +28,9 @@ class ChromeAudio {
   ///     returned device list will contain all available audio devices.
   /// |callback|: Reports the requested list of audio devices.
   Future<List<AudioDeviceInfo>> getDevices(DeviceFilter? filter) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.audio.getDevices(filter?.toJS));
-    return $res.toDart
+    var $res = await $js.chrome.audio.getDevices(filter?.toJS).toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.AudioDeviceInfo>()
         .map((e) => AudioDeviceInfo.fromJS(e))
         .toList();
@@ -44,7 +43,7 @@ class ChromeAudio {
   ///
   ///     It is an error to pass in a non-existent device ID.
   Future<void> setActiveDevices(DeviceIdLists ids) async {
-    await promiseToFuture<void>($js.chrome.audio.setActiveDevices(ids.toJS));
+    await $js.chrome.audio.setActiveDevices(ids.toJS).toDart;
   }
 
   /// Sets the properties for the input or output device.
@@ -52,10 +51,12 @@ class ChromeAudio {
     String id,
     DeviceProperties properties,
   ) async {
-    await promiseToFuture<void>($js.chrome.audio.setProperties(
-      id,
-      properties.toJS,
-    ));
+    await $js.chrome.audio
+        .setProperties(
+          id,
+          properties.toJS,
+        )
+        .toDart;
   }
 
   /// Gets the system-wide mute state for the specified stream type.
@@ -63,9 +64,8 @@ class ChromeAudio {
   /// |callback|: Callback reporting whether mute is set or not for specified
   /// stream type.
   Future<bool> getMute(StreamType streamType) async {
-    var $res =
-        await promiseToFuture<bool>($js.chrome.audio.getMute(streamType.toJS));
-    return $res;
+    var $res = await $js.chrome.audio.getMute(streamType.toJS).toDart;
+    return $res as bool;
   }
 
   /// Sets mute state for a stream type. The mute state will apply to all audio
@@ -76,10 +76,12 @@ class ChromeAudio {
     StreamType streamType,
     bool isMuted,
   ) async {
-    await promiseToFuture<void>($js.chrome.audio.setMute(
-      streamType.toJS,
-      isMuted,
-    ));
+    await $js.chrome.audio
+        .setMute(
+          streamType.toJS,
+          isMuted,
+        )
+        .toDart;
   }
 
   /// Fired when sound level changes for an active audio device.

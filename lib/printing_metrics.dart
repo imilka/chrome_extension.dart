@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'printing.dart';
 import 'src/internal_helpers.dart';
 import 'src/js/printing_metrics.dart' as $js;
@@ -25,9 +24,9 @@ class ChromePrintingMetrics {
 
   /// Returns the list of the finished print jobs.
   Future<List<PrintJobInfo>> getPrintJobs() async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.printingMetrics.getPrintJobs());
-    return $res.toDart
+    var $res = await $js.chrome.printingMetrics.getPrintJobs().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.PrintJobInfo>()
         .map((e) => PrintJobInfo.fromJS(e))
         .toList();

@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'enterprise.dart';
 import 'src/internal_helpers.dart';
 import 'src/js/enterprise_networking_attributes.dart' as $js;
@@ -36,9 +35,10 @@ class ChromeEnterpriseNetworkingAttributes {
   /// |callback| : Called with the device's default network's
   /// [NetworkDetails].
   Future<NetworkDetails> getNetworkDetails() async {
-    var $res = await promiseToFuture<$js.NetworkDetails>(
-        $js.chrome.enterprise.networkingAttributes.getNetworkDetails());
-    return NetworkDetails.fromJS($res);
+    var $res = await $js.chrome.enterprise.networkingAttributes
+        .getNetworkDetails()
+        .toDart;
+    return NetworkDetails.fromJS($res as $js.NetworkDetails);
   }
 }
 

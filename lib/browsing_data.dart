@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/browsing_data.dart' as $js;
 
@@ -26,9 +25,8 @@ class ChromeBrowsingData {
   /// not available in the settings UI, and some UI settings control more than
   /// one data type listed here.
   Future<SettingsCallbackResult> settings() async {
-    var $res = await promiseToFuture<$js.SettingsCallbackResult>(
-        $js.chrome.browsingData.settings());
-    return SettingsCallbackResult.fromJS($res);
+    var $res = await $js.chrome.browsingData.settings().toDart;
+    return SettingsCallbackResult.fromJS($res as $js.SettingsCallbackResult);
   }
 
   /// Clears various types of browsing data stored in a user's profile.
@@ -38,31 +36,30 @@ class ChromeBrowsingData {
     RemovalOptions options,
     DataTypeSet dataToRemove,
   ) async {
-    await promiseToFuture<void>($js.chrome.browsingData.remove(
-      options.toJS,
-      dataToRemove.toJS,
-    ));
+    await $js.chrome.browsingData
+        .remove(
+          options.toJS,
+          dataToRemove.toJS,
+        )
+        .toDart;
   }
 
   /// Clears websites' appcache data.
   /// [returns] Called when websites' appcache data has been cleared.
   Future<void> removeAppcache(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeAppcache(options.toJS));
+    await $js.chrome.browsingData.removeAppcache(options.toJS).toDart;
   }
 
   /// Clears the browser's cache.
   /// [returns] Called when the browser's cache has been cleared.
   Future<void> removeCache(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeCache(options.toJS));
+    await $js.chrome.browsingData.removeCache(options.toJS).toDart;
   }
 
   /// Clears websites' cache storage data.
   /// [returns] Called when websites' cache storage has been cleared.
   Future<void> removeCacheStorage(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeCacheStorage(options.toJS));
+    await $js.chrome.browsingData.removeCacheStorage(options.toJS).toDart;
   }
 
   /// Clears the browser's cookies and server-bound certificates modified within
@@ -70,8 +67,7 @@ class ChromeBrowsingData {
   /// [returns] Called when the browser's cookies and server-bound
   /// certificates have been cleared.
   Future<void> removeCookies(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeCookies(options.toJS));
+    await $js.chrome.browsingData.removeCookies(options.toJS).toDart;
   }
 
   /// Clears the browser's list of downloaded files (_not_ the downloaded files
@@ -79,43 +75,37 @@ class ChromeBrowsingData {
   /// [returns] Called when the browser's list of downloaded files has been
   /// cleared.
   Future<void> removeDownloads(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeDownloads(options.toJS));
+    await $js.chrome.browsingData.removeDownloads(options.toJS).toDart;
   }
 
   /// Clears websites' file system data.
   /// [returns] Called when websites' file systems have been cleared.
   Future<void> removeFileSystems(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeFileSystems(options.toJS));
+    await $js.chrome.browsingData.removeFileSystems(options.toJS).toDart;
   }
 
   /// Clears the browser's stored form data (autofill).
   /// [returns] Called when the browser's form data has been cleared.
   Future<void> removeFormData(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeFormData(options.toJS));
+    await $js.chrome.browsingData.removeFormData(options.toJS).toDart;
   }
 
   /// Clears the browser's history.
   /// [returns] Called when the browser's history has cleared.
   Future<void> removeHistory(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeHistory(options.toJS));
+    await $js.chrome.browsingData.removeHistory(options.toJS).toDart;
   }
 
   /// Clears websites' IndexedDB data.
   /// [returns] Called when websites' IndexedDB data has been cleared.
   Future<void> removeIndexedDB(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeIndexedDB(options.toJS));
+    await $js.chrome.browsingData.removeIndexedDB(options.toJS).toDart;
   }
 
   /// Clears websites' local storage data.
   /// [returns] Called when websites' local storage has been cleared.
   Future<void> removeLocalStorage(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeLocalStorage(options.toJS));
+    await $js.chrome.browsingData.removeLocalStorage(options.toJS).toDart;
   }
 
   /// Clears plugins' data.
@@ -123,29 +113,25 @@ class ChromeBrowsingData {
   @Deprecated(
       r'Support for Flash has been removed. This function has no effect.')
   Future<void> removePluginData(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removePluginData(options.toJS));
+    await $js.chrome.browsingData.removePluginData(options.toJS).toDart;
   }
 
   /// Clears the browser's stored passwords.
   /// [returns] Called when the browser's passwords have been cleared.
   Future<void> removePasswords(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removePasswords(options.toJS));
+    await $js.chrome.browsingData.removePasswords(options.toJS).toDart;
   }
 
   /// Clears websites' service workers.
   /// [returns] Called when websites' service workers have been cleared.
   Future<void> removeServiceWorkers(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeServiceWorkers(options.toJS));
+    await $js.chrome.browsingData.removeServiceWorkers(options.toJS).toDart;
   }
 
   /// Clears websites' WebSQL data.
   /// [returns] Called when websites' WebSQL databases have been cleared.
   Future<void> removeWebSQL(RemovalOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.browsingData.removeWebSQL(options.toJS));
+    await $js.chrome.browsingData.removeWebSQL(options.toJS).toDart;
   }
 }
 

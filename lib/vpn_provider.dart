@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'dart:typed_data';
 import 'src/internal_helpers.dart';
 import 'src/js/vpn_provider.dart' as $js;
@@ -28,9 +28,8 @@ class ChromeVpnProvider {
   /// |callback|: Called when the configuration is created or if there is an
   /// error.
   Future<String> createConfig(String name) async {
-    var $res = await promiseToFuture<String>(
-        $js.chrome.vpnProvider.createConfig(name));
-    return $res;
+    var $res = await $js.chrome.vpnProvider.createConfig(name).toDart;
+    return $res as String;
   }
 
   /// Destroys a VPN configuration created by the extension.
@@ -38,7 +37,7 @@ class ChromeVpnProvider {
   /// |callback|: Called when the configuration is destroyed or if there is an
   /// error.
   Future<void> destroyConfig(String id) async {
-    await promiseToFuture<void>($js.chrome.vpnProvider.destroyConfig(id));
+    await $js.chrome.vpnProvider.destroyConfig(id).toDart;
   }
 
   /// Sets the parameters for the VPN session. This should be called
@@ -47,8 +46,7 @@ class ChromeVpnProvider {
   /// |parameters|: The parameters for the VPN session.
   /// |callback|: Called when the parameters are set or if there is an error.
   Future<void> setParameters(Parameters parameters) async {
-    await promiseToFuture<void>(
-        $js.chrome.vpnProvider.setParameters(parameters.toJS));
+    await $js.chrome.vpnProvider.setParameters(parameters.toJS).toDart;
   }
 
   /// Sends an IP packet through the tunnel created for the VPN session.
@@ -56,7 +54,7 @@ class ChromeVpnProvider {
   /// |data|: The IP packet to be sent to the platform.
   /// |callback|: Called when the packet is sent or if there is an error.
   Future<void> sendPacket(ByteBuffer data) async {
-    await promiseToFuture<void>($js.chrome.vpnProvider.sendPacket(data.toJS));
+    await $js.chrome.vpnProvider.sendPacket(data.toJS).toDart;
   }
 
   /// Notifies the VPN session state to the platform.
@@ -65,8 +63,9 @@ class ChromeVpnProvider {
   /// |callback|: Called when the notification is complete or if there is an
   /// error.
   Future<void> notifyConnectionStateChanged(VpnConnectionState state) async {
-    await promiseToFuture<void>(
-        $js.chrome.vpnProvider.notifyConnectionStateChanged(state.toJS));
+    await $js.chrome.vpnProvider
+        .notifyConnectionStateChanged(state.toJS)
+        .toDart;
   }
 
   /// Triggered when a message is received from the platform for a

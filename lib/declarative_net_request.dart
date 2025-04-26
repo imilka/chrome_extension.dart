@@ -2,7 +2,7 @@
 
 library;
 
-import 'dart:js_util';
+import 'dart:js_interop';
 import 'extension_types.dart';
 import 'src/internal_helpers.dart';
 import 'src/js/declarative_net_request.dart' as $js;
@@ -47,8 +47,9 @@ class ChromeDeclarativeNetRequest {
   /// rule format, duplicate rule ID, rule count limit exceeded, internal
   /// errors, and others.
   Future<void> updateDynamicRules(UpdateRuleOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.declarativeNetRequest.updateDynamicRules(options.toJS));
+    await $js.chrome.declarativeNetRequest
+        .updateDynamicRules(options.toJS)
+        .toDart;
   }
 
   /// Returns the current set of dynamic rules for the extension. Callers can
@@ -58,9 +59,14 @@ class ChromeDeclarativeNetRequest {
   /// |callback|: Called with the set of dynamic rules. An error might be
   /// raised in case of transient internal errors.
   Future<List<Rule>> getDynamicRules(GetRulesFilter? filter) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.declarativeNetRequest.getDynamicRules(filter?.toJS));
-    return $res.toDart.cast<$js.Rule>().map((e) => Rule.fromJS(e)).toList();
+    var $res = await $js.chrome.declarativeNetRequest
+        .getDynamicRules(filter?.toJS)
+        .toDart;
+    return ($res as JSArray)
+        .toDart
+        .cast<$js.Rule>()
+        .map((e) => Rule.fromJS(e))
+        .toList();
   }
 
   /// Modifies the current set of session scoped rules for the extension.
@@ -80,8 +86,9 @@ class ChromeDeclarativeNetRequest {
   /// to the rule set. This can happen for multiple reasons, such as invalid
   /// rule format, duplicate rule ID, rule count limit exceeded, and others.
   Future<void> updateSessionRules(UpdateRuleOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.declarativeNetRequest.updateSessionRules(options.toJS));
+    await $js.chrome.declarativeNetRequest
+        .updateSessionRules(options.toJS)
+        .toDart;
   }
 
   /// Returns the current set of session scoped rules for the extension.
@@ -90,9 +97,14 @@ class ChromeDeclarativeNetRequest {
   /// |filter|: An object to filter the list of fetched rules.
   /// |callback|: Called with the set of session scoped rules.
   Future<List<Rule>> getSessionRules(GetRulesFilter? filter) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.declarativeNetRequest.getSessionRules(filter?.toJS));
-    return $res.toDart.cast<$js.Rule>().map((e) => Rule.fromJS(e)).toList();
+    var $res = await $js.chrome.declarativeNetRequest
+        .getSessionRules(filter?.toJS)
+        .toDart;
+    return ($res as JSArray)
+        .toDart
+        .cast<$js.Rule>()
+        .map((e) => Rule.fromJS(e))
+        .toList();
   }
 
   /// Updates the set of enabled static rulesets for the extension. The
@@ -108,17 +120,18 @@ class ChromeDeclarativeNetRequest {
   /// enabled rulesets. This can happen for multiple reasons, such as invalid
   /// ruleset IDs, rule count limit exceeded, or internal errors.
   Future<void> updateEnabledRulesets(UpdateRulesetOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.declarativeNetRequest.updateEnabledRulesets(options.toJS));
+    await $js.chrome.declarativeNetRequest
+        .updateEnabledRulesets(options.toJS)
+        .toDart;
   }
 
   /// Returns the ids for the current set of enabled static rulesets.
   /// |callback|: Called with a list of ids, where each id corresponds to an
   /// enabled static [Ruleset].
   Future<List<String>> getEnabledRulesets() async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.declarativeNetRequest.getEnabledRulesets());
-    return $res.toDart.cast<String>().map((e) => e).toList();
+    var $res =
+        await $js.chrome.declarativeNetRequest.getEnabledRulesets().toDart;
+    return ($res as JSArray).toDart.cast<String>().map((e) => e).toList();
   }
 
   /// Disables and enables individual static rules in a [Ruleset].
@@ -128,8 +141,9 @@ class ChromeDeclarativeNetRequest {
   /// [runtime.lastError] will be set and no change will be made to the
   /// enabled static rules.
   Future<void> updateStaticRules(UpdateStaticRulesOptions options) async {
-    await promiseToFuture<void>(
-        $js.chrome.declarativeNetRequest.updateStaticRules(options.toJS));
+    await $js.chrome.declarativeNetRequest
+        .updateStaticRules(options.toJS)
+        .toDart;
   }
 
   /// Returns the list of static rules in the given [Ruleset] that are
@@ -139,9 +153,10 @@ class ChromeDeclarativeNetRequest {
   /// rules in that ruleset.
   Future<List<int>> getDisabledRuleIds(
       GetDisabledRuleIdsOptions options) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.declarativeNetRequest.getDisabledRuleIds(options.toJS));
-    return $res.toDart.cast<int>().map((e) => e).toList();
+    var $res = await $js.chrome.declarativeNetRequest
+        .getDisabledRuleIds(options.toJS)
+        .toDart;
+    return ($res as JSArray).toDart.cast<int>().map((e) => e).toList();
   }
 
   /// Returns all rules matched for the extension. Callers can optionally
@@ -159,17 +174,19 @@ class ChromeDeclarativeNetRequest {
   /// permissions, or exceeding the quota.
   Future<RulesMatchedDetails> getMatchedRules(
       MatchedRulesFilter? filter) async {
-    var $res = await promiseToFuture<$js.RulesMatchedDetails>(
-        $js.chrome.declarativeNetRequest.getMatchedRules(filter?.toJS));
-    return RulesMatchedDetails.fromJS($res);
+    var $res = await $js.chrome.declarativeNetRequest
+        .getMatchedRules(filter?.toJS)
+        .toDart;
+    return RulesMatchedDetails.fromJS($res as $js.RulesMatchedDetails);
   }
 
   /// Configures if the action count for tabs should be displayed as the
   /// extension action's badge text and provides a way for that action count to
   /// be incremented.
   Future<void> setExtensionActionOptions(ExtensionActionOptions options) async {
-    await promiseToFuture<void>($js.chrome.declarativeNetRequest
-        .setExtensionActionOptions(options.toJS));
+    await $js.chrome.declarativeNetRequest
+        .setExtensionActionOptions(options.toJS)
+        .toDart;
   }
 
   /// Checks if the given regular expression will be supported as a
@@ -179,18 +196,20 @@ class ChromeDeclarativeNetRequest {
   /// expression is supported and the reason if not.
   Future<IsRegexSupportedResult> isRegexSupported(
       RegexOptions regexOptions) async {
-    var $res = await promiseToFuture<$js.IsRegexSupportedResult>(
-        $js.chrome.declarativeNetRequest.isRegexSupported(regexOptions.toJS));
-    return IsRegexSupportedResult.fromJS($res);
+    var $res = await $js.chrome.declarativeNetRequest
+        .isRegexSupported(regexOptions.toJS)
+        .toDart;
+    return IsRegexSupportedResult.fromJS($res as $js.IsRegexSupportedResult);
   }
 
   /// Returns the number of static rules an extension can enable before the
   /// [global static rule limit](#global-static-rule-limit) is
   /// reached.
   Future<int> getAvailableStaticRuleCount() async {
-    var $res = await promiseToFuture<int>(
-        $js.chrome.declarativeNetRequest.getAvailableStaticRuleCount());
-    return $res;
+    var $res = await $js.chrome.declarativeNetRequest
+        .getAvailableStaticRuleCount()
+        .toDart;
+    return $res as int;
   }
 
   /// Checks if any of the extension's declarativeNetRequest rules would match
@@ -201,9 +220,10 @@ class ChromeDeclarativeNetRequest {
   /// |callback|: Called with the details of matched rules.
   Future<TestMatchOutcomeResult> testMatchOutcome(
       TestMatchRequestDetails request) async {
-    var $res = await promiseToFuture<$js.TestMatchOutcomeResult>(
-        $js.chrome.declarativeNetRequest.testMatchOutcome(request.toJS));
-    return TestMatchOutcomeResult.fromJS($res);
+    var $res = await $js.chrome.declarativeNetRequest
+        .testMatchOutcome(request.toJS)
+        .toDart;
+    return TestMatchOutcomeResult.fromJS($res as $js.TestMatchOutcomeResult);
   }
 
   /// The minimum number of static rules guaranteed to an extension across its

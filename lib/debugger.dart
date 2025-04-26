@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/debugger.dart' as $js;
 
@@ -39,10 +38,12 @@ class ChromeDebugger {
     Debuggee target,
     String requiredVersion,
   ) async {
-    await promiseToFuture<void>($js.chrome.debugger.attach(
-      target.toJS,
-      requiredVersion,
-    ));
+    await $js.chrome.debugger
+        .attach(
+          target.toJS,
+          requiredVersion,
+        )
+        .toDart;
   }
 
   /// Detaches debugger from the given target.
@@ -51,7 +52,7 @@ class ChromeDebugger {
   /// receives no arguments. If the detach fails, [runtime.lastError] will be
   /// set to the error message.
   Future<void> detach(Debuggee target) async {
-    await promiseToFuture<void>($js.chrome.debugger.detach(target.toJS));
+    await $js.chrome.debugger.detach(target.toJS).toDart;
   }
 
   /// Sends given command to the debugging target.
@@ -69,18 +70,21 @@ class ChromeDebugger {
     String method,
     Map? commandParams,
   ) async {
-    var $res = await promiseToFuture<JSAny?>($js.chrome.debugger.sendCommand(
-      target.toJS,
-      method,
-      commandParams?.jsify(),
-    ));
-    return $res?.toDartMap();
+    var $res = await $js.chrome.debugger
+        .sendCommand(
+          target.toJS,
+          method,
+          commandParams?.jsify(),
+        )
+        .toDart;
+    return ($res as JSAny?)?.toDartMap();
   }
 
   /// Returns the list of available debug targets.
   Future<List<TargetInfo>> getTargets() async {
-    var $res = await promiseToFuture<JSArray>($js.chrome.debugger.getTargets());
-    return $res.toDart
+    var $res = await $js.chrome.debugger.getTargets().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.TargetInfo>()
         .map((e) => TargetInfo.fromJS(e))
         .toList();

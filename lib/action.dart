@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/action.dart' as $js;
 import 'src/js/browser_action.dart' as $js_browser_action;
@@ -26,14 +25,13 @@ class ChromeAction {
 
   /// Sets the title of the action. This shows up in the tooltip.
   Future<void> setTitle(SetTitleDetails details) async {
-    await promiseToFuture<void>($js.chrome.action.setTitle(details.toJS));
+    await $js.chrome.action.setTitle(details.toJS).toDart;
   }
 
   /// Gets the title of the action.
   Future<String> getTitle(TabDetails details) async {
-    var $res =
-        await promiseToFuture<String>($js.chrome.action.getTitle(details.toJS));
-    return $res;
+    final jsResult = await $js.chrome.action.getTitle(details.toJS).toDart;
+    return jsResult != null ? (jsResult as JSString).toDart : '';
   }
 
   /// Sets the icon for the action. The icon can be specified either as the path
@@ -41,26 +39,25 @@ class ChromeAction {
   /// dictionary of either one of those. Either the **path** or the
   /// **imageData** property must be specified.
   Future<void> setIcon(SetIconDetails details) async {
-    await promiseToFuture<void>($js.chrome.action.setIcon(details.toJS));
+    await $js.chrome.action.setIcon(details.toJS).toDart;
   }
 
   /// Sets the HTML document to be opened as a popup when the user clicks on the
   /// action's icon.
   Future<void> setPopup(SetPopupDetails details) async {
-    await promiseToFuture<void>($js.chrome.action.setPopup(details.toJS));
+    await $js.chrome.action.setPopup(details.toJS).toDart;
   }
 
   /// Gets the html document set as the popup for this action.
   Future<String> getPopup(TabDetails details) async {
-    var $res =
-        await promiseToFuture<String>($js.chrome.action.getPopup(details.toJS));
-    return $res;
+    final jsResult = await $js.chrome.action.getPopup(details.toJS).toDart;
+    return jsResult != null ? (jsResult as JSString).toDart : '';
   }
 
   /// Sets the badge text for the action. The badge is displayed on top of the
   /// icon.
   Future<void> setBadgeText(SetBadgeTextDetails details) async {
-    await promiseToFuture<void>($js.chrome.action.setBadgeText(details.toJS));
+    await $js.chrome.action.setBadgeText(details.toJS).toDart;
   }
 
   /// Gets the badge text of the action. If no tab is specified, the
@@ -70,48 +67,51 @@ class ChromeAction {
   /// [declarativeNetRequestFeedback](/docs/extensions/develop/concepts/declare-permissions#declarativeNetRequestFeedback)
   /// permission is present or tab-specific badge text was provided.
   Future<String> getBadgeText(TabDetails details) async {
-    var $res = await promiseToFuture<String>(
-        $js.chrome.action.getBadgeText(details.toJS));
-    return $res;
+    final jsResult = await $js.chrome.action.getBadgeText(details.toJS).toDart;
+    return jsResult != null ? (jsResult as JSString).toDart : '';
   }
 
   /// Sets the background color for the badge.
   Future<void> setBadgeBackgroundColor(
       SetBadgeBackgroundColorDetails details) async {
-    await promiseToFuture<void>(
-        $js.chrome.action.setBadgeBackgroundColor(details.toJS));
+    await $js.chrome.action.setBadgeBackgroundColor(details.toJS).toDart;
   }
 
   /// Gets the background color of the action.
   Future<List<int>> getBadgeBackgroundColor(TabDetails details) async {
-    var $res = await promiseToFuture<$js_browser_action.ColorArray>(
-        $js.chrome.action.getBadgeBackgroundColor(details.toJS));
-    return $res.toDart.cast<int>().map((e) => e).toList();
+    final jsResult =
+        await $js.chrome.action.getBadgeBackgroundColor(details.toJS).toDart;
+    final colorArray = jsResult as $js_browser_action.ColorArray?;
+    return colorArray != null
+        ? colorArray.toDart.cast<int>().map((e) => e).toList()
+        : [];
   }
 
   /// Sets the text color for the badge.
   Future<void> setBadgeTextColor(SetBadgeTextColorDetails details) async {
-    await promiseToFuture<void>(
-        $js.chrome.action.setBadgeTextColor(details.toJS));
+    await $js.chrome.action.setBadgeTextColor(details.toJS).toDart;
   }
 
   /// Gets the text color of the action.
   Future<List<int>> getBadgeTextColor(TabDetails details) async {
-    var $res = await promiseToFuture<$js_browser_action.ColorArray>(
-        $js.chrome.action.getBadgeTextColor(details.toJS));
-    return $res.toDart.cast<int>().map((e) => e).toList();
+    final jsResult =
+        await $js.chrome.action.getBadgeTextColor(details.toJS).toDart;
+    final colorArray = jsResult as $js_browser_action.ColorArray?;
+    return colorArray != null
+        ? colorArray.toDart.cast<int>().map((e) => e).toList()
+        : [];
   }
 
   /// Enables the action for a tab. By default, actions are enabled.
   /// [tabId] The id of the tab for which you want to modify the action.
   Future<void> enable(int? tabId) async {
-    await promiseToFuture<void>($js.chrome.action.enable(tabId));
+    await $js.chrome.action.enable(tabId).toDart;
   }
 
   /// Disables the action for a tab.
   /// [tabId] The id of the tab for which you want to modify the action.
   Future<void> disable(int? tabId) async {
-    await promiseToFuture<void>($js.chrome.action.disable(tabId));
+    await $js.chrome.action.disable(tabId).toDart;
   }
 
   /// Indicates whether the extension action is enabled for a tab (or globally
@@ -119,21 +119,23 @@ class ChromeAction {
   /// [declarativeContent] always return false.
   /// [tabId] The id of the tab for which you want check enabled status.
   Future<bool> isEnabled(int? tabId) async {
-    var $res = await promiseToFuture<bool>($js.chrome.action.isEnabled(tabId));
-    return $res;
+    final jsResult = await $js.chrome.action.isEnabled(tabId).toDart;
+    return jsResult != null ? (jsResult as JSBoolean).toDart : false;
   }
 
   /// Returns the user-specified settings relating to an extension's action.
   Future<UserSettings> getUserSettings() async {
-    var $res = await promiseToFuture<$js.UserSettings>(
-        $js.chrome.action.getUserSettings());
-    return UserSettings.fromJS($res);
+    final jsResult = await $js.chrome.action.getUserSettings().toDart;
+    final settings = jsResult as $js.UserSettings?;
+    return settings != null
+        ? UserSettings.fromJS(settings)
+        : UserSettings.fromJS($js.UserSettings());
   }
 
   /// Opens the extension's popup.
   /// [options] Specifies options for opening the popup.
   Future<void> openPopup(OpenPopupOptions? options) async {
-    await promiseToFuture<void>($js.chrome.action.openPopup(options?.toJS));
+    await $js.chrome.action.openPopup(options?.toJS).toDart;
   }
 
   /// Fired when an action icon is clicked.  This event will not fire if the

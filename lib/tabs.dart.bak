@@ -8,7 +8,6 @@ import 'src/internal_helpers.dart';
 import 'src/js/tabs.dart' as $js;
 import 'src/js/windows.dart' as $js_windows;
 import 'windows.dart';
-import 'dart:js_interop';
 
 export 'src/chrome.dart' show chrome, EventStream;
 
@@ -155,36 +154,31 @@ class ChromeTabs {
     int? tabId,
     UpdateProperties updateProperties,
   ) async {
-    var $res = await $js.chrome.tabs
-        .update(
-          tabId,
-          updateProperties.toJS,
-        )
-        .toDart;
+    var $res = await $js.chrome.tabs.update(
+      tabId,
+      updateProperties.toJS,
+    ).toDart;
     return ($res as $js.Tab?)?.let(Tab.fromJS);
   }
 
-  /// Moves one or more tabs to a new position within the same window or to a
-  /// different window. Note that tabs can only be moved to and from normal
-  /// (window.type === "normal") windows.
+  /// Moves one or more tabs to a new position within its window, or to a new
+  /// window. Note that tabs can only be moved to and from normal (window.type
+  /// === "normal") windows.
   /// [tabIds] The tab ID or list of tab IDs to move.
-  /// [moveProperties] Information specifying where to move the tab(s).
   Future<Object> move(
     Object tabIds,
     MoveProperties moveProperties,
   ) async {
-    var $res = await $js.chrome.tabs
-        .move(
-          switch (tabIds) {
-            int() => tabIds.jsify()!,
-            List<int>() => tabIds.toJSArray((e) => e),
-            _ => throw UnsupportedError(
-                'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
-          },
-          moveProperties.toJS,
-        )
-        .toDart;
-    return ($res as JSAny).when(
+    var $res = await promiseToFuture<JSAny>($js.chrome.tabs.move(
+      switch (tabIds) {
+        int() => tabIds.jsify()!,
+        List<int>() => tabIds.toJSArray((e) => e),
+        _ => throw UnsupportedError(
+            'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
+      },
+      moveProperties.toJS,
+    ));
+    return $res.when(
       isOther: (v) => Tab.fromJS((v as $js.Tab)),
       isArray: (v) =>
           v.toDart.cast<$js.Tab>().map((e) => Tab.fromJS(e)).toList(),
@@ -198,25 +192,21 @@ class ChromeTabs {
     int? tabId,
     ReloadProperties? reloadProperties,
   ) async {
-    await $js.chrome.tabs
-        .reload(
-          tabId,
-          reloadProperties?.toJS,
-        )
-        .toDart;
+    await promiseToFuture<void>($js.chrome.tabs.reload(
+      tabId,
+      reloadProperties?.toJS,
+    ));
   }
 
   /// Closes one or more tabs.
   /// [tabIds] The tab ID or list of tab IDs to close.
   Future<void> remove(Object tabIds) async {
-    await $js.chrome.tabs
-        .remove(switch (tabIds) {
-          int() => tabIds.jsify()!,
-          List<int>() => tabIds.toJSArray((e) => e),
-          _ => throw UnsupportedError(
-              'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
-        })
-        .toDart;
+    await promiseToFuture<void>($js.chrome.tabs.remove(switch (tabIds) {
+      int() => tabIds.jsify()!,
+      List<int>() => tabIds.toJSArray((e) => e),
+      _ => throw UnsupportedError(
+          'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
+    }));
   }
 
   /// Adds one or more tabs to a specified group, or if no group is specified,
@@ -231,14 +221,12 @@ class ChromeTabs {
   /// [tabIds] The tab ID or list of tab IDs to remove from their respective
   /// groups.
   Future<void> ungroup(Object tabIds) async {
-    await $js.chrome.tabs
-        .ungroup(switch (tabIds) {
-          int() => tabIds.jsify()!,
-          List<int>() => tabIds.toJSArray((e) => e),
-          _ => throw UnsupportedError(
-              'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
-        })
-        .toDart;
+    await $js.chrome.tabs.ungroup(switch (tabIds) {
+      int() => tabIds.jsify()!,
+      List<int>() => tabIds.toJSArray((e) => e),
+      _ => throw UnsupportedError(
+          'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
+    }).toDart;
   }
 
   /// Detects the primary language of the content in a tab.
@@ -259,12 +247,10 @@ class ChromeTabs {
     int? windowId,
     ImageDetails? options,
   ) async {
-    var $res = await $js.chrome.tabs
-        .captureVisibleTab(
-          windowId,
-          options?.toJS,
-        )
-        .toDart;
+    var $res = await $js.chrome.tabs.captureVisibleTab(
+      windowId,
+      options?.toJS,
+    ).toDart;
     return $res as String;
   }
 
@@ -274,99 +260,95 @@ class ChromeTabs {
     int? tabId,
     InjectDetails details,
   ) async {
-    await $js.chrome.tabs
-        .insertCSS(
-          tabId,
-          details.toJS,
-        )
-        .toDart;
+    await $js.chrome.tabs.insertCSS(
+      tabId,
+      details.toJS,
+    ).toDart;
   }
 
   /// Removes from a page CSS that was previously injected by a call to
-  /// [scripting.insertCSS].
-  /// [tabId] The ID of the tab from which to remove the CSS; defaults to the
-  /// active tab of the current window.
-  /// [details] Details of the CSS to remove.
+  /// [insertCSS].
   Future<void> removeCSS(
     int? tabId,
     DeleteInjectionDetails details,
   ) async {
-    await $js.chrome.tabs
-        .removeCSS(
-          tabId,
-          details.toJS,
-        )
-        .toDart;
+    await $js.chrome.tabs.removeCSS(
+      tabId,
+      details.toJS,
+    ).toDart;
   }
 
   /// Executes script in a specific tab.
   Future<List<Object>> executeScript(
+  /// Removes from a page CSS that was previously injected by a call to
+  /// [scripting.insertCSS].
+  /// [tabId] The ID of the tab from which to remove the CSS; defaults to the
+  /// active tab of the current window.
+  /// [details] Details of the CSS text to remove. Either the code or the file
+  /// property must be set, but both may not be set at the same time.
+  /// [returns] Called when all the CSS has been removed.
+  @Deprecated(r'Replaced by $(ref:scripting.removeCSS) in Manifest V3.')
+  Future<void> removeCSS(
     int? tabId,
-    InjectDetails details,
+    DeleteInjectionDetails details,
   ) async {
-    var $res = await $js.chrome.tabs
-        .executeScript(
-          tabId,
-          details.toJS,
-        )
-        .toDart;
-    return ($res as JSArray).toDart.map((e) => e.dartify()!).toList();
+    await promiseToFuture<void>($js.chrome.tabs.removeCSS(
+      tabId,
+      details.toJS,
+    ));
   }
 
   /// Zooms a specified tab.
   /// [tabId] The ID of the tab to zoom; defaults to the active tab of the
   /// current window.
-  /// [zoomFactor] The new zoom factor. A value of 0 sets the tab to its current
-  /// default zoom factor. Values greater than 0 specify a (possibly
+  /// [zoomFactor] The new zoom factor. A value of `0` sets the tab to its
+  /// current default zoom factor. Values greater than `0` specify a (possibly
   /// non-default) zoom factor for the tab.
   /// [returns] Called after the zoom factor has been changed.
   Future<void> setZoom(
     int? tabId,
     double zoomFactor,
   ) async {
-    await $js.chrome.tabs
-        .setZoom(
-          tabId,
-          zoomFactor,
-        )
-        .toDart;
+    await promiseToFuture<void>($js.chrome.tabs.setZoom(
+      tabId,
+      zoomFactor,
+    ));
   }
 
   /// Gets the current zoom factor of a specified tab.
-  /// [tabId] The ID of the tab to get the current zoom factor from; defaults to
-  /// the active tab of the current window.
-  /// [callback] Called with the tab's current zoom factor after it has been
+  /// [tabId] The ID of the tab to get the current zoom factor from; defaults
+  /// to the active tab of the current window.
+  /// [returns] Called with the tab's current zoom factor after it has been
   /// fetched.
   Future<double> getZoom(int? tabId) async {
-    var $res = await $js.chrome.tabs.getZoom(tabId).toDart;
-    return $res as double;
+    var $res = await promiseToFuture<double>($js.chrome.tabs.getZoom(tabId));
+    return $res;
   }
 
   /// Sets the zoom settings for a specified tab, which define how zoom changes
   /// are handled. These settings are reset to defaults upon navigating the tab.
-  /// [tabId] The ID of the tab to change the zoom settings for; defaults to the
-  /// active tab of the current window.
+  /// [tabId] The ID of the tab to change the zoom settings for; defaults to
+  /// the active tab of the current window.
   /// [zoomSettings] Defines how zoom changes are handled and at what scope.
   /// [returns] Called after the zoom settings are changed.
   Future<void> setZoomSettings(
     int? tabId,
     ZoomSettings zoomSettings,
   ) async {
-    await $js.chrome.tabs
-        .setZoomSettings(
-          tabId,
-          zoomSettings.toJS,
-        )
-        .toDart;
+    await promiseToFuture<void>($js.chrome.tabs.setZoomSettings(
+      tabId,
+      zoomSettings.toJS,
+    ));
   }
 
   /// Gets the current zoom settings of a specified tab.
-  /// [tabId] The ID of the tab to get the current zoom settings from; defaults
-  /// to the active tab of the current window.
+  /// [tabId] The ID of the tab to get the current zoom settings from;
+  /// defaults to the active tab of the current window.
   /// [returns] Called with the tab's current zoom settings.
   Future<ZoomSettings> getZoomSettings(int? tabId) async {
-    var $res = await $js.chrome.tabs.getZoomSettings(tabId).toDart;
-    return ZoomSettings.fromJS($res as $js.ZoomSettings);
+    var $res = await promiseToFuture<$js.ZoomSettings>(
+        $js.chrome.tabs.getZoomSettings(tabId));
+    return ZoomSettings.fromJS($res);
   }
 
   /// Discards a tab from memory. Discarded tabs are still visible on the tab
@@ -377,22 +359,22 @@ class ChromeTabs {
   /// discardable tabs exist.
   /// [returns] Called after the operation is completed.
   Future<Tab?> discard(int? tabId) async {
-    var $res = await $js.chrome.tabs.discard(tabId).toDart;
-    return ($res as $js.Tab?)?.let(Tab.fromJS);
+    var $res = await promiseToFuture<$js.Tab?>($js.chrome.tabs.discard(tabId));
+    return $res?.let(Tab.fromJS);
   }
 
-  /// Go forward to the next page, if one is available.
+  /// Go foward to the next page, if one is available.
   /// [tabId] The ID of the tab to navigate forward; defaults to the selected
   /// tab of the current window.
   Future<void> goForward(int? tabId) async {
-    await $js.chrome.tabs.goForward(tabId).toDart;
+    await promiseToFuture<void>($js.chrome.tabs.goForward(tabId));
   }
 
   /// Go back to the previous page, if one is available.
   /// [tabId] The ID of the tab to navigate back; defaults to the selected tab
   /// of the current window.
   Future<void> goBack(int? tabId) async {
-    await $js.chrome.tabs.goBack(tabId).toDart;
+    await promiseToFuture<void>($js.chrome.tabs.goBack(tabId));
   }
 
   /// The maximum number of times that [captureVisibleTab] can be called per

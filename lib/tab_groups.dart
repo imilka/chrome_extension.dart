@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/tab_groups.dart' as $js;
 
@@ -25,17 +24,16 @@ class ChromeTabGroups {
 
   /// Retrieves details about the specified group.
   Future<TabGroup> get(int groupId) async {
-    var $res =
-        await promiseToFuture<$js.TabGroup>($js.chrome.tabGroups.get(groupId));
-    return TabGroup.fromJS($res);
+    var $res = await $js.chrome.tabGroups.get(groupId).toDart;
+    return TabGroup.fromJS($res as $js.TabGroup);
   }
 
   /// Gets all groups that have the specified properties, or all groups if no
   /// properties are specified.
   Future<List<TabGroup>> query(QueryInfo queryInfo) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.tabGroups.query(queryInfo.toJS));
-    return $res.toDart
+    var $res = await $js.chrome.tabGroups.query(queryInfo.toJS).toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.TabGroup>()
         .map((e) => TabGroup.fromJS(e))
         .toList();
@@ -48,11 +46,13 @@ class ChromeTabGroups {
     int groupId,
     UpdateProperties updateProperties,
   ) async {
-    var $res = await promiseToFuture<$js.TabGroup?>($js.chrome.tabGroups.update(
-      groupId,
-      updateProperties.toJS,
-    ));
-    return $res?.let(TabGroup.fromJS);
+    var $res = await $js.chrome.tabGroups
+        .update(
+          groupId,
+          updateProperties.toJS,
+        )
+        .toDart;
+    return ($res as $js.TabGroup?)?.let(TabGroup.fromJS);
   }
 
   /// Moves the group and all its tabs within its window, or to a new window.
@@ -61,11 +61,13 @@ class ChromeTabGroups {
     int groupId,
     MoveProperties moveProperties,
   ) async {
-    var $res = await promiseToFuture<$js.TabGroup?>($js.chrome.tabGroups.move(
-      groupId,
-      moveProperties.toJS,
-    ));
-    return $res?.let(TabGroup.fromJS);
+    var $res = await $js.chrome.tabGroups
+        .move(
+          groupId,
+          moveProperties.toJS,
+        )
+        .toDart;
+    return ($res as $js.TabGroup?)?.let(TabGroup.fromJS);
   }
 
   /// An ID that represents the absence of a group.

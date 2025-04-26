@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_util';
 import 'src/internal_helpers.dart';
 import 'src/js/bookmarks.dart' as $js;
 
@@ -25,14 +24,16 @@ class ChromeBookmarks {
   /// Retrieves the specified BookmarkTreeNode(s).
   /// [idOrIdList] A single string-valued id, or an array of string-valued ids
   Future<List<BookmarkTreeNode>> get(Object idOrIdList) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.bookmarks.get(switch (idOrIdList) {
-      String() => idOrIdList.jsify()!,
-      List() => idOrIdList.toJSArrayString(),
-      _ => throw UnsupportedError(
-          'Received type: ${idOrIdList.runtimeType}. Supported types are: String, List<String>')
-    }));
-    return $res.toDart
+    var $res = await $js.chrome.bookmarks
+        .get(switch (idOrIdList) {
+          String() => idOrIdList.jsify()!,
+          List() => idOrIdList.toJSArrayString(),
+          _ => throw UnsupportedError(
+              'Received type: ${idOrIdList.runtimeType}. Supported types are: String, List<String>')
+        })
+        .toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.BookmarkTreeNode>()
         .map((e) => BookmarkTreeNode.fromJS(e))
         .toList();
@@ -40,9 +41,9 @@ class ChromeBookmarks {
 
   /// Retrieves the children of the specified BookmarkTreeNode id.
   Future<List<BookmarkTreeNode>> getChildren(String id) async {
-    var $res =
-        await promiseToFuture<JSArray>($js.chrome.bookmarks.getChildren(id));
-    return $res.toDart
+    var $res = await $js.chrome.bookmarks.getChildren(id).toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.BookmarkTreeNode>()
         .map((e) => BookmarkTreeNode.fromJS(e))
         .toList();
@@ -51,9 +52,9 @@ class ChromeBookmarks {
   /// Retrieves the recently added bookmarks.
   /// [numberOfItems] The maximum number of items to return.
   Future<List<BookmarkTreeNode>> getRecent(int numberOfItems) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.bookmarks.getRecent(numberOfItems));
-    return $res.toDart
+    var $res = await $js.chrome.bookmarks.getRecent(numberOfItems).toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.BookmarkTreeNode>()
         .map((e) => BookmarkTreeNode.fromJS(e))
         .toList();
@@ -61,8 +62,9 @@ class ChromeBookmarks {
 
   /// Retrieves the entire Bookmarks hierarchy.
   Future<List<BookmarkTreeNode>> getTree() async {
-    var $res = await promiseToFuture<JSArray>($js.chrome.bookmarks.getTree());
-    return $res.toDart
+    var $res = await $js.chrome.bookmarks.getTree().toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.BookmarkTreeNode>()
         .map((e) => BookmarkTreeNode.fromJS(e))
         .toList();
@@ -71,9 +73,9 @@ class ChromeBookmarks {
   /// Retrieves part of the Bookmarks hierarchy, starting at the specified node.
   /// [id] The ID of the root of the subtree to retrieve.
   Future<List<BookmarkTreeNode>> getSubTree(String id) async {
-    var $res =
-        await promiseToFuture<JSArray>($js.chrome.bookmarks.getSubTree(id));
-    return $res.toDart
+    var $res = await $js.chrome.bookmarks.getSubTree(id).toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.BookmarkTreeNode>()
         .map((e) => BookmarkTreeNode.fromJS(e))
         .toList();
@@ -87,14 +89,16 @@ class ChromeBookmarks {
   /// properties `query`, `url`, and `title` may be specified and bookmarks
   /// matching all specified properties will be produced.
   Future<List<BookmarkTreeNode>> search(Object query) async {
-    var $res = await promiseToFuture<JSArray>(
-        $js.chrome.bookmarks.search(switch (query) {
-      String() => query.jsify()!,
-      SearchQuery() => (query.toJS as JSAny),
-      _ => throw UnsupportedError(
-          'Received type: ${query.runtimeType}. Supported types are: String, SearchQuery')
-    }));
-    return $res.toDart
+    var $res = await $js.chrome.bookmarks
+        .search(switch (query) {
+          String() => query.jsify()!,
+          SearchQuery() => (query.toJS as JSAny),
+          _ => throw UnsupportedError(
+              'Received type: ${query.runtimeType}. Supported types are: String, SearchQuery')
+        })
+        .toDart;
+    return ($res as JSArray)
+        .toDart
         .cast<$js.BookmarkTreeNode>()
         .map((e) => BookmarkTreeNode.fromJS(e))
         .toList();
@@ -103,9 +107,8 @@ class ChromeBookmarks {
   /// Creates a bookmark or folder under the specified parentId.  If url is NULL
   /// or missing, it will be a folder.
   Future<BookmarkTreeNode> create(CreateDetails bookmark) async {
-    var $res = await promiseToFuture<$js.BookmarkTreeNode>(
-        $js.chrome.bookmarks.create(bookmark.toJS));
-    return BookmarkTreeNode.fromJS($res);
+    var $res = await $js.chrome.bookmarks.create(bookmark.toJS).toDart;
+    return BookmarkTreeNode.fromJS($res as $js.BookmarkTreeNode);
   }
 
   /// Moves the specified BookmarkTreeNode to the provided location.
@@ -113,12 +116,13 @@ class ChromeBookmarks {
     String id,
     MoveDestination destination,
   ) async {
-    var $res =
-        await promiseToFuture<$js.BookmarkTreeNode>($js.chrome.bookmarks.move(
-      id,
-      destination.toJS,
-    ));
-    return BookmarkTreeNode.fromJS($res);
+    var $res = await $js.chrome.bookmarks
+        .move(
+          id,
+          destination.toJS,
+        )
+        .toDart;
+    return BookmarkTreeNode.fromJS($res as $js.BookmarkTreeNode);
   }
 
   /// Updates the properties of a bookmark or folder. Specify only the
@@ -128,22 +132,23 @@ class ChromeBookmarks {
     String id,
     UpdateChanges changes,
   ) async {
-    var $res =
-        await promiseToFuture<$js.BookmarkTreeNode>($js.chrome.bookmarks.update(
-      id,
-      changes.toJS,
-    ));
-    return BookmarkTreeNode.fromJS($res);
+    var $res = await $js.chrome.bookmarks
+        .update(
+          id,
+          changes.toJS,
+        )
+        .toDart;
+    return BookmarkTreeNode.fromJS($res as $js.BookmarkTreeNode);
   }
 
   /// Removes a bookmark or an empty bookmark folder.
   Future<void> remove(String id) async {
-    await promiseToFuture<void>($js.chrome.bookmarks.remove(id));
+    await $js.chrome.bookmarks.remove(id).toDart;
   }
 
   /// Recursively removes a bookmark folder.
   Future<void> removeTree(String id) async {
-    await promiseToFuture<void>($js.chrome.bookmarks.removeTree(id));
+    await $js.chrome.bookmarks.removeTree(id).toDart;
   }
 
   int get maxWriteOperationsPerHour =>
