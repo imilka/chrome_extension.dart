@@ -93,11 +93,8 @@ class ChromeTabs {
   )
   Future<List<Tab>> getAllInWindow(int? windowId) async {
     var $res = await $js.chrome.tabs.getAllInWindow(windowId).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Tab>()
-            .map((e) => Tab.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<Tab>((e) => Tab.fromJS(e as $js.Tab)).toList();
   }
 
   /// Creates a new tab.
@@ -117,11 +114,8 @@ class ChromeTabs {
   /// properties are specified.
   Future<List<Tab>> query(QueryInfo queryInfo) async {
     var $res = await $js.chrome.tabs.query(queryInfo.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Tab>()
-            .map((e) => Tab.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<Tab>((e) => Tab.fromJS(e as $js.Tab)).toList();
   }
 
   /// Highlights the given tabs and focuses on the first of group. Will appear
@@ -243,10 +237,13 @@ class ChromeTabs {
   }
 
   /// Executes script in a specific tab.
-  @Deprecated('Use scripting.executeScript instead in Manifest V3')
+
   Future<List<Object>> executeScript(int? tabId, InjectDetails details) async {
     var $res = await $js.chrome.tabs.executeScript(tabId, details.toJS).toDart;
-    return ($res as JSArray?)?.toDart.map((e) => e.dartify()!).toList() ?? [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<Object>((e) => (e?.dartify() as Object?) ?? e as Object)
+        .toList();
   }
 
   /// Zooms a specified tab.

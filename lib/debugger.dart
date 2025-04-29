@@ -72,11 +72,8 @@ class ChromeDebugger {
   /// Returns the list of available debug targets.
   Future<List<TargetInfo>> getTargets() async {
     var $res = await $js.chrome.debugger.getTargets().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.TargetInfo>()
-            .map((e) => TargetInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<TargetInfo>((e) => e as TargetInfo).toList();
   }
 
   /// Fired whenever debugging target issues instrumentation event.

@@ -52,11 +52,8 @@ class ChromeFileSystemProvider {
   /// Returns all file systems mounted by the extension.
   Future<List<FileSystemInfo>> getAll() async {
     var $res = await $js.chrome.fileSystemProvider.getAll().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.FileSystemInfo>()
-            .map((e) => FileSystemInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<FileSystemInfo>((e) => e as FileSystemInfo).toList();
   }
 
   /// Returns information about a file system with the passed

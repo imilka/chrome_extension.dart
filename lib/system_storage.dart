@@ -27,11 +27,12 @@ class ChromeSystemStorage {
   /// callback is an array of StorageUnitInfo objects.
   Future<List<StorageUnitInfo>> getInfo() async {
     var $res = await $js.chrome.system.storage.getInfo().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.StorageUnitInfo>()
-            .map((e) => StorageUnitInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<StorageUnitInfo>(
+          (e) => StorageUnitInfo.fromJS(e as $js.StorageUnitInfo),
+        )
+        .toList();
   }
 
   /// Ejects a removable storage device.

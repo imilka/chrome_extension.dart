@@ -46,11 +46,8 @@ class ChromeDownloads {
   /// `startTime` of the last item from the last page.
   Future<List<DownloadItem>> search(DownloadQuery query) async {
     var $res = await $js.chrome.downloads.search(query.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.DownloadItem>()
-            .map((e) => DownloadItem.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<DownloadItem>((e) => e as DownloadItem).toList();
   }
 
   /// Pause the download. If the request was successful the download is in a
@@ -130,7 +127,8 @@ class ChromeDownloads {
   /// `callback` will be called.
   Future<List<int>> erase(DownloadQuery query) async {
     var $res = await $js.chrome.downloads.erase(query.toJS).toDart;
-    return ($res as JSArray?)?.toDart.cast<int>().toList() ?? [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<int>((e) => e as int).toList();
   }
 
   /// Remove the downloaded file if it exists and the [DownloadItem] is

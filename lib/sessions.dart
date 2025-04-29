@@ -25,21 +25,19 @@ class ChromeSessions {
   /// Gets the list of recently closed tabs and/or windows.
   Future<List<Session>> getRecentlyClosed(Filter? filter) async {
     var $res = await $js.chrome.sessions.getRecentlyClosed(filter?.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Session>()
-            .map((e) => Session.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<Session>((e) => Session.fromJS(e as $js.Session))
+        .toList();
   }
 
   /// Retrieves all devices with synced sessions.
   Future<List<Device>> getDevices(Filter? filter) async {
     var $res = await $js.chrome.sessions.getDevices(filter?.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Device>()
-            .map((e) => Device.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<Device>((e) => Device.fromJS(e as $js.Device))
+        .toList();
   }
 
   /// Reopens a [windows.Window] or [tabs.Tab], with an optional callback to run

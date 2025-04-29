@@ -46,11 +46,10 @@ class ChromeWindows {
   /// Gets all windows.
   Future<List<Window>> getAll(QueryOptions? queryOptions) async {
     var $res = await $js.chrome.windows.getAll(queryOptions?.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Window>()
-            .map((e) => Window.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<Window>((e) => Window.fromJS(e as $js.Window))
+        .toList();
   }
 
   /// Creates (opens) a new browser window with any optional sizing, position,

@@ -25,11 +25,8 @@ class ChromePrintingMetrics {
   /// Returns the list of the finished print jobs.
   Future<List<PrintJobInfo>> getPrintJobs() async {
     var $res = await $js.chrome.printingMetrics.getPrintJobs().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.PrintJobInfo>()
-            .map((e) => PrintJobInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<PrintJobInfo>((e) => e as PrintJobInfo).toList();
   }
 
   /// Event fired when the print job is finished.

@@ -27,10 +27,12 @@ class ChromeSystemNetwork {
   /// |callback| : Called when local adapter information is available.
   Future<List<NetworkInterface>> getNetworkInterfaces() async {
     var $res = await $js.chrome.system.network.getNetworkInterfaces().toDart;
-    return ($res as JSArray?)?.toDart
-            .map((e) => NetworkInterface.fromJS(e! as $js.NetworkInterface))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<NetworkInterface>(
+          (e) => NetworkInterface.fromJS(e as $js.NetworkInterface),
+        )
+        .toList();
   }
 }
 

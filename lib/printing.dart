@@ -45,7 +45,8 @@ class ChromePrinting {
   /// only receive its own printers.
   Future<List<$js.Printer>> getPrinters() async {
     var $res = await $js.chrome.printing.getPrinters().toDart;
-    return ($res as JSArray?)?.toDart.cast<$js.Printer>() ?? [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<$js.Printer>((e) => e as $js.Printer).toList();
   }
 
   /// Returns the status and capabilities of a printer as a [GetPrinterInfoResponse].

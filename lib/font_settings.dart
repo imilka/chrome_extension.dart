@@ -38,11 +38,8 @@ class ChromeFontSettings {
   /// Gets a list of fonts on the system.
   Future<List<FontName>> getFontList() async {
     var $res = await $js.chrome.fontSettings.getFontList().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.FontName>()
-            .map((e) => FontName.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<FontName>((e) => e as FontName).toList();
   }
 
   /// Clears the default font size set by this extension, if any.

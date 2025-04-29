@@ -29,11 +29,8 @@ class ChromeAudio {
   /// |callback|: Reports the requested list of audio devices.
   Future<List<AudioDeviceInfo>> getDevices(DeviceFilter? filter) async {
     var $res = await $js.chrome.audio.getDevices(filter?.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.AudioDeviceInfo>()
-            .map((e) => AudioDeviceInfo.fromJS(e))
-            .toList() ??
-        [];
+    final List dartified = $res.dartify() as List? ?? [];
+    return dartified.map<AudioDeviceInfo>((e) => e as AudioDeviceInfo).toList();
   }
 
   /// Sets lists of active input and/or output devices.

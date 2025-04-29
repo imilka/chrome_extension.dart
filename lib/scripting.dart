@@ -31,11 +31,12 @@ class ChromeScripting {
   /// injection succeeded.
   Future<List<InjectionResult>> executeScript(ScriptInjection injection) async {
     var $res = await $js.chrome.scripting.executeScript(injection.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.InjectionResult>()
-            .map((e) => InjectionResult.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<InjectionResult>(
+          (e) => InjectionResult.fromJS(e as $js.InjectionResult),
+        )
+        .toList();
   }
 
   /// Inserts a CSS stylesheet into a target context.
@@ -82,11 +83,13 @@ class ChromeScripting {
         await $js.chrome.scripting
             .getRegisteredContentScripts(filter?.toJS)
             .toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.RegisteredContentScript>()
-            .map((e) => RegisteredContentScript.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<RegisteredContentScript>(
+          (e) =>
+              RegisteredContentScript.fromJS(e as $js.RegisteredContentScript),
+        )
+        .toList();
   }
 
   /// Unregisters content scripts for this extension.

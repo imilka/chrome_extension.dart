@@ -32,11 +32,10 @@ class ChromeTabGroups {
   /// properties are specified.
   Future<List<TabGroup>> query(QueryInfo queryInfo) async {
     var $res = await $js.chrome.tabGroups.query(queryInfo.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.TabGroup>()
-            .map((e) => TabGroup.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<TabGroup>((e) => TabGroup.fromJS(e as $js.TabGroup))
+        .toList();
   }
 
   /// Modifies the properties of a group. Properties that are not specified in

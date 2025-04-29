@@ -25,11 +25,8 @@ class ChromeManagement {
   /// Returns a list of information about installed extensions and apps.
   Future<List<ExtensionInfo>> getAll() async {
     var $res = await $js.chrome.management.getAll().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.ExtensionInfo>()
-            .map((e) => ExtensionInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<ExtensionInfo>((e) => e as ExtensionInfo).toList();
   }
 
   /// Returns information about the installed extension, app, or theme that has
@@ -54,8 +51,8 @@ class ChromeManagement {
   /// [id] The ID of an already installed extension.
   Future<List<String>> getPermissionWarningsById(String id) async {
     var $res = await $js.chrome.management.getPermissionWarningsById(id).toDart;
-    return ($res as JSArray?)?.toDart.cast<String>().map((e) => e).toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<String>((e) => e as String).toList();
   }
 
   /// Returns a list of [permission
@@ -70,8 +67,8 @@ class ChromeManagement {
         await $js.chrome.management
             .getPermissionWarningsByManifest(manifestStr)
             .toDart;
-    return ($res as JSArray?)?.toDart.cast<String>().map((e) => e).toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<String>((e) => e as String).toList();
   }
 
   /// Enables or disables an app or extension. In most cases this function must

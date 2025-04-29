@@ -27,11 +27,12 @@ class ChromeSystemDisplay {
   /// |callback|: The callback to invoke with the results.
   Future<List<DisplayUnitInfo>> getInfo(GetInfoFlags? flags) async {
     var $res = await $js.chrome.system.display.getInfo(flags?.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.DisplayUnitInfo>()
-            .map((e) => DisplayUnitInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<DisplayUnitInfo>(
+          (e) => DisplayUnitInfo.fromJS(e as $js.DisplayUnitInfo),
+        )
+        .toList();
   }
 
   /// Requests the layout info for all displays.
@@ -39,11 +40,10 @@ class ChromeSystemDisplay {
   /// |callback|: The callback to invoke with the results.
   Future<List<DisplayLayout>> getDisplayLayout() async {
     var $res = await $js.chrome.system.display.getDisplayLayout().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.DisplayLayout>()
-            .map((e) => DisplayLayout.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<DisplayLayout>((e) => DisplayLayout.fromJS(e as $js.DisplayLayout))
+        .toList();
   }
 
   /// Updates the properties for the display specified by |id|, according to

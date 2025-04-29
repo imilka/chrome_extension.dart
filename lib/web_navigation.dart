@@ -38,9 +38,13 @@ class ChromeWebNavigation {
     GetAllFramesDetails details,
   ) async {
     var $res = await $js.chrome.webNavigation.getAllFrames(details.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-        .cast<$js.GetAllFramesCallbackDetails>()
-        .map((e) => GetAllFramesCallbackDetails.fromJS(e))
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<GetAllFramesCallbackDetails>(
+          (e) => GetAllFramesCallbackDetails.fromJS(
+            e as $js.GetAllFramesCallbackDetails,
+          ),
+        )
         .toList();
   }
 

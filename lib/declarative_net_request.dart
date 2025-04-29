@@ -62,11 +62,8 @@ class ChromeDeclarativeNetRequest {
         await $js.chrome.declarativeNetRequest
             .getDynamicRules(filter?.toJS)
             .toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Rule>()
-            .map((e) => Rule.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<Rule>((e) => e as Rule).toList();
   }
 
   /// Modifies the current set of session scoped rules for the extension.
@@ -101,11 +98,8 @@ class ChromeDeclarativeNetRequest {
         await $js.chrome.declarativeNetRequest
             .getSessionRules(filter?.toJS)
             .toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Rule>()
-            .map((e) => Rule.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<Rule>((e) => e as Rule).toList();
   }
 
   /// Updates the set of enabled static rulesets for the extension. The
@@ -132,8 +126,8 @@ class ChromeDeclarativeNetRequest {
   Future<List<String>> getEnabledRulesets() async {
     var $res =
         await $js.chrome.declarativeNetRequest.getEnabledRulesets().toDart;
-    return ($res as JSArray?)?.toDart.cast<String>().map((e) => e).toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<String>((e) => e as String).toList();
   }
 
   /// Disables and enables individual static rules in a [Ruleset].
@@ -160,7 +154,8 @@ class ChromeDeclarativeNetRequest {
         await $js.chrome.declarativeNetRequest
             .getDisabledRuleIds(options.toJS)
             .toDart;
-    return ($res as JSArray?)?.toDart.cast<int>().map((e) => e).toList() ?? [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<int>((e) => e as int).toList();
   }
 
   /// Returns all rules matched for the extension. Callers can optionally

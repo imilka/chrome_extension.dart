@@ -209,11 +209,10 @@ class ChromeRuntime {
   /// [returns] Invoked with the matching contexts, if any.
   Future<List<ExtensionContext>> getContexts(ContextFilter filter) async {
     var $res = await $js.chrome.runtime.getContexts(filter.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.ExtensionContext>()
-            .map((e) => ExtensionContext.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<ExtensionContext>((e) => e as ExtensionContext)
+        .toList();
   }
 
   /// Populated with an error message if calling an API function fails;

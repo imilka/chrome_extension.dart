@@ -25,11 +25,8 @@ class ChromeIdentity {
   /// `getAccounts` is only supported on dev channel.
   Future<List<AccountInfo>> getAccounts() async {
     var $res = await $js.chrome.identity.getAccounts().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.AccountInfo>()
-            .map((e) => AccountInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<AccountInfo>((e) => e as AccountInfo).toList();
   }
 
   /// Gets an OAuth2 access token using the client ID and scopes

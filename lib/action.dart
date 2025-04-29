@@ -82,11 +82,8 @@ class ChromeAction {
   Future<List<int>> getBadgeBackgroundColor(TabDetails details) async {
     var $res =
         await $js.chrome.action.getBadgeBackgroundColor(details.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js_browser_action.ColorArray>()
-            .expand((e) => e.toDart.cast<int>())
-            .toList() ??
-        [];
+    final List dartified = $res.dartify() as List? ?? [];
+    return dartified.map<int>((e) => e as int).toList();
   }
 
   /// Sets the text color for the badge.
@@ -97,11 +94,8 @@ class ChromeAction {
   /// Gets the text color of the action.
   Future<List<int>> getBadgeTextColor(TabDetails details) async {
     var $res = await $js.chrome.action.getBadgeTextColor(details.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js_browser_action.ColorArray>()
-            .expand((e) => e.toDart.cast<int>())
-            .toList() ??
-        [];
+    final List dartified = $res.dartify() as List? ?? [];
+    return dartified.map<int>((e) => e as int).toList();
   }
 
   /// Enables the action for a tab. By default, actions are enabled.

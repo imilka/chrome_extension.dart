@@ -54,11 +54,10 @@ class ChromeTabCapture {
   /// |callback| : Callback invoked with CaptureInfo[] for captured tabs.
   Future<List<CaptureInfo>> getCapturedTabs() async {
     var $res = await $js.chrome.tabCapture.getCapturedTabs().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.CaptureInfo>()
-            .map((e) => CaptureInfo.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<CaptureInfo>((e) => CaptureInfo.fromJS(e as $js.CaptureInfo))
+        .toList();
   }
 
   /// Creates a stream ID to capture the target tab.

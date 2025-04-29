@@ -64,11 +64,10 @@ class ChromeTts {
   /// Gets an array of all available voices.
   Future<List<TtsVoice>> getVoices() async {
     var $res = await $js.chrome.tts.getVoices().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.TtsVoice>()
-            .map((e) => TtsVoice.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<TtsVoice>((e) => TtsVoice.fromJS(e as $js.TtsVoice))
+        .toList();
   }
 
   /// Used to pass events back to the function calling speak().

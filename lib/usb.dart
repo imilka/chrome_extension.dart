@@ -32,11 +32,10 @@ class ChromeUsb {
   /// |options|: The properties to search for on target devices.
   Future<List<Device>> getDevices(EnumerateDevicesOptions options) async {
     var $res = await $js.chrome.usb.getDevices(options.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Device>()
-            .map((e) => Device.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<Device>((e) => Device.fromJS(e as $js.Device))
+        .toList();
   }
 
   /// Presents a device picker to the user and returns the [Device]s
@@ -50,22 +49,22 @@ class ChromeUsb {
     DevicePromptOptions options,
   ) async {
     var $res = await $js.chrome.usb.getUserSelectedDevices(options.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Device>()
-            .map((e) => Device.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<Device>((e) => Device.fromJS(e as $js.Device))
+        .toList();
   }
 
   /// Returns the full set of device configuration descriptors.
   /// |device|: The [Device] to fetch descriptors from.
   Future<List<ConfigDescriptor>> getConfigurations(Device device) async {
     var $res = await $js.chrome.usb.getConfigurations(device.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.ConfigDescriptor>()
-            .map((e) => ConfigDescriptor.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<ConfigDescriptor>(
+          (e) => ConfigDescriptor.fromJS(e as $js.ConfigDescriptor),
+        )
+        .toList();
   }
 
   /// Requests access from the permission broker to a device claimed by
@@ -103,11 +102,12 @@ class ChromeUsb {
     EnumerateDevicesAndRequestAccessOptions options,
   ) async {
     var $res = await $js.chrome.usb.findDevices(options.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.ConnectionHandle>()
-            .map((e) => ConnectionHandle.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<ConnectionHandle>(
+          (e) => ConnectionHandle.fromJS(e as $js.ConnectionHandle),
+        )
+        .toList();
   }
 
   /// Closes a connection handle. Invoking operations on a handle after it
@@ -147,11 +147,12 @@ class ChromeUsb {
     ConnectionHandle handle,
   ) async {
     var $res = await $js.chrome.usb.listInterfaces(handle.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.InterfaceDescriptor>()
-            .map((e) => InterfaceDescriptor.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<InterfaceDescriptor>(
+          (e) => InterfaceDescriptor.fromJS(e as $js.InterfaceDescriptor),
+        )
+        .toList();
   }
 
   /// Claims an interface on a USB device.

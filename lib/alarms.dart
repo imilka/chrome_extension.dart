@@ -60,11 +60,8 @@ class ChromeAlarms {
   /// Gets an array of all the alarms.
   Future<List<Alarm>> getAll() async {
     var $res = await $js.chrome.alarms.getAll().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Alarm>()
-            .map((e) => Alarm.fromJS(e))
-            .toList() ??
-        [];
+    final List dartified = $res.dartify() as List? ?? [];
+    return dartified.map<Alarm>((e) => e as Alarm).toList();
   }
 
   /// Clears the alarm with the given name.

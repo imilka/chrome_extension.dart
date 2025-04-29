@@ -26,21 +26,15 @@ class ChromeHistory {
   /// query.
   Future<List<HistoryItem>> search(SearchQuery query) async {
     var $res = await $js.chrome.history.search(query.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.HistoryItem>()
-            .map((e) => HistoryItem.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<HistoryItem>((e) => e as HistoryItem).toList();
   }
 
   /// Retrieves information about visits to a URL.
   Future<List<VisitItem>> getVisits(UrlDetails details) async {
     var $res = await $js.chrome.history.getVisits(details.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.VisitItem>()
-            .map((e) => VisitItem.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<VisitItem>((e) => e as VisitItem).toList();
   }
 
   /// Adds a URL to the history at the current time with a [transition

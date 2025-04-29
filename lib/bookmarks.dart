@@ -33,53 +33,48 @@ class ChromeBookmarks {
               'Received type: ${idOrIdList.runtimeType}. Supported types are: String, List<String>',
             ),
         }).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.BookmarkTreeNode>()
-            .map((e) => BookmarkTreeNode.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .toList();
   }
 
   /// Retrieves the children of the specified BookmarkTreeNode id.
   Future<List<BookmarkTreeNode>> getChildren(String id) async {
     var $res = await $js.chrome.bookmarks.getChildren(id).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.BookmarkTreeNode>()
-            .map((e) => BookmarkTreeNode.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .toList();
   }
 
   /// Retrieves the recently added bookmarks.
   /// [numberOfItems] The maximum number of items to return.
   Future<List<BookmarkTreeNode>> getRecent(int numberOfItems) async {
     var $res = await $js.chrome.bookmarks.getRecent(numberOfItems).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.BookmarkTreeNode>()
-            .map((e) => BookmarkTreeNode.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .toList();
   }
 
   /// Retrieves the entire Bookmarks hierarchy.
   Future<List<BookmarkTreeNode>> getTree() async {
     var $res = await $js.chrome.bookmarks.getTree().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.BookmarkTreeNode>()
-            .map((e) => BookmarkTreeNode.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .toList();
   }
 
   /// Retrieves part of the Bookmarks hierarchy, starting at the specified node.
   /// [id] The ID of the root of the subtree to retrieve.
   Future<List<BookmarkTreeNode>> getSubTree(String id) async {
     var $res = await $js.chrome.bookmarks.getSubTree(id).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.BookmarkTreeNode>()
-            .map((e) => BookmarkTreeNode.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .toList();
   }
 
   /// Searches for BookmarkTreeNodes matching the given query. Queries specified
@@ -99,11 +94,10 @@ class ChromeBookmarks {
               'Received type: ${query.runtimeType}. Supported types are: String, SearchQuery',
             ),
         }).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.BookmarkTreeNode>()
-            .map((e) => BookmarkTreeNode.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified
+        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .toList();
   }
 
   /// Creates a bookmark or folder under the specified parentId.  If url is NULL

@@ -37,11 +37,8 @@ class ChromeCookies {
   /// [details] Information to filter the cookies being retrieved.
   Future<List<Cookie>> getAll(GetAllDetails details) async {
     var $res = await $js.chrome.cookies.getAll(details.toJS).toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.Cookie>()
-            .map((e) => Cookie.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<Cookie>((e) => e as Cookie).toList();
   }
 
   /// Sets a cookie with the given cookie data; may overwrite equivalent cookies
@@ -63,11 +60,8 @@ class ChromeCookies {
   /// Lists all existing cookie stores.
   Future<List<CookieStore>> getAllCookieStores() async {
     var $res = await $js.chrome.cookies.getAllCookieStores().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.CookieStore>()
-            .map((e) => CookieStore.fromJS(e))
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<CookieStore>((e) => e as CookieStore).toList();
   }
 
   /// Fired when a cookie is set or removed. As a special case, note that

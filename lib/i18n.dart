@@ -24,11 +24,8 @@ class ChromeI18n {
   /// locale used by the browser; to get the locale, use [i18n.getUILanguage].
   Future<List<String>> getAcceptLanguages() async {
     var $res = await $js.chrome.i18n.getAcceptLanguages().toDart;
-    return ($res as JSArray?)?.toDart
-            .cast<$js.LanguageCode>()
-            .map((e) => e)
-            .toList() ??
-        [];
+    final dartified = $res.dartify() as List? ?? [];
+    return dartified.map<String>((e) => e as String).toList();
   }
 
   /// Gets the localized string for the specified message. If the message is
