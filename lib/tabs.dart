@@ -117,7 +117,7 @@ class ChromeTabs {
 
     // Handle the response properly regardless of its type
     final dartRes = $res.dartify();
-    final List dartified = dartRes is List ? dartRes : [];
+    final dartified = dartRes is List ? dartRes : [];
 
     // Convert each element to a Tab using Map data
     return dartified.map<Tab>((e) {
@@ -166,10 +166,7 @@ class ChromeTabs {
         audible: map['audible'] as bool?,
         mutedInfo: null,
         lastAccessed: (map['lastAccessed'] as num?)?.toDouble(),
-        status:
-            map['status'] != null
-                ? map['status'].toString().toJS as $js.TabStatus
-                : null,
+        status: map['status']?.toString().toJS,
         incognito: map['incognito'] as bool? ?? false,
         width: (map['width'] as num?)?.toInt(),
         height: (map['height'] as num?)?.toInt(),
@@ -297,12 +294,13 @@ class ChromeTabs {
   }
 
   /// Executes script in a specific tab.
-
+  @Deprecated('Use scripting.executeScript instead in Manifest V3')
   Future<List<Object>> executeScript(int? tabId, InjectDetails details) async {
     var $res = await $js.chrome.tabs.executeScript(tabId, details.toJS).toDart;
     final dartified = $res.dartify() as List? ?? [];
     return dartified
-        .map<Object>((e) => (e?.dartify() as Object?) ?? e as Object)
+        // ignore: avoid_dynamic_calls
+        .map<Object>((e) => (e.dartify() as Object?) ?? e as Object)
         .toList();
   }
 

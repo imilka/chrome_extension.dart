@@ -49,7 +49,7 @@ class ChromeWindows {
 
     // Handle the response properly regardless of its type
     final dartRes = $res.dartify();
-    final List dartified = dartRes is List ? dartRes : [];
+    final dartified = dartRes is List ? dartRes : [];
 
     // Convert each element to a Window using Map data
     return dartified.map<Window>((e) {
@@ -248,11 +248,7 @@ class Window {
                   audible: tabMap['audible'] as bool?,
                   mutedInfo: null,
                   lastAccessed: (tabMap['lastAccessed'] as num?)?.toDouble(),
-                  status:
-                      tabMap['status'] != null
-                          ? tabMap['status'].toString().toJS
-                              as $js_tabs.TabStatus
-                          : null,
+                  status: tabMap['status']?.toString().toJS,
                   incognito: tabMap['incognito'] as bool? ?? false,
                   width: (tabMap['width'] as num?)?.toInt(),
                   height: (tabMap['height'] as num?)?.toInt(),

@@ -30,7 +30,7 @@ class ChromeSystemStorage {
 
     // Handle the response properly regardless of its type
     final dartRes = $res.dartify();
-    final List dartified = dartRes is List ? dartRes : [];
+    final dartified = dartRes is List ? dartRes : [];
 
     // Convert each element to a StorageUnitInfo using Map data
     return dartified.map<StorageUnitInfo>((e) {

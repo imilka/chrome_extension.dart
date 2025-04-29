@@ -36,7 +36,7 @@ class ChromeBookmarks {
 
     // Handle the response properly regardless of its type
     final dartRes = $res.dartify();
-    final List dartified = dartRes is List ? dartRes : [];
+    final dartified = dartRes is List ? dartRes : [];
 
     // Convert each element to a BookmarkTreeNode using Map data
     return dartified.map<BookmarkTreeNode>((e) {
@@ -55,7 +55,7 @@ class ChromeBookmarks {
     // Handle children if present
     List<BookmarkTreeNode>? children;
     if (map['children'] is List) {
-      final List childrenList = map['children'] as List;
+      final childrenList = map['children'] as List;
       children =
           childrenList.map((child) {
             if (child is Map) {
@@ -120,7 +120,7 @@ class ChromeBookmarks {
 
     // Handle the response properly regardless of its type
     final dartRes = $res.dartify();
-    final List dartified = dartRes is List ? dartRes : [];
+    final dartified = dartRes is List ? dartRes : [];
 
     // Convert each element to a BookmarkTreeNode using Map data
     return dartified.map<BookmarkTreeNode>((e) {
@@ -166,7 +166,7 @@ class ChromeBookmarks {
 
     // Handle the response properly regardless of its type
     final dartRes = $res.dartify();
-    final List dartified = dartRes is List ? dartRes : [];
+    final dartified = dartRes is List ? dartRes : [];
 
     // Convert each element to a BookmarkTreeNode using Map data
     return dartified.map<BookmarkTreeNode>((e) {

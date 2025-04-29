@@ -82,7 +82,7 @@ class ChromeAction {
   Future<List<int>> getBadgeBackgroundColor(TabDetails details) async {
     var $res =
         await $js.chrome.action.getBadgeBackgroundColor(details.toJS).toDart;
-    final List dartified = $res.dartify() as List? ?? [];
+    final dartified = $res.dartify() as List? ?? [];
     return dartified.map<int>((e) => e as int).toList();
   }
 
@@ -94,7 +94,7 @@ class ChromeAction {
   /// Gets the text color of the action.
   Future<List<int>> getBadgeTextColor(TabDetails details) async {
     var $res = await $js.chrome.action.getBadgeTextColor(details.toJS).toDart;
-    final List dartified = $res.dartify() as List? ?? [];
+    final dartified = $res.dartify() as List? ?? [];
     return dartified.map<int>((e) => e as int).toList();
   }
 

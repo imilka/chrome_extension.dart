@@ -67,7 +67,7 @@ class ChromeTts {
 
     // Handle the response properly regardless of its type
     final dartRes = $res.dartify();
-    final List dartified = dartRes is List ? dartRes : [];
+    final dartified = dartRes is List ? dartRes : [];
 
     // Convert each element to a TtsVoice using Map data
     return dartified.map<TtsVoice>((e) {
@@ -77,7 +77,7 @@ class ChromeTts {
         // Handle eventTypes conversion to proper EventType objects
         List<EventType>? eventTypes;
         if (e['eventTypes'] is List) {
-          final List eventTypesList = e['eventTypes'] as List;
+          final eventTypesList = e['eventTypes'] as List;
           eventTypes =
               eventTypesList
                   .map((et) {
