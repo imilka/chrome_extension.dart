@@ -26,7 +26,9 @@ class ChromeIdentity {
   Future<List<AccountInfo>> getAccounts() async {
     var $res = await $js.chrome.identity.getAccounts().toDart;
     final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<AccountInfo>((e) => e as AccountInfo).toList();
+    return dartified
+        .map<AccountInfo>((e) => AccountInfo.fromJS(e as $js.AccountInfo))
+        .toList();
   }
 
   /// Gets an OAuth2 access token using the client ID and scopes

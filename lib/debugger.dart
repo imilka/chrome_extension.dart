@@ -73,7 +73,9 @@ class ChromeDebugger {
   Future<List<TargetInfo>> getTargets() async {
     var $res = await $js.chrome.debugger.getTargets().toDart;
     final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<TargetInfo>((e) => e as TargetInfo).toList();
+    return dartified
+        .map<TargetInfo>((e) => TargetInfo.fromJS(e as $js.TargetInfo))
+        .toList();
   }
 
   /// Fired whenever debugging target issues instrumentation event.

@@ -53,7 +53,11 @@ class ChromeFileSystemProvider {
   Future<List<FileSystemInfo>> getAll() async {
     var $res = await $js.chrome.fileSystemProvider.getAll().toDart;
     final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<FileSystemInfo>((e) => e as FileSystemInfo).toList();
+    return dartified
+        .map<FileSystemInfo>(
+          (e) => FileSystemInfo.fromJS(e as $js.FileSystemInfo),
+        )
+        .toList();
   }
 
   /// Returns information about a file system with the passed

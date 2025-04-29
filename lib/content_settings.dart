@@ -473,7 +473,9 @@ class ContentSetting {
     var $res = await _wrapped.getResourceIdentifiers().toDart;
     final dartified = $res.dartify() as List? ?? [];
     return dartified
-        .map<ResourceIdentifier>((e) => e as ResourceIdentifier)
+        .map<ResourceIdentifier>(
+          (e) => ResourceIdentifier.fromJS(e as $js.ResourceIdentifier),
+        )
         .toList();
   }
 }

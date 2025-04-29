@@ -64,10 +64,51 @@ class ChromeTts {
   /// Gets an array of all available voices.
   Future<List<TtsVoice>> getVoices() async {
     var $res = await $js.chrome.tts.getVoices().toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<TtsVoice>((e) => TtsVoice.fromJS(e as $js.TtsVoice))
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a TtsVoice using Map data
+    return dartified.map<TtsVoice>((e) {
+      if (e is Map) {
+        // Create TtsVoice from Map data
+
+        // Handle eventTypes conversion to proper EventType objects
+        List<EventType>? eventTypes;
+        if (e['eventTypes'] is List) {
+          final List eventTypesList = e['eventTypes'] as List;
+          eventTypes =
+              eventTypesList
+                  .map((et) {
+                    try {
+                      return EventType.fromJS(et.toString().toJS);
+                    } catch (e) {
+                      // If there's an error (unknown event type), skip it
+                      return null;
+                    }
+                  })
+                  .whereType<EventType>() // Filter out nulls
+                  .toList();
+          if (eventTypes.isEmpty) eventTypes = null;
+        }
+
+        return TtsVoice(
+          voiceName: e['voiceName'] as String? ?? '',
+          lang: e['lang'] as String?,
+          extensionId: e['extensionId'] as String?,
+          gender:
+              e['gender'] != null
+                  ? VoiceGender.fromJS((e['gender'] as String).toJS)
+                  : null,
+          remote: e['remote'] as bool?,
+          eventTypes: eventTypes,
+        );
+      } else {
+        // Fallback for unexpected types
+        return TtsVoice(voiceName: '');
+      }
+    }).toList();
   }
 
   /// Used to pass events back to the function calling speak().

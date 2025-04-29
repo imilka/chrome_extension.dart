@@ -26,7 +26,9 @@ class ChromeManagement {
   Future<List<ExtensionInfo>> getAll() async {
     var $res = await $js.chrome.management.getAll().toDart;
     final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<ExtensionInfo>((e) => e as ExtensionInfo).toList();
+    return dartified
+        .map<ExtensionInfo>((e) => ExtensionInfo.fromJS(e as $js.ExtensionInfo))
+        .toList();
   }
 
   /// Returns information about the installed extension, app, or theme that has

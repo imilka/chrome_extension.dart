@@ -114,8 +114,68 @@ class ChromeTabs {
   /// properties are specified.
   Future<List<Tab>> query(QueryInfo queryInfo) async {
     var $res = await $js.chrome.tabs.query(queryInfo.toJS).toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<Tab>((e) => Tab.fromJS(e as $js.Tab)).toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a Tab using Map data
+    return dartified.map<Tab>((e) {
+      if (e is Map) {
+        // Create Tab from Map data
+        return _createTabFromMap(e);
+      } else {
+        // Fallback for unexpected types
+        return Tab.fromJS(
+          $js.Tab(
+            active: false,
+            highlighted: false,
+            pinned: false,
+            selected: true,
+            discarded: false,
+            autoDiscardable: true,
+            groupId: -1,
+            windowId: -1,
+            index: 0,
+            incognito: false,
+          ),
+        );
+      }
+    }).toList();
+  }
+
+  // Helper method to create a Tab from Map data
+  Tab _createTabFromMap(Map map) {
+    return Tab.fromJS(
+      $js.Tab(
+        id: (map['id'] as num?)?.toInt(),
+        active: map['active'] as bool? ?? false,
+        highlighted: map['highlighted'] as bool? ?? false,
+        pinned: map['pinned'] as bool? ?? false,
+        selected: map['selected'] as bool? ?? true,
+        discarded: map['discarded'] as bool? ?? false,
+        autoDiscardable: map['autoDiscardable'] as bool? ?? true,
+        groupId: (map['groupId'] as num?)?.toInt() ?? -1,
+        windowId: (map['windowId'] as num?)?.toInt() ?? -1,
+        openerTabId: (map['openerTabId'] as num?)?.toInt(),
+        index: (map['index'] as num?)?.toInt() ?? 0,
+        title: map['title'] as String?,
+        url: map['url'] as String?,
+        pendingUrl: map['pendingUrl'] as String?,
+        favIconUrl: map['favIconUrl'] as String?,
+        audible: map['audible'] as bool?,
+        mutedInfo: null,
+        lastAccessed: (map['lastAccessed'] as num?)?.toDouble(),
+        status:
+            map['status'] != null
+                ? map['status'].toString().toJS as $js.TabStatus
+                : null,
+        incognito: map['incognito'] as bool? ?? false,
+        width: (map['width'] as num?)?.toInt(),
+        height: (map['height'] as num?)?.toInt(),
+        sessionId: map['sessionId'] as String?,
+      ),
+    );
   }
 
   /// Highlights the given tabs and focuses on the first of group. Will appear

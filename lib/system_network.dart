@@ -27,12 +27,25 @@ class ChromeSystemNetwork {
   /// |callback| : Called when local adapter information is available.
   Future<List<NetworkInterface>> getNetworkInterfaces() async {
     var $res = await $js.chrome.system.network.getNetworkInterfaces().toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<NetworkInterface>(
-          (e) => NetworkInterface.fromJS(e as $js.NetworkInterface),
-        )
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a NetworkInterface using Map data
+    return dartified.map<NetworkInterface>((e) {
+      if (e is Map) {
+        // Create NetworkInterface from Map data
+        return NetworkInterface(
+          name: e['name'] as String? ?? '',
+          address: e['address'] as String? ?? '',
+          prefixLength: (e['prefixLength'] as num?)?.toInt() ?? 0,
+        );
+      } else {
+        // Fallback for unexpected types
+        return NetworkInterface(name: '', address: '', prefixLength: 0);
+      }
+    }).toList();
   }
 }
 

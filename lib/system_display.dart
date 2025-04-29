@@ -27,12 +27,92 @@ class ChromeSystemDisplay {
   /// |callback|: The callback to invoke with the results.
   Future<List<DisplayUnitInfo>> getInfo(GetInfoFlags? flags) async {
     var $res = await $js.chrome.system.display.getInfo(flags?.toJS).toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<DisplayUnitInfo>(
-          (e) => DisplayUnitInfo.fromJS(e as $js.DisplayUnitInfo),
-        )
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a DisplayUnitInfo using Map data
+    return dartified.map<DisplayUnitInfo>((e) {
+      if (e is Map) {
+        // Create DisplayUnitInfo from Map data
+        return _createDisplayUnitInfoFromMap(e);
+      } else {
+        // Fallback for unexpected types
+        return DisplayUnitInfo.fromJS(
+          $js.DisplayUnitInfo(
+            id: '',
+            name: '',
+            bounds: $js.Bounds(left: 0, top: 0, width: 0, height: 0),
+            workArea: $js.Bounds(left: 0, top: 0, width: 0, height: 0),
+            isEnabled: false,
+            isPrimary: false,
+            isInternal: false,
+            isAutoRotationAllowed: false,
+            dpiX: 0,
+            dpiY: 0,
+            rotation: 0,
+            overscan: $js.Insets(left: 0, top: 0, right: 0, bottom: 0),
+            modes: <$js.DisplayMode>[].toJS,
+            hasTouchSupport: false,
+            hasAccelerometerSupport: false,
+            mirroringSourceId: '',
+            mirroringDestinationIds: <JSString>[].toJS,
+            isUnified: false,
+            activeState: ActiveState.active.toJS,
+            availableDisplayZoomFactors: <JSNumber>[].toJS,
+            displayZoomFactor: 1.0,
+          ),
+        );
+      }
+    }).toList();
+  }
+
+  // Helper method to create a DisplayUnitInfo from Map data
+  DisplayUnitInfo _createDisplayUnitInfoFromMap(Map map) {
+    // Create Bounds objects from map data
+    $js.Bounds createBounds(Map? boundsMap) {
+      if (boundsMap == null) {
+        return $js.Bounds(left: 0, top: 0, width: 0, height: 0);
+      }
+      return $js.Bounds(
+        left: (boundsMap['left'] as num?)?.toInt() ?? 0,
+        top: (boundsMap['top'] as num?)?.toInt() ?? 0,
+        width: (boundsMap['width'] as num?)?.toInt() ?? 0,
+        height: (boundsMap['height'] as num?)?.toInt() ?? 0,
+      );
+    }
+
+    // Handle creation of DisplayUnitInfo from map
+    return DisplayUnitInfo.fromJS(
+      $js.DisplayUnitInfo(
+        id: map['id'] as String? ?? '',
+        name: map['name'] as String? ?? '',
+        bounds: createBounds(map['bounds'] as Map?),
+        workArea: createBounds(map['workArea'] as Map?),
+        isEnabled: map['isEnabled'] as bool? ?? false,
+        isPrimary: map['isPrimary'] as bool? ?? false,
+        isInternal: map['isInternal'] as bool? ?? false,
+        isAutoRotationAllowed: map['isAutoRotationAllowed'] as bool? ?? false,
+        dpiX: (map['dpiX'] as num?)?.toDouble() ?? 0,
+        dpiY: (map['dpiY'] as num?)?.toDouble() ?? 0,
+        rotation: (map['rotation'] as num?)?.toInt() ?? 0,
+        overscan: $js.Insets(left: 0, top: 0, right: 0, bottom: 0),
+        modes: <$js.DisplayMode>[].toJS,
+        hasTouchSupport: map['hasTouchSupport'] as bool? ?? false,
+        hasAccelerometerSupport:
+            map['hasAccelerometerSupport'] as bool? ?? false,
+        mirroringSourceId: map['mirroringSourceId'] as String? ?? '',
+        mirroringDestinationIds: <JSString>[].toJS,
+        isUnified: map['isUnified'] as bool? ?? false,
+        activeState:
+            map['activeState'] != null
+                ? ActiveState.fromJS((map['activeState'] as String).toJS).toJS
+                : ActiveState.active.toJS,
+        availableDisplayZoomFactors: <JSNumber>[].toJS,
+        displayZoomFactor: 1.0,
+      ),
+    );
   }
 
   /// Requests the layout info for all displays.

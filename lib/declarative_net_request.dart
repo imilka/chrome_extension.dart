@@ -63,7 +63,7 @@ class ChromeDeclarativeNetRequest {
             .getDynamicRules(filter?.toJS)
             .toDart;
     final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<Rule>((e) => e as Rule).toList();
+    return dartified.map<Rule>((e) => Rule.fromJS(e as $js.Rule)).toList();
   }
 
   /// Modifies the current set of session scoped rules for the extension.
@@ -99,7 +99,7 @@ class ChromeDeclarativeNetRequest {
             .getSessionRules(filter?.toJS)
             .toDart;
     final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<Rule>((e) => e as Rule).toList();
+    return dartified.map<Rule>((e) => Rule.fromJS(e as $js.Rule)).toList();
   }
 
   /// Updates the set of enabled static rulesets for the extension. The

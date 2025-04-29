@@ -30,7 +30,9 @@ class ChromeCommands {
   Future<List<Command>> getAll() async {
     var result = await $js.chrome.commands.getAll().toDart;
     final dartified = result.dartify() as List? ?? [];
-    return dartified.map<Command>((e) => e as Command).toList();
+    return dartified
+        .map<Command>((e) => Command.fromJS(e as $js.Command))
+        .toList();
   }
 
   /// Fired when a registered command is activated using a keyboard shortcut.

@@ -27,12 +27,34 @@ class ChromeSystemStorage {
   /// callback is an array of StorageUnitInfo objects.
   Future<List<StorageUnitInfo>> getInfo() async {
     var $res = await $js.chrome.system.storage.getInfo().toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<StorageUnitInfo>(
-          (e) => StorageUnitInfo.fromJS(e as $js.StorageUnitInfo),
-        )
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a StorageUnitInfo using Map data
+    return dartified.map<StorageUnitInfo>((e) {
+      if (e is Map) {
+        // Create StorageUnitInfo from Map data
+        return StorageUnitInfo(
+          id: e['id'] as String? ?? '',
+          name: e['name'] as String? ?? '',
+          type:
+              e['type'] != null
+                  ? StorageUnitType.fromJS((e['type'] as String).toJS)
+                  : StorageUnitType.unknown,
+          capacity: (e['capacity'] as num?)?.toDouble() ?? 0,
+        );
+      } else {
+        // Fallback for unexpected types
+        return StorageUnitInfo(
+          id: '',
+          name: '',
+          type: StorageUnitType.unknown,
+          capacity: 0,
+        );
+      }
+    }).toList();
   }
 
   /// Ejects a removable storage device.
@@ -45,9 +67,20 @@ class ChromeSystemStorage {
   /// |id| is the transient device ID from StorageUnitInfo.
   Future<StorageAvailableCapacityInfo> getAvailableCapacity(String id) async {
     var $res = await $js.chrome.system.storage.getAvailableCapacity(id).toDart;
-    return StorageAvailableCapacityInfo.fromJS(
-      $res! as $js.StorageAvailableCapacityInfo,
-    );
+
+    // Handle the response properly
+    final dartRes = $res.dartify();
+    if (dartRes is Map) {
+      // Create StorageAvailableCapacityInfo from Map data
+      return StorageAvailableCapacityInfo(
+        id: dartRes['id'] as String? ?? '',
+        availableCapacity:
+            (dartRes['availableCapacity'] as num?)?.toDouble() ?? 0,
+      );
+    } else {
+      // Fallback for unexpected types
+      return StorageAvailableCapacityInfo(id: id, availableCapacity: 0);
+    }
   }
 
   /// Fired when a new removable storage is attached to the system.

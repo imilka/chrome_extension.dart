@@ -60,8 +60,25 @@ class ChromeAlarms {
   /// Gets an array of all the alarms.
   Future<List<Alarm>> getAll() async {
     var $res = await $js.chrome.alarms.getAll().toDart;
-    final List dartified = $res.dartify() as List? ?? [];
-    return dartified.map<Alarm>((e) => e as Alarm).toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to an Alarm using Map data
+    return dartified.map<Alarm>((e) {
+      if (e is Map) {
+        // Create Alarm from Map data
+        return Alarm(
+          name: e['name'] as String? ?? '',
+          scheduledTime: (e['scheduledTime'] as num?)?.toDouble() ?? 0,
+          periodInMinutes: (e['periodInMinutes'] as num?)?.toDouble(),
+        );
+      } else {
+        // Fallback for unexpected types
+        return Alarm(name: '', scheduledTime: 0);
+      }
+    }).toList();
   }
 
   /// Clears the alarm with the given name.
@@ -175,10 +192,7 @@ class AlarmCreateInfo {
     _wrapped.when = v;
   }
 
-  /// Length of time in minutes after which the `onAlarm` event
-  /// should fire.
-  ///
-  /// <!-- TODO: need minimum=0 -->
+  /// Length of time in minutes after which the `onAlarm` event should fire.
   double? get delayInMinutes => _wrapped.delayInMinutes;
 
   set delayInMinutes(double? v) {

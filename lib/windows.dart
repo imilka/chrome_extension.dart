@@ -46,10 +46,21 @@ class ChromeWindows {
   /// Gets all windows.
   Future<List<Window>> getAll(QueryOptions? queryOptions) async {
     var $res = await $js.chrome.windows.getAll(queryOptions?.toJS).toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<Window>((e) => Window.fromJS(e as $js.Window))
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a Window using Map data
+    return dartified.map<Window>((e) {
+      if (e is Map) {
+        // Create Window from Map data instead of casting
+        return Window._fromMap(e);
+      } else {
+        // Fallback for unexpected types
+        return Window.fromJS($js.Window(focused: false));
+      }
+    }).toList();
   }
 
   /// Creates (opens) a new browser window with any optional sizing, position,
@@ -206,6 +217,89 @@ enum CreateType {
 
 class Window {
   Window.fromJS(this._wrapped);
+
+  /// Create a Window from a Map (useful for handling JSON responses)
+  static Window _fromMap(Map map) {
+    // Handle tab objects if present
+    List<Tab>? tabs;
+    if (map['tabs'] is List) {
+      final tabsList = map['tabs'] as List;
+      tabs =
+          tabsList.map<Tab>((tabMap) {
+            if (tabMap is Map) {
+              // Create a Tab with required parameters
+              return Tab.fromJS(
+                $js_tabs.Tab(
+                  id: (tabMap['id'] as num?)?.toInt(),
+                  active: tabMap['active'] as bool? ?? false,
+                  highlighted: tabMap['highlighted'] as bool? ?? false,
+                  pinned: tabMap['pinned'] as bool? ?? false,
+                  selected: tabMap['selected'] as bool? ?? true,
+                  discarded: tabMap['discarded'] as bool? ?? false,
+                  autoDiscardable: tabMap['autoDiscardable'] as bool? ?? true,
+                  groupId: (tabMap['groupId'] as num?)?.toInt() ?? -1,
+                  windowId: (tabMap['windowId'] as num?)?.toInt() ?? -1,
+                  openerTabId: (tabMap['openerTabId'] as num?)?.toInt(),
+                  index: (tabMap['index'] as num?)?.toInt() ?? 0,
+                  title: tabMap['title'] as String?,
+                  url: tabMap['url'] as String?,
+                  pendingUrl: tabMap['pendingUrl'] as String?,
+                  favIconUrl: tabMap['favIconUrl'] as String?,
+                  audible: tabMap['audible'] as bool?,
+                  mutedInfo: null,
+                  lastAccessed: (tabMap['lastAccessed'] as num?)?.toDouble(),
+                  status:
+                      tabMap['status'] != null
+                          ? tabMap['status'].toString().toJS
+                              as $js_tabs.TabStatus
+                          : null,
+                  incognito: tabMap['incognito'] as bool? ?? false,
+                  width: (tabMap['width'] as num?)?.toInt(),
+                  height: (tabMap['height'] as num?)?.toInt(),
+                  sessionId: tabMap['sessionId'] as String?,
+                ),
+              );
+            } else {
+              // Fallback for invalid tab data
+              return Tab.fromJS(
+                $js_tabs.Tab(
+                  active: false,
+                  highlighted: false,
+                  pinned: false,
+                  selected: true,
+                  discarded: false,
+                  autoDiscardable: true,
+                  groupId: -1,
+                  windowId: -1,
+                  index: 0,
+                  incognito: false,
+                ),
+              );
+            }
+          }).toList();
+    }
+
+    return Window(
+      id: (map['id'] as num?)?.toInt(),
+      focused: map['focused'] as bool? ?? false,
+      top: (map['top'] as num?)?.toInt(),
+      left: (map['left'] as num?)?.toInt(),
+      width: (map['width'] as num?)?.toInt(),
+      height: (map['height'] as num?)?.toInt(),
+      tabs: tabs,
+      incognito: map['incognito'] as bool? ?? false,
+      type:
+          map['type'] != null
+              ? WindowType.fromJS((map['type'] as String).toJS)
+              : null,
+      state:
+          map['state'] != null
+              ? WindowState.fromJS((map['state'] as String).toJS)
+              : null,
+      alwaysOnTop: map['alwaysOnTop'] as bool? ?? false,
+      sessionId: map['sessionId'] as String?,
+    );
+  }
 
   Window({
     /// The ID of the window. Window IDs are unique within a browser session. In

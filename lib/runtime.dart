@@ -211,7 +211,9 @@ class ChromeRuntime {
     var $res = await $js.chrome.runtime.getContexts(filter.toJS).toDart;
     final dartified = $res.dartify() as List? ?? [];
     return dartified
-        .map<ExtensionContext>((e) => e as ExtensionContext)
+        .map<ExtensionContext>(
+          (e) => ExtensionContext.fromJS(e as $js.ExtensionContext),
+        )
         .toList();
   }
 

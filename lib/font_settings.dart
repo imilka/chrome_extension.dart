@@ -39,7 +39,9 @@ class ChromeFontSettings {
   Future<List<FontName>> getFontList() async {
     var $res = await $js.chrome.fontSettings.getFontList().toDart;
     final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<FontName>((e) => e as FontName).toList();
+    return dartified
+        .map<FontName>((e) => FontName.fromJS(e as $js.FontName))
+        .toList();
   }
 
   /// Clears the default font size set by this extension, if any.

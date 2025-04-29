@@ -33,10 +33,62 @@ class ChromeBookmarks {
               'Received type: ${idOrIdList.runtimeType}. Supported types are: String, List<String>',
             ),
         }).toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a BookmarkTreeNode using Map data
+    return dartified.map<BookmarkTreeNode>((e) {
+      if (e is Map) {
+        // Create BookmarkTreeNode from Map data
+        return _createBookmarkTreeNodeFromMap(e);
+      } else {
+        // Fallback for unexpected types
+        return BookmarkTreeNode(id: '', title: '');
+      }
+    }).toList();
+  }
+
+  // Helper method to create a BookmarkTreeNode from Map data
+  BookmarkTreeNode _createBookmarkTreeNodeFromMap(Map map) {
+    // Handle children if present
+    List<BookmarkTreeNode>? children;
+    if (map['children'] is List) {
+      final List childrenList = map['children'] as List;
+      children =
+          childrenList.map((child) {
+            if (child is Map) {
+              return _createBookmarkTreeNodeFromMap(child);
+            } else {
+              return BookmarkTreeNode(id: '', title: '');
+            }
+          }).toList();
+    }
+
+    // Handle unmodifiable value
+    BookmarkTreeNodeUnmodifiable? unmodifiable;
+    if (map['unmodifiable'] != null) {
+      try {
+        unmodifiable = BookmarkTreeNodeUnmodifiable.fromJS(
+          (map['unmodifiable'] as String).toJS,
+        );
+      } catch (_) {
+        // If this fails, leave it as null
+      }
+    }
+
+    return BookmarkTreeNode(
+      id: map['id'] as String? ?? '',
+      parentId: map['parentId'] as String?,
+      index: (map['index'] as num?)?.toInt(),
+      url: map['url'] as String?,
+      title: map['title'] as String? ?? '',
+      dateAdded: (map['dateAdded'] as num?)?.toDouble(),
+      dateGroupModified: (map['dateGroupModified'] as num?)?.toDouble(),
+      unmodifiable: unmodifiable,
+      children: children,
+    );
   }
 
   /// Retrieves the children of the specified BookmarkTreeNode id.
@@ -44,7 +96,9 @@ class ChromeBookmarks {
     var $res = await $js.chrome.bookmarks.getChildren(id).toDart;
     final dartified = $res.dartify() as List? ?? [];
     return dartified
-        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .map<BookmarkTreeNode>(
+          (e) => BookmarkTreeNode.fromJS(e as $js.BookmarkTreeNode),
+        )
         .toList();
   }
 
@@ -54,17 +108,30 @@ class ChromeBookmarks {
     var $res = await $js.chrome.bookmarks.getRecent(numberOfItems).toDart;
     final dartified = $res.dartify() as List? ?? [];
     return dartified
-        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .map<BookmarkTreeNode>(
+          (e) => BookmarkTreeNode.fromJS(e as $js.BookmarkTreeNode),
+        )
         .toList();
   }
 
   /// Retrieves the entire Bookmarks hierarchy.
   Future<List<BookmarkTreeNode>> getTree() async {
     var $res = await $js.chrome.bookmarks.getTree().toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a BookmarkTreeNode using Map data
+    return dartified.map<BookmarkTreeNode>((e) {
+      if (e is Map) {
+        // Create BookmarkTreeNode from Map data
+        return _createBookmarkTreeNodeFromMap(e);
+      } else {
+        // Fallback for unexpected types
+        return BookmarkTreeNode(id: '', title: '');
+      }
+    }).toList();
   }
 
   /// Retrieves part of the Bookmarks hierarchy, starting at the specified node.
@@ -73,7 +140,9 @@ class ChromeBookmarks {
     var $res = await $js.chrome.bookmarks.getSubTree(id).toDart;
     final dartified = $res.dartify() as List? ?? [];
     return dartified
-        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
+        .map<BookmarkTreeNode>(
+          (e) => BookmarkTreeNode.fromJS(e as $js.BookmarkTreeNode),
+        )
         .toList();
   }
 
@@ -94,17 +163,37 @@ class ChromeBookmarks {
               'Received type: ${query.runtimeType}. Supported types are: String, SearchQuery',
             ),
         }).toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
-        .map<BookmarkTreeNode>((e) => e as BookmarkTreeNode)
-        .toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a BookmarkTreeNode using Map data
+    return dartified.map<BookmarkTreeNode>((e) {
+      if (e is Map) {
+        // Create BookmarkTreeNode from Map data
+        return _createBookmarkTreeNodeFromMap(e);
+      } else {
+        // Fallback for unexpected types
+        return BookmarkTreeNode(id: '', title: '');
+      }
+    }).toList();
   }
 
   /// Creates a bookmark or folder under the specified parentId.  If url is NULL
   /// or missing, it will be a folder.
   Future<BookmarkTreeNode> create(CreateDetails bookmark) async {
     var $res = await $js.chrome.bookmarks.create(bookmark.toJS).toDart;
-    return BookmarkTreeNode.fromJS($res! as $js.BookmarkTreeNode);
+
+    // Handle the response properly
+    final dartRes = $res.dartify();
+    if (dartRes is Map) {
+      // Create BookmarkTreeNode from Map data
+      return _createBookmarkTreeNodeFromMap(dartRes);
+    } else {
+      // Fallback for unexpected types
+      return BookmarkTreeNode(id: '', title: '');
+    }
   }
 
   /// Moves the specified BookmarkTreeNode to the provided location.

@@ -46,8 +46,40 @@ class ChromeDownloads {
   /// `startTime` of the last item from the last page.
   Future<List<DownloadItem>> search(DownloadQuery query) async {
     var $res = await $js.chrome.downloads.search(query.toJS).toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified.map<DownloadItem>((e) => e as DownloadItem).toList();
+
+    // Handle the response properly regardless of its type
+    final dartRes = $res.dartify();
+    final List dartified = dartRes is List ? dartRes : [];
+
+    // Convert each element to a DownloadItem using Map data
+    return dartified.map<DownloadItem>((e) {
+      if (e is Map) {
+        // Create DownloadItem from Map data instead of casting
+        return DownloadItem._fromMap(e);
+      } else {
+        // Fallback
+        return DownloadItem.fromJS(
+          $js.DownloadItem(
+            id: 0,
+            url: '',
+            finalUrl: '',
+            referrer: '',
+            filename: '',
+            incognito: false,
+            danger: 'safe'.toJS,
+            mime: '',
+            startTime: '',
+            state: 'interrupted'.toJS,
+            paused: false,
+            canResume: false,
+            bytesReceived: 0,
+            totalBytes: -1,
+            fileSize: -1,
+            exists: false,
+          ),
+        );
+      }
+    }).toList();
   }
 
   /// Pause the download. If the request was successful the download is in a
@@ -595,6 +627,42 @@ class DownloadOptions {
 
 class DownloadItem {
   DownloadItem.fromJS(this._wrapped);
+
+  /// Create a DownloadItem from a Map (useful for handling JSON responses)
+  static DownloadItem _fromMap(Map map) {
+    return DownloadItem(
+      id: (map['id'] as num?)?.toInt() ?? 0,
+      url: map['url'] as String? ?? '',
+      finalUrl: map['finalUrl'] as String? ?? '',
+      referrer: map['referrer'] as String? ?? '',
+      filename: map['filename'] as String? ?? '',
+      incognito: map['incognito'] as bool? ?? false,
+      danger:
+          map['danger'] != null
+              ? DangerType.fromJS((map['danger'] as String).toJS)
+              : DangerType.safe,
+      mime: map['mime'] as String? ?? '',
+      startTime: map['startTime'] as String? ?? '',
+      endTime: map['endTime'] as String?,
+      estimatedEndTime: map['estimatedEndTime'] as String?,
+      state:
+          map['state'] != null
+              ? State.fromJS((map['state'] as String).toJS)
+              : State.interrupted,
+      paused: map['paused'] as bool? ?? false,
+      canResume: map['canResume'] as bool? ?? false,
+      error:
+          map['error'] != null
+              ? InterruptReason.fromJS((map['error'] as String).toJS)
+              : null,
+      bytesReceived: (map['bytesReceived'] as num?)?.toDouble() ?? 0,
+      totalBytes: (map['totalBytes'] as num?)?.toDouble() ?? -1,
+      fileSize: (map['fileSize'] as num?)?.toDouble() ?? -1,
+      exists: map['exists'] as bool? ?? false,
+      byExtensionId: map['byExtensionId'] as String?,
+      byExtensionName: map['byExtensionName'] as String?,
+    );
+  }
 
   DownloadItem({
     /// An identifier that is persistent across browser sessions.
