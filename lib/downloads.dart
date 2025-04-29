@@ -4,7 +4,6 @@ library;
 
 import 'src/internal_helpers.dart';
 import 'src/js/downloads.dart' as $js;
-import 'dart:js_interop';
 
 export 'src/chrome.dart' show chrome, EventStream;
 
@@ -36,7 +35,7 @@ class ChromeDownloads {
   /// |callback|: Called with the id of the new [DownloadItem].
   Future<int> download(DownloadOptions options) async {
     var $res = await $js.chrome.downloads.download(options.toJS).toDart;
-    return $res as int;
+    return $res?.dartify() as int? ?? 0;
   }
 
   /// Find [DownloadItem]. Set `query` to the empty object to get
@@ -47,10 +46,11 @@ class ChromeDownloads {
   /// `startTime` of the last item from the last page.
   Future<List<DownloadItem>> search(DownloadQuery query) async {
     var $res = await $js.chrome.downloads.search(query.toJS).toDart;
-    return ($res as List<dynamic>)
-        .cast<$js.DownloadItem>()
-        .map((e) => DownloadItem.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.DownloadItem>()
+            .map((e) => DownloadItem.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Pause the download. If the request was successful the download is in a
@@ -98,7 +98,7 @@ class ChromeDownloads {
         await $js.chrome.downloads
             .getFileIcon(downloadId, options?.toJS)
             .toDart;
-    return $res as String?;
+    return $res?.dartify() as String?;
   }
 
   /// Opens the downloaded file now if the [DownloadItem] is complete;
@@ -130,7 +130,7 @@ class ChromeDownloads {
   /// `callback` will be called.
   Future<List<int>> erase(DownloadQuery query) async {
     var $res = await $js.chrome.downloads.erase(query.toJS).toDart;
-    return ($res as List<dynamic>).cast<int>().toList();
+    return ($res as JSArray?)?.toDart.cast<int>().toList() ?? [];
   }
 
   /// Remove the downloaded file if it exists and the [DownloadItem] is

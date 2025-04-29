@@ -35,10 +35,11 @@ class ChromeEnterpriseNetworkingAttributes {
   /// |callback| : Called with the device's default network's
   /// [NetworkDetails].
   Future<NetworkDetails> getNetworkDetails() async {
-    var $res = await $js.chrome.enterprise.networkingAttributes
-        .getNetworkDetails()
-        .toDart;
-    return NetworkDetails.fromJS($res as $js.NetworkDetails);
+    var $res =
+        await $js.chrome.enterprise.networkingAttributes
+            .getNetworkDetails()
+            .toDart;
+    return NetworkDetails.fromJS($res! as $js.NetworkDetails);
   }
 }
 
@@ -55,10 +56,10 @@ class NetworkDetails {
     /// The device's local IPv6 address (undefined if not configured).
     String? ipv6,
   }) : _wrapped = $js.NetworkDetails(
-          macAddress: macAddress,
-          ipv4: ipv4,
-          ipv6: ipv6,
-        );
+         macAddress: macAddress,
+         ipv4: ipv4,
+         ipv6: ipv6,
+       );
 
   final $js.NetworkDetails _wrapped;
 

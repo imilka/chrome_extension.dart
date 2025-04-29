@@ -25,18 +25,18 @@ class ChromeTabGroups {
   /// Retrieves details about the specified group.
   Future<TabGroup> get(int groupId) async {
     var $res = await $js.chrome.tabGroups.get(groupId).toDart;
-    return TabGroup.fromJS($res as $js.TabGroup);
+    return TabGroup.fromJS($res! as $js.TabGroup);
   }
 
   /// Gets all groups that have the specified properties, or all groups if no
   /// properties are specified.
   Future<List<TabGroup>> query(QueryInfo queryInfo) async {
     var $res = await $js.chrome.tabGroups.query(queryInfo.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.TabGroup>()
-        .map((e) => TabGroup.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.TabGroup>()
+            .map((e) => TabGroup.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Modifies the properties of a group. Properties that are not specified in
@@ -46,27 +46,18 @@ class ChromeTabGroups {
     int groupId,
     UpdateProperties updateProperties,
   ) async {
-    var $res = await $js.chrome.tabGroups
-        .update(
-          groupId,
-          updateProperties.toJS,
-        )
-        .toDart;
+    var $res =
+        await $js.chrome.tabGroups
+            .update(groupId, updateProperties.toJS)
+            .toDart;
     return ($res as $js.TabGroup?)?.let(TabGroup.fromJS);
   }
 
   /// Moves the group and all its tabs within its window, or to a new window.
   /// [groupId] The ID of the group to move.
-  Future<TabGroup?> move(
-    int groupId,
-    MoveProperties moveProperties,
-  ) async {
-    var $res = await $js.chrome.tabGroups
-        .move(
-          groupId,
-          moveProperties.toJS,
-        )
-        .toDart;
+  Future<TabGroup?> move(int groupId, MoveProperties moveProperties) async {
+    var $res =
+        await $js.chrome.tabGroups.move(groupId, moveProperties.toJS).toDart;
     return ($res as $js.TabGroup?)?.let(TabGroup.fromJS);
   }
 
@@ -75,31 +66,42 @@ class ChromeTabGroups {
 
   /// Fired when a group is created.
   EventStream<TabGroup> get onCreated =>
-      $js.chrome.tabGroups.onCreated.asStream(($c) => ($js.TabGroup group) {
-            return $c(TabGroup.fromJS(group));
-          }.toJS);
+      $js.chrome.tabGroups.onCreated.asStream(
+        ($c) =>
+            ($js.TabGroup group) {
+              return $c(TabGroup.fromJS(group));
+            }.toJS,
+      );
 
   /// Fired when a group is updated.
   EventStream<TabGroup> get onUpdated =>
-      $js.chrome.tabGroups.onUpdated.asStream(($c) => ($js.TabGroup group) {
-            return $c(TabGroup.fromJS(group));
-          }.toJS);
+      $js.chrome.tabGroups.onUpdated.asStream(
+        ($c) =>
+            ($js.TabGroup group) {
+              return $c(TabGroup.fromJS(group));
+            }.toJS,
+      );
 
   /// Fired when a group is moved within a window. Move events are still fired
   /// for the individual tabs within the group, as well as for the group itself.
   /// This event is not fired when a group is moved between windows; instead, it
   /// will be removed from one window and created in another.
-  EventStream<TabGroup> get onMoved =>
-      $js.chrome.tabGroups.onMoved.asStream(($c) => ($js.TabGroup group) {
-            return $c(TabGroup.fromJS(group));
-          }.toJS);
+  EventStream<TabGroup> get onMoved => $js.chrome.tabGroups.onMoved.asStream(
+    ($c) =>
+        ($js.TabGroup group) {
+          return $c(TabGroup.fromJS(group));
+        }.toJS,
+  );
 
   /// Fired when a group is closed, either directly by the user or automatically
   /// because it contained zero tabs.
   EventStream<TabGroup> get onRemoved =>
-      $js.chrome.tabGroups.onRemoved.asStream(($c) => ($js.TabGroup group) {
-            return $c(TabGroup.fromJS(group));
-          }.toJS);
+      $js.chrome.tabGroups.onRemoved.asStream(
+        ($c) =>
+            ($js.TabGroup group) {
+              return $c(TabGroup.fromJS(group));
+            }.toJS,
+      );
 }
 
 /// The group's color.
@@ -145,12 +147,12 @@ class TabGroup {
     /// The ID of the window that contains the group.
     required int windowId,
   }) : _wrapped = $js.TabGroup(
-          id: id,
-          collapsed: collapsed,
-          color: color.toJS,
-          title: title,
-          windowId: windowId,
-        );
+         id: id,
+         collapsed: collapsed,
+         color: color.toJS,
+         title: title,
+         windowId: windowId,
+       );
 
   final $js.TabGroup _wrapped;
 
@@ -210,11 +212,11 @@ class QueryInfo {
     /// [current window](windows#current-window).
     int? windowId,
   }) : _wrapped = $js.QueryInfo(
-          collapsed: collapsed,
-          color: color?.toJS,
-          title: title,
-          windowId: windowId,
-        );
+         collapsed: collapsed,
+         color: color?.toJS,
+         title: title,
+         windowId: windowId,
+       );
 
   final $js.QueryInfo _wrapped;
 
@@ -263,10 +265,10 @@ class UpdateProperties {
     /// The title of the group.
     String? title,
   }) : _wrapped = $js.UpdateProperties(
-          collapsed: collapsed,
-          color: color?.toJS,
-          title: title,
-        );
+         collapsed: collapsed,
+         color: color?.toJS,
+         title: title,
+       );
 
   final $js.UpdateProperties _wrapped;
 
@@ -306,10 +308,7 @@ class MoveProperties {
     /// The position to move the group to. Use `-1` to place the group at the
     /// end of the window.
     required int index,
-  }) : _wrapped = $js.MoveProperties(
-          windowId: windowId,
-          index: index,
-        );
+  }) : _wrapped = $js.MoveProperties(windowId: windowId, index: index);
 
   final $js.MoveProperties _wrapped;
 

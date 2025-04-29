@@ -28,7 +28,7 @@ class ChromeIdle {
   Future<IdleState> queryState(int detectionIntervalInSeconds) async {
     var $res =
         await $js.chrome.idle.queryState(detectionIntervalInSeconds).toDart;
-    return IdleState.fromJS($res as $js.IdleState);
+    return IdleState.fromJS($res! as $js.IdleState);
   }
 
   /// Sets the interval, in seconds, used to determine when the system is in an
@@ -44,7 +44,7 @@ class ChromeIdle {
   /// locked automatically. Currently supported on Chrome OS only.
   Future<int> getAutoLockDelay() async {
     var $res = await $js.chrome.idle.getAutoLockDelay().toDart;
-    return $res as int;
+    return $res.dartify() as int? ?? 0;
   }
 
   /// Fired when the system changes to an active, idle or locked state. The
@@ -53,9 +53,12 @@ class ChromeIdle {
   /// any input for a specified number of seconds, and "active" when the user
   /// generates input on an idle system.
   EventStream<IdleState> get onStateChanged =>
-      $js.chrome.idle.onStateChanged.asStream(($c) => ($js.IdleState newState) {
-            return $c(IdleState.fromJS(newState));
-          }.toJS);
+      $js.chrome.idle.onStateChanged.asStream(
+        ($c) =>
+            ($js.IdleState newState) {
+              return $c(IdleState.fromJS(newState));
+            }.toJS,
+      );
 }
 
 enum IdleState {

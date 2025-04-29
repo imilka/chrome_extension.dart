@@ -37,11 +37,11 @@ class ChromeCookies {
   /// [details] Information to filter the cookies being retrieved.
   Future<List<Cookie>> getAll(GetAllDetails details) async {
     var $res = await $js.chrome.cookies.getAll(details.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.Cookie>()
-        .map((e) => Cookie.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.Cookie>()
+            .map((e) => Cookie.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Sets a cookie with the given cookie data; may overwrite equivalent cookies
@@ -55,18 +55,19 @@ class ChromeCookies {
   /// Deletes a cookie by name.
   Future<RemoveCallbackDetails?> remove(CookieDetails details) async {
     var $res = await $js.chrome.cookies.remove(details.toJS).toDart;
-    return ($res as $js.RemoveCallbackDetails?)
-        ?.let(RemoveCallbackDetails.fromJS);
+    return ($res as $js.RemoveCallbackDetails?)?.let(
+      RemoveCallbackDetails.fromJS,
+    );
   }
 
   /// Lists all existing cookie stores.
   Future<List<CookieStore>> getAllCookieStores() async {
     var $res = await $js.chrome.cookies.getAllCookieStores().toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.CookieStore>()
-        .map((e) => CookieStore.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.CookieStore>()
+            .map((e) => CookieStore.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Fired when a cookie is set or removed. As a special case, note that
@@ -75,10 +76,13 @@ class ChromeCookies {
   /// with "cause" of "overwrite" .  Afterwards, a new cookie is written with
   /// the updated values, generating a second notification with "cause"
   /// "explicit".
-  EventStream<OnChangedChangeInfo> get onChanged => $js.chrome.cookies.onChanged
-      .asStream(($c) => ($js.OnChangedChangeInfo changeInfo) {
-            return $c(OnChangedChangeInfo.fromJS(changeInfo));
-          }.toJS);
+  EventStream<OnChangedChangeInfo> get onChanged =>
+      $js.chrome.cookies.onChanged.asStream(
+        ($c) =>
+            ($js.OnChangedChangeInfo changeInfo) {
+              return $c(OnChangedChangeInfo.fromJS(changeInfo));
+            }.toJS,
+      );
 }
 
 /// A cookie's 'SameSite' state
@@ -133,11 +137,10 @@ enum OnChangedCause {
 class CookiePartitionKey {
   CookiePartitionKey.fromJS(this._wrapped);
 
-  CookiePartitionKey(
-      {
-      /// The top-level site the partitioned cookie is available in.
-      String? topLevelSite})
-      : _wrapped = $js.CookiePartitionKey(topLevelSite: topLevelSite);
+  CookiePartitionKey({
+    /// The top-level site the partitioned cookie is available in.
+    String? topLevelSite,
+  }) : _wrapped = $js.CookiePartitionKey(topLevelSite: topLevelSite);
 
   final $js.CookiePartitionKey _wrapped;
 
@@ -199,19 +202,19 @@ class Cookie {
     /// attribute.
     CookiePartitionKey? partitionKey,
   }) : _wrapped = $js.Cookie(
-          name: name,
-          value: value,
-          domain: domain,
-          hostOnly: hostOnly,
-          path: path,
-          secure: secure,
-          httpOnly: httpOnly,
-          sameSite: sameSite.toJS,
-          session: session,
-          expirationDate: expirationDate,
-          storeId: storeId,
-          partitionKey: partitionKey?.toJS,
-        );
+         name: name,
+         value: value,
+         domain: domain,
+         hostOnly: hostOnly,
+         path: path,
+         secure: secure,
+         httpOnly: httpOnly,
+         sameSite: sameSite.toJS,
+         session: session,
+         expirationDate: expirationDate,
+         storeId: storeId,
+         partitionKey: partitionKey?.toJS,
+       );
 
   final $js.Cookie _wrapped;
 
@@ -320,10 +323,7 @@ class CookieStore {
 
     /// Identifiers of all the browser tabs that share this cookie store.
     required List<int> tabIds,
-  }) : _wrapped = $js.CookieStore(
-          id: id,
-          tabIds: tabIds.toJSArray((e) => e),
-        );
+  }) : _wrapped = $js.CookieStore(id: id, tabIds: tabIds.toJSArray((e) => e));
 
   final $js.CookieStore _wrapped;
 
@@ -366,11 +366,11 @@ class CookieDetails {
     /// attribute.
     CookiePartitionKey? partitionKey,
   }) : _wrapped = $js.CookieDetails(
-          url: url,
-          name: name,
-          storeId: storeId,
-          partitionKey: partitionKey?.toJS,
-        );
+         url: url,
+         name: name,
+         storeId: storeId,
+         partitionKey: partitionKey?.toJS,
+       );
 
   final $js.CookieDetails _wrapped;
 
@@ -424,10 +424,10 @@ class OnChangedChangeInfo {
     /// The underlying reason behind the cookie's change.
     required OnChangedCause cause,
   }) : _wrapped = $js.OnChangedChangeInfo(
-          removed: removed,
-          cookie: cookie.toJS,
-          cause: cause.toJS,
-        );
+         removed: removed,
+         cookie: cookie.toJS,
+         cause: cause.toJS,
+       );
 
   final $js.OnChangedChangeInfo _wrapped;
 
@@ -487,15 +487,15 @@ class GetAllDetails {
     /// attribute.
     CookiePartitionKey? partitionKey,
   }) : _wrapped = $js.GetAllDetails(
-          url: url,
-          name: name,
-          domain: domain,
-          path: path,
-          secure: secure,
-          session: session,
-          storeId: storeId,
-          partitionKey: partitionKey?.toJS,
-        );
+         url: url,
+         name: name,
+         domain: domain,
+         path: path,
+         secure: secure,
+         session: session,
+         storeId: storeId,
+         partitionKey: partitionKey?.toJS,
+       );
 
   final $js.GetAllDetails _wrapped;
 
@@ -609,18 +609,18 @@ class SetDetails {
     /// attribute.
     CookiePartitionKey? partitionKey,
   }) : _wrapped = $js.SetDetails(
-          url: url,
-          name: name,
-          value: value,
-          domain: domain,
-          path: path,
-          secure: secure,
-          httpOnly: httpOnly,
-          sameSite: sameSite?.toJS,
-          expirationDate: expirationDate,
-          storeId: storeId,
-          partitionKey: partitionKey?.toJS,
-        );
+         url: url,
+         name: name,
+         value: value,
+         domain: domain,
+         path: path,
+         secure: secure,
+         httpOnly: httpOnly,
+         sameSite: sameSite?.toJS,
+         expirationDate: expirationDate,
+         storeId: storeId,
+         partitionKey: partitionKey?.toJS,
+       );
 
   final $js.SetDetails _wrapped;
 
@@ -730,11 +730,11 @@ class RemoveCallbackDetails {
     /// attribute.
     CookiePartitionKey? partitionKey,
   }) : _wrapped = $js.RemoveCallbackDetails(
-          url: url,
-          name: name,
-          storeId: storeId,
-          partitionKey: partitionKey?.toJS,
-        );
+         url: url,
+         name: name,
+         storeId: storeId,
+         partitionKey: partitionKey?.toJS,
+       );
 
   final $js.RemoveCallbackDetails _wrapped;
 

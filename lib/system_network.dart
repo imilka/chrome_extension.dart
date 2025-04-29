@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/system_network.dart' as $js;
 import 'system.dart';
@@ -28,10 +27,10 @@ class ChromeSystemNetwork {
   /// |callback| : Called when local adapter information is available.
   Future<List<NetworkInterface>> getNetworkInterfaces() async {
     var $res = await $js.chrome.system.network.getNetworkInterfaces().toDart;
-    return ($res as JSArray)
-        .toDart
-        .map((e) => NetworkInterface.fromJS(e as $js.NetworkInterface))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .map((e) => NetworkInterface.fromJS(e! as $js.NetworkInterface))
+            .toList() ??
+        [];
   }
 }
 
@@ -49,10 +48,10 @@ class NetworkInterface {
     /// The prefix length
     required int prefixLength,
   }) : _wrapped = $js.NetworkInterface(
-          name: name,
-          address: address,
-          prefixLength: prefixLength,
-        );
+         name: name,
+         address: address,
+         prefixLength: prefixLength,
+       );
 
   final $js.NetworkInterface _wrapped;
 

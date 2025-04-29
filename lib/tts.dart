@@ -31,16 +31,8 @@ class ChromeTts {
   /// [returns] Called right away, before speech finishes. Check
   /// [runtime.lastError] to make sure there were no errors. Use
   /// options.onEvent to get more detailed feedback.
-  Future<void> speak(
-    String utterance,
-    TtsOptions? options,
-  ) async {
-    await $js.chrome.tts
-        .speak(
-          utterance,
-          options?.toJS,
-        )
-        .toDart;
+  Future<void> speak(String utterance, TtsOptions? options) async {
+    await $js.chrome.tts.speak(utterance, options?.toJS).toDart;
   }
 
   /// Stops any current speech and flushes the queue of any pending utterances.
@@ -66,24 +58,26 @@ class ChromeTts {
   /// wasn't initiated by Chrome.
   Future<bool> isSpeaking() async {
     var $res = await $js.chrome.tts.isSpeaking().toDart;
-    return $res as bool;
+    return ($res?.dartify() as bool?) ?? false;
   }
 
   /// Gets an array of all available voices.
   Future<List<TtsVoice>> getVoices() async {
     var $res = await $js.chrome.tts.getVoices().toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.TtsVoice>()
-        .map((e) => TtsVoice.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.TtsVoice>()
+            .map((e) => TtsVoice.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Used to pass events back to the function calling speak().
-  EventStream<TtsEvent> get onEvent =>
-      $js.chrome.tts.onEvent.asStream(($c) => ($js.TtsEvent event) {
-            return $c(TtsEvent.fromJS(event));
-          }.toJS);
+  EventStream<TtsEvent> get onEvent => $js.chrome.tts.onEvent.asStream(
+    ($c) =>
+        ($js.TtsEvent event) {
+          return $c(TtsEvent.fromJS(event));
+        }.toJS,
+  );
 }
 
 enum EventType {
@@ -175,18 +169,18 @@ class TtsOptions {
     /// speaking the utterance.
     JSFunction? onEvent,
   }) : _wrapped = $js.TtsOptions(
-          enqueue: enqueue,
-          voiceName: voiceName,
-          extensionId: extensionId,
-          lang: lang,
-          gender: gender?.toJS,
-          rate: rate,
-          pitch: pitch,
-          volume: volume,
-          requiredEventTypes: requiredEventTypes?.toJSArray((e) => e),
-          desiredEventTypes: desiredEventTypes?.toJSArray((e) => e),
-          onEvent: onEvent,
-        );
+         enqueue: enqueue,
+         voiceName: voiceName,
+         extensionId: extensionId,
+         lang: lang,
+         gender: gender?.toJS,
+         rate: rate,
+         pitch: pitch,
+         volume: volume,
+         requiredEventTypes: requiredEventTypes?.toJSArray((e) => e),
+         desiredEventTypes: desiredEventTypes?.toJSArray((e) => e),
+         onEvent: onEvent,
+       );
 
   final $js.TtsOptions _wrapped;
 
@@ -322,13 +316,13 @@ class TtsEvent {
     /// be set to -1 if not set by the speech engine.
     int? length,
   }) : _wrapped = $js.TtsEvent(
-          type: type.toJS,
-          charIndex: charIndex,
-          errorMessage: errorMessage,
-          srcId: srcId,
-          isFinalEvent: isFinalEvent,
-          length: length,
-        );
+         type: type.toJS,
+         charIndex: charIndex,
+         errorMessage: errorMessage,
+         srcId: srcId,
+         isFinalEvent: isFinalEvent,
+         length: length,
+       );
 
   final $js.TtsEvent _wrapped;
 
@@ -416,13 +410,13 @@ class TtsVoice {
     /// All of the callback event types that this voice is capable of sending.
     List<EventType>? eventTypes,
   }) : _wrapped = $js.TtsVoice(
-          voiceName: voiceName,
-          lang: lang,
-          gender: gender?.toJS,
-          remote: remote,
-          extensionId: extensionId,
-          eventTypes: eventTypes?.toJSArray((e) => e.toJS),
-        );
+         voiceName: voiceName,
+         lang: lang,
+         gender: gender?.toJS,
+         remote: remote,
+         extensionId: extensionId,
+         eventTypes: eventTypes?.toJSArray((e) => e.toJS),
+       );
 
   final $js.TtsVoice _wrapped;
 
@@ -466,10 +460,11 @@ class TtsVoice {
   }
 
   /// All of the callback event types that this voice is capable of sending.
-  List<EventType>? get eventTypes => _wrapped.eventTypes?.toDart
-      .cast<$js.EventType>()
-      .map((e) => EventType.fromJS(e))
-      .toList();
+  List<EventType>? get eventTypes =>
+      _wrapped.eventTypes?.toDart
+          .cast<$js.EventType>()
+          .map((e) => EventType.fromJS(e))
+          .toList();
 
   set eventTypes(List<EventType>? v) {
     _wrapped.eventTypes = v?.toJSArray((e) => e.toJS);

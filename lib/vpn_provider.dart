@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_interop';
 import 'dart:typed_data';
 import 'src/internal_helpers.dart';
 import 'src/js/vpn_provider.dart' as $js;
@@ -29,7 +28,7 @@ class ChromeVpnProvider {
   /// error.
   Future<String> createConfig(String name) async {
     var $res = await $js.chrome.vpnProvider.createConfig(name).toDart;
-    return $res as String;
+    return ($res!.dartify() as String?) ?? '';
   }
 
   /// Destroys a VPN configuration created by the extension.
@@ -76,34 +75,40 @@ class ChromeVpnProvider {
   /// features.
   /// |error|: Error message when there is an error.
   EventStream<OnPlatformMessageEvent> get onPlatformMessage =>
-      $js.chrome.vpnProvider.onPlatformMessage.asStream(($c) => (
-            String id,
-            $js.PlatformMessage message,
-            String error,
-          ) {
-            return $c(OnPlatformMessageEvent(
-              id: id,
-              message: PlatformMessage.fromJS(message),
-              error: error,
-            ));
-          }.toJS);
+      $js.chrome.vpnProvider.onPlatformMessage.asStream(
+        ($c) =>
+            (String id, $js.PlatformMessage message, String error) {
+              return $c(
+                OnPlatformMessageEvent(
+                  id: id,
+                  message: PlatformMessage.fromJS(message),
+                  error: error,
+                ),
+              );
+            }.toJS,
+      );
 
   /// Triggered when an IP packet is received via the tunnel for the VPN
   /// session owned by the extension.
   /// |data|: The IP packet received from the platform.
   EventStream<ByteBuffer> get onPacketReceived =>
-      $js.chrome.vpnProvider.onPacketReceived
-          .asStream(($c) => (JSArrayBuffer data) {
-                return $c(data.toDart);
-              }.toJS);
+      $js.chrome.vpnProvider.onPacketReceived.asStream(
+        ($c) =>
+            (JSArrayBuffer data) {
+              return $c(data.toDart);
+            }.toJS,
+      );
 
   /// Triggered when a configuration created by the extension is removed by the
   /// platform.
   /// |id|: ID of the removed configuration.
   EventStream<String> get onConfigRemoved =>
-      $js.chrome.vpnProvider.onConfigRemoved.asStream(($c) => (String id) {
-            return $c(id);
-          }.toJS);
+      $js.chrome.vpnProvider.onConfigRemoved.asStream(
+        ($c) =>
+            (String id) {
+              return $c(id);
+            }.toJS,
+      );
 
   /// Triggered when a configuration is created by the platform for the
   /// extension.
@@ -111,17 +116,18 @@ class ChromeVpnProvider {
   /// |name|: Name of the configuration created.
   /// |data|: Configuration data provided by the administrator.
   EventStream<OnConfigCreatedEvent> get onConfigCreated =>
-      $js.chrome.vpnProvider.onConfigCreated.asStream(($c) => (
-            String id,
-            String name,
-            JSAny data,
-          ) {
-            return $c(OnConfigCreatedEvent(
-              id: id,
-              name: name,
-              data: data.toDartMap(),
-            ));
-          }.toJS);
+      $js.chrome.vpnProvider.onConfigCreated.asStream(
+        ($c) =>
+            (String id, String name, JSAny data) {
+              return $c(
+                OnConfigCreatedEvent(
+                  id: id,
+                  name: name,
+                  data: data.toDartMap(),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Triggered when there is a UI event for the extension. UI events are
   /// signals from the platform that indicate to the app that a UI dialog
@@ -129,15 +135,12 @@ class ChromeVpnProvider {
   /// |event|: The UI event that is triggered.
   /// |id|: ID of the configuration for which the UI event was triggered.
   EventStream<OnUIEventEvent> get onUIEvent =>
-      $js.chrome.vpnProvider.onUIEvent.asStream(($c) => (
-            $js.UIEvent event,
-            String? id,
-          ) {
-            return $c(OnUIEventEvent(
-              event: UIEvent.fromJS(event),
-              id: id,
-            ));
-          }.toJS);
+      $js.chrome.vpnProvider.onUIEvent.asStream(
+        ($c) =>
+            ($js.UIEvent event, String? id) {
+              return $c(OnUIEventEvent(event: UIEvent.fromJS(event), id: id));
+            }.toJS,
+      );
 }
 
 /// The enum is used by the platform to notify the client of the VPN session
@@ -290,15 +293,15 @@ class Parameters {
     /// feature based on browser support.
     String? reconnect,
   }) : _wrapped = $js.Parameters(
-          address: address,
-          broadcastAddress: broadcastAddress,
-          mtu: mtu,
-          exclusionList: exclusionList.toJSArray((e) => e),
-          inclusionList: inclusionList.toJSArray((e) => e),
-          domainSearch: domainSearch?.toJSArray((e) => e),
-          dnsServers: dnsServers.toJSArray((e) => e),
-          reconnect: reconnect,
-        );
+         address: address,
+         broadcastAddress: broadcastAddress,
+         mtu: mtu,
+         exclusionList: exclusionList.toJSArray((e) => e),
+         inclusionList: inclusionList.toJSArray((e) => e),
+         domainSearch: domainSearch?.toJSArray((e) => e),
+         dnsServers: dnsServers.toJSArray((e) => e),
+         reconnect: reconnect,
+       );
 
   final $js.Parameters _wrapped;
 
@@ -424,10 +427,7 @@ class OnConfigCreatedEvent {
 }
 
 class OnUIEventEvent {
-  OnUIEventEvent({
-    required this.event,
-    required this.id,
-  });
+  OnUIEventEvent({required this.event, required this.id});
 
   final UIEvent event;
 

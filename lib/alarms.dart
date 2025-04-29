@@ -46,16 +46,8 @@ class ChromeAlarms {
   /// repeating alarm, [periodInMinutes] is used as the default for
   /// [delayInMinutes].
   /// |callback|: Invoked when the alarm has been created.
-  Future<void> create(
-    String? name,
-    AlarmCreateInfo alarmInfo,
-  ) async {
-    await $js.chrome.alarms
-        .create(
-          name,
-          alarmInfo.toJS,
-        )
-        .toDart;
+  Future<void> create(String? name, AlarmCreateInfo alarmInfo) async {
+    await $js.chrome.alarms.create(name, alarmInfo.toJS).toDart;
   }
 
   /// Retrieves details about the specified alarm.
@@ -68,32 +60,34 @@ class ChromeAlarms {
   /// Gets an array of all the alarms.
   Future<List<Alarm>> getAll() async {
     var $res = await $js.chrome.alarms.getAll().toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.Alarm>()
-        .map((e) => Alarm.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.Alarm>()
+            .map((e) => Alarm.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Clears the alarm with the given name.
   /// |name|: The name of the alarm to clear. Defaults to the empty string.
   Future<bool> clear(String? name) async {
     var $res = await $js.chrome.alarms.clear(name).toDart;
-    return $res as bool;
+    return $res != null ? ($res.dartify() as bool? ?? false) : false;
   }
 
   /// Clears all alarms.
   Future<bool> clearAll() async {
     var $res = await $js.chrome.alarms.clearAll().toDart;
-    return $res as bool;
+    return $res != null ? ($res.dartify() as bool? ?? false) : false;
   }
 
   /// Fired when an alarm has elapsed. Useful for event pages.
   /// |alarm|: The alarm that has elapsed.
-  EventStream<Alarm> get onAlarm =>
-      $js.chrome.alarms.onAlarm.asStream(($c) => ($js.Alarm alarm) {
-            return $c(Alarm.fromJS(alarm));
-          }.toJS);
+  EventStream<Alarm> get onAlarm => $js.chrome.alarms.onAlarm.asStream(
+    ($c) =>
+        ($js.Alarm alarm) {
+          return $c(Alarm.fromJS(alarm));
+        }.toJS,
+  );
 }
 
 class Alarm {
@@ -112,10 +106,10 @@ class Alarm {
     /// [periodInMinutes] minutes.
     double? periodInMinutes,
   }) : _wrapped = $js.Alarm(
-          name: name,
-          scheduledTime: scheduledTime,
-          periodInMinutes: periodInMinutes,
-        );
+         name: name,
+         scheduledTime: scheduledTime,
+         periodInMinutes: periodInMinutes,
+       );
 
   final $js.Alarm _wrapped;
 
@@ -167,10 +161,10 @@ class AlarmCreateInfo {
     /// <!-- TODO: need minimum=0 -->
     double? periodInMinutes,
   }) : _wrapped = $js.AlarmCreateInfo(
-          when: when,
-          delayInMinutes: delayInMinutes,
-          periodInMinutes: periodInMinutes,
-        );
+         when: when,
+         delayInMinutes: delayInMinutes,
+         periodInMinutes: periodInMinutes,
+       );
 
   final $js.AlarmCreateInfo _wrapped;
 

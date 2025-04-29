@@ -25,7 +25,7 @@ class ChromeSystemMemory {
   /// Get physical memory information.
   Future<MemoryInfo> getInfo() async {
     var $res = await $js.chrome.system.memory.getInfo().toDart;
-    return MemoryInfo.fromJS($res as $js.MemoryInfo);
+    return MemoryInfo.fromJS($res! as $js.MemoryInfo);
   }
 }
 
@@ -39,9 +39,9 @@ class MemoryInfo {
     /// The amount of available capacity, in bytes.
     required double availableCapacity,
   }) : _wrapped = $js.MemoryInfo(
-          capacity: capacity,
-          availableCapacity: availableCapacity,
-        );
+         capacity: capacity,
+         availableCapacity: availableCapacity,
+       );
 
   final $js.MemoryInfo _wrapped;
 

@@ -26,7 +26,7 @@ class ChromeInstanceId {
   /// [runtime.lastError] for error when instanceID is empty.
   Future<String> getID() async {
     var $res = await $js.chrome.instanceId.getID().toDart;
-    return $res as String;
+    return $res.dartify() as String? ?? '';
   }
 
   /// Retrieves the time when the InstanceID has been generated. The creation
@@ -35,7 +35,7 @@ class ChromeInstanceId {
   /// [runtime.lastError] for error when creationTime is zero.
   Future<double> getCreationTime() async {
     var $res = await $js.chrome.instanceId.getCreationTime().toDart;
-    return $res as double;
+    return $res.dartify() as double? ?? 0;
   }
 
   /// Return a token that allows the authorized entity to access the service
@@ -45,7 +45,7 @@ class ChromeInstanceId {
   /// [runtime.lastError] for error when token is empty.
   Future<String> getToken(GetTokenParams getTokenParams) async {
     var $res = await $js.chrome.instanceId.getToken(getTokenParams.toJS).toDart;
-    return $res as String;
+    return $res.dartify() as String? ?? '';
   }
 
   /// Revokes a granted token.
@@ -66,9 +66,12 @@ class ChromeInstanceId {
 
   /// Fired when all the granted tokens need to be refreshed.
   EventStream<void> get onTokenRefresh =>
-      $js.chrome.instanceId.onTokenRefresh.asStream(($c) => () {
-            return $c(null);
-          }.toJS);
+      $js.chrome.instanceId.onTokenRefresh.asStream(
+        ($c) =>
+            () {
+              return $c(null);
+            }.toJS,
+      );
 }
 
 class GetTokenParams {
@@ -88,10 +91,10 @@ class GetTokenParams {
     /// associated with the token and may be used in processing the request.
     Map? options,
   }) : _wrapped = $js.GetTokenParams(
-          authorizedEntity: authorizedEntity,
-          scope: scope,
-          options: options?.jsify(),
-        );
+         authorizedEntity: authorizedEntity,
+         scope: scope,
+         options: options?.jsify(),
+       );
 
   final $js.GetTokenParams _wrapped;
 
@@ -133,9 +136,9 @@ class DeleteTokenParams {
     /// The scope that is used to obtain the token.
     required String scope,
   }) : _wrapped = $js.DeleteTokenParams(
-          authorizedEntity: authorizedEntity,
-          scope: scope,
-        );
+         authorizedEntity: authorizedEntity,
+         scope: scope,
+       );
 
   final $js.DeleteTokenParams _wrapped;
 

@@ -29,25 +29,24 @@ class ChromeCommands {
   /// [returns] Called to return the registered commands.
   Future<List<Command>> getAll() async {
     var result = await $js.chrome.commands.getAll().toDart;
-    var dartArray = (result as JSArray).toDart;
+    var dartArray = (result as JSArray?)?.toDart;
     if (dartArray == null) return [];
 
-    return List<$js.Command>.from(dartArray)
-        .map((e) => Command.fromJS(e))
-        .toList();
+    return List<$js.Command>.from(
+      dartArray,
+    ).map((e) => Command.fromJS(e)).toList();
   }
 
   /// Fired when a registered command is activated using a keyboard shortcut.
   EventStream<OnCommandEvent> get onCommand =>
-      $js.chrome.commands.onCommand.asStream(($c) => (
-            String command,
-            $js_tabs.Tab? tab,
-          ) {
-            return $c(OnCommandEvent(
-              command: command,
-              tab: tab?.let(Tab.fromJS),
-            ));
-          }.toJS);
+      $js.chrome.commands.onCommand.asStream(
+        ($c) =>
+            (String command, $js_tabs.Tab? tab) {
+              return $c(
+                OnCommandEvent(command: command, tab: tab?.let(Tab.fromJS)),
+              );
+            }.toJS,
+      );
 }
 
 class Command {
@@ -63,10 +62,10 @@ class Command {
     /// The shortcut active for this command, or blank if not active.
     String? shortcut,
   }) : _wrapped = $js.Command(
-          name: name,
-          description: description,
-          shortcut: shortcut,
-        );
+         name: name,
+         description: description,
+         shortcut: shortcut,
+       );
 
   final $js.Command _wrapped;
 
@@ -95,10 +94,7 @@ class Command {
 }
 
 class OnCommandEvent {
-  OnCommandEvent({
-    required this.command,
-    required this.tab,
-  });
+  OnCommandEvent({required this.command, required this.tab});
 
   final String command;
 

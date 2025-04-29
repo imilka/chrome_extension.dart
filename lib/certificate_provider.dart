@@ -71,10 +71,12 @@ class ChromeCertificateProvider {
   /// extension must call [setCertificates] with the updated list of
   /// certificates and the received `certificatesRequestId`.
   EventStream<CertificatesUpdateRequest> get onCertificatesUpdateRequested =>
-      $js.chrome.certificateProvider.onCertificatesUpdateRequested
-          .asStream(($c) => ($js.CertificatesUpdateRequest request) {
-                return $c(CertificatesUpdateRequest.fromJS(request));
-              }.toJS);
+      $js.chrome.certificateProvider.onCertificatesUpdateRequested.asStream(
+        ($c) =>
+            ($js.CertificatesUpdateRequest request) {
+              return $c(CertificatesUpdateRequest.fromJS(request));
+            }.toJS,
+      );
 
   /// This event fires every time the browser needs to sign a message using a
   /// certificate provided by this extension via [setCertificates].
@@ -82,36 +84,43 @@ class ChromeCertificateProvider {
   /// the appropriate algorithm and private key and return it by calling
   /// [reportSignature] with the received `signRequestId`.
   EventStream<SignatureRequest> get onSignatureRequested =>
-      $js.chrome.certificateProvider.onSignatureRequested
-          .asStream(($c) => ($js.SignatureRequest request) {
-                return $c(SignatureRequest.fromJS(request));
-              }.toJS);
+      $js.chrome.certificateProvider.onSignatureRequested.asStream(
+        ($c) =>
+            ($js.SignatureRequest request) {
+              return $c(SignatureRequest.fromJS(request));
+            }.toJS,
+      );
 
   /// This event fires every time the browser requests the current list of
   /// certificates provided by this extension. The extension must call
   /// `reportCallback` exactly once with the current list of
   /// certificates.
   EventStream<
-          void Function(
-            List<CertificateInfo>,
-            void Function(List<ByteBuffer>),
-          )>
-      get onCertificatesRequested =>
-          $js.chrome.certificateProvider.onCertificatesRequested
-              .asStream(($c) => ($js.CertificatesCallback reportCallback) {
-                    return $c((List<CertificateInfo> certificates,
-                        void Function(List<ByteBuffer>) callback) {
-                      reportCallback.callAsFunction(
-                          null,
-                          certificates.toJSArray((e) => e.toJS),
-                          (JSArray rejectedCertificates) {
-                            callback(rejectedCertificates.toDart
-                                .cast<JSArrayBuffer>()
-                                .map((e) => e.toDart)
-                                .toList());
-                          }.toJS);
-                    });
-                  }.toJS);
+    void Function(List<CertificateInfo>, void Function(List<ByteBuffer>))
+  >
+  get onCertificatesRequested =>
+      $js.chrome.certificateProvider.onCertificatesRequested.asStream(
+        ($c) =>
+            ($js.CertificatesCallback reportCallback) {
+              return $c((
+                List<CertificateInfo> certificates,
+                void Function(List<ByteBuffer>) callback,
+              ) {
+                reportCallback.callAsFunction(
+                  null,
+                  certificates.toJSArray((e) => e.toJS),
+                  (JSArray rejectedCertificates) {
+                    callback(
+                      rejectedCertificates.toDart
+                          .cast<JSArrayBuffer>()
+                          .map((e) => e.toDart)
+                          .toList(),
+                    );
+                  }.toJS,
+                );
+              });
+            }.toJS,
+      );
 
   /// This event fires every time the browser needs to sign a message using
   /// a certificate provided by this extension in reply to an
@@ -122,17 +131,19 @@ class ChromeCertificateProvider {
   /// exactly once.
   /// |request|: Contains the details about the sign request.
   EventStream<OnSignDigestRequestedEvent> get onSignDigestRequested =>
-      $js.chrome.certificateProvider.onSignDigestRequested.asStream(($c) => (
-            $js.SignRequest request,
-            $js.SignCallback reportCallback,
-          ) {
-            return $c(OnSignDigestRequestedEvent(
-              request: SignRequest.fromJS(request),
-              reportCallback: (ByteBuffer? signature) {
-                reportCallback.callAsFunction(null, signature?.toJS);
-              },
-            ));
-          }.toJS);
+      $js.chrome.certificateProvider.onSignDigestRequested.asStream(
+        ($c) =>
+            ($js.SignRequest request, $js.SignCallback reportCallback) {
+              return $c(
+                OnSignDigestRequestedEvent(
+                  request: SignRequest.fromJS(request),
+                  reportCallback: (ByteBuffer? signature) {
+                    reportCallback.callAsFunction(null, signature?.toJS);
+                  },
+                ),
+              );
+            }.toJS,
+      );
 }
 
 /// Types of supported cryptographic signature algorithms.
@@ -286,10 +297,8 @@ typedef ResultCallback = void Function(List<ByteBuffer>);
 /// invalid certificates, these will be ignored. All valid certificates are
 /// still registered for the extension. Chrome will call back with the list of
 /// rejected certificates, which might be empty.
-typedef CertificatesCallback = void Function(
-  List<CertificateInfo>,
-  void Function(List<ByteBuffer>),
-);
+typedef CertificatesCallback =
+    void Function(List<CertificateInfo>, void Function(List<ByteBuffer>));
 
 /// If no error occurred, this function must be called with the signature of
 /// the digest using the private key of the requested certificate.
@@ -313,9 +322,9 @@ class ClientCertificateInfo {
     /// asked for signatures using one of these algorithms.
     required List<Algorithm> supportedAlgorithms,
   }) : _wrapped = $js.ClientCertificateInfo(
-          certificateChain: certificateChain.toJSArray((e) => e.toJS),
-          supportedAlgorithms: supportedAlgorithms.toJSArray((e) => e.toJS),
-        );
+         certificateChain: certificateChain.toJSArray((e) => e.toJS),
+         supportedAlgorithms: supportedAlgorithms.toJSArray((e) => e.toJS),
+       );
 
   final $js.ClientCertificateInfo _wrapped;
 
@@ -324,10 +333,11 @@ class ClientCertificateInfo {
   /// The array must contain the DER encoding of the X.509 client certificate
   /// as its first element.
   /// This must include exactly one certificate.
-  List<ByteBuffer> get certificateChain => _wrapped.certificateChain.toDart
-      .cast<JSArrayBuffer>()
-      .map((e) => e.toDart)
-      .toList();
+  List<ByteBuffer> get certificateChain =>
+      _wrapped.certificateChain.toDart
+          .cast<JSArrayBuffer>()
+          .map((e) => e.toDart)
+          .toList();
 
   set certificateChain(List<ByteBuffer> v) {
     _wrapped.certificateChain = v.toJSArray((e) => e.toJS);
@@ -335,10 +345,11 @@ class ClientCertificateInfo {
 
   /// All algorithms supported for this certificate. The extension will only be
   /// asked for signatures using one of these algorithms.
-  List<Algorithm> get supportedAlgorithms => _wrapped.supportedAlgorithms.toDart
-      .cast<$js.Algorithm>()
-      .map((e) => Algorithm.fromJS(e))
-      .toList();
+  List<Algorithm> get supportedAlgorithms =>
+      _wrapped.supportedAlgorithms.toDart
+          .cast<$js.Algorithm>()
+          .map((e) => Algorithm.fromJS(e))
+          .toList();
 
   set supportedAlgorithms(List<Algorithm> v) {
     _wrapped.supportedAlgorithms = v.toJSArray((e) => e.toJS);
@@ -362,10 +373,10 @@ class SetCertificatesDetails {
     /// List of currently available client certificates.
     required List<ClientCertificateInfo> clientCertificates,
   }) : _wrapped = $js.SetCertificatesDetails(
-          certificatesRequestId: certificatesRequestId,
-          error: error?.toJS,
-          clientCertificates: clientCertificates.toJSArray((e) => e.toJS),
-        );
+         certificatesRequestId: certificatesRequestId,
+         error: error?.toJS,
+         clientCertificates: clientCertificates.toJSArray((e) => e.toJS),
+       );
 
   final $js.SetCertificatesDetails _wrapped;
 
@@ -403,12 +414,12 @@ class SetCertificatesDetails {
 class CertificatesUpdateRequest {
   CertificatesUpdateRequest.fromJS(this._wrapped);
 
-  CertificatesUpdateRequest(
-      {
-      /// Request identifier to be passed to [setCertificates].
-      required int certificatesRequestId})
-      : _wrapped = $js.CertificatesUpdateRequest(
-            certificatesRequestId: certificatesRequestId);
+  CertificatesUpdateRequest({
+    /// Request identifier to be passed to [setCertificates].
+    required int certificatesRequestId,
+  }) : _wrapped = $js.CertificatesUpdateRequest(
+         certificatesRequestId: certificatesRequestId,
+       );
 
   final $js.CertificatesUpdateRequest _wrapped;
 
@@ -439,11 +450,11 @@ class SignatureRequest {
     /// `input` using the associated private key.
     required ByteBuffer certificate,
   }) : _wrapped = $js.SignatureRequest(
-          signRequestId: signRequestId,
-          input: input.toJS,
-          algorithm: algorithm.toJS,
-          certificate: certificate.toJS,
-        );
+         signRequestId: signRequestId,
+         input: input.toJS,
+         algorithm: algorithm.toJS,
+         certificate: certificate.toJS,
+       );
 
   final $js.SignatureRequest _wrapped;
 
@@ -493,10 +504,10 @@ class ReportSignatureDetails {
     /// The signature, if successfully generated.
     ByteBuffer? signature,
   }) : _wrapped = $js.ReportSignatureDetails(
-          signRequestId: signRequestId,
-          error: error?.toJS,
-          signature: signature?.toJS,
-        );
+         signRequestId: signRequestId,
+         error: error?.toJS,
+         signature: signature?.toJS,
+       );
 
   final $js.ReportSignatureDetails _wrapped;
 
@@ -539,9 +550,9 @@ class CertificateInfo {
     /// hash algorithms. This should be in order of decreasing hash preference.
     required List<Hash> supportedHashes,
   }) : _wrapped = $js.CertificateInfo(
-          certificate: certificate.toJS,
-          supportedHashes: supportedHashes.toJSArray((e) => e.toJS),
-        );
+         certificate: certificate.toJS,
+         supportedHashes: supportedHashes.toJSArray((e) => e.toJS),
+       );
 
   final $js.CertificateInfo _wrapped;
 
@@ -558,10 +569,11 @@ class CertificateInfo {
   /// Must be set to all hashes supported for this certificate. This extension
   /// will only be asked for signatures of digests calculated with one of these
   /// hash algorithms. This should be in order of decreasing hash preference.
-  List<Hash> get supportedHashes => _wrapped.supportedHashes.toDart
-      .cast<$js.Hash>()
-      .map((e) => Hash.fromJS(e))
-      .toList();
+  List<Hash> get supportedHashes =>
+      _wrapped.supportedHashes.toDart
+          .cast<$js.Hash>()
+          .map((e) => Hash.fromJS(e))
+          .toList();
 
   set supportedHashes(List<Hash> v) {
     _wrapped.supportedHashes = v.toJSArray((e) => e.toJS);
@@ -587,11 +599,11 @@ class SignRequest {
     /// `digest` using the associated private key.
     required ByteBuffer certificate,
   }) : _wrapped = $js.SignRequest(
-          signRequestId: signRequestId,
-          digest: digest.toJS,
-          hash: hash.toJS,
-          certificate: certificate.toJS,
-        );
+         signRequestId: signRequestId,
+         digest: digest.toJS,
+         hash: hash.toJS,
+         certificate: certificate.toJS,
+       );
 
   final $js.SignRequest _wrapped;
 
@@ -649,11 +661,11 @@ class RequestPinDetails {
     /// exceeded.
     int? attemptsLeft,
   }) : _wrapped = $js.RequestPinDetails(
-          signRequestId: signRequestId,
-          requestType: requestType?.toJS,
-          errorType: errorType?.toJS,
-          attemptsLeft: attemptsLeft,
-        );
+         signRequestId: signRequestId,
+         requestType: requestType?.toJS,
+         errorType: errorType?.toJS,
+         attemptsLeft: attemptsLeft,
+       );
 
   final $js.RequestPinDetails _wrapped;
 
@@ -707,9 +719,9 @@ class StopPinRequestDetails {
     /// e.g. MAX_ATTEMPTS_EXCEEDED.
     PinRequestErrorType? errorType,
   }) : _wrapped = $js.StopPinRequestDetails(
-          signRequestId: signRequestId,
-          errorType: errorType?.toJS,
-        );
+         signRequestId: signRequestId,
+         errorType: errorType?.toJS,
+       );
 
   final $js.StopPinRequestDetails _wrapped;
 
@@ -736,12 +748,11 @@ class StopPinRequestDetails {
 class PinResponseDetails {
   PinResponseDetails.fromJS(this._wrapped);
 
-  PinResponseDetails(
-      {
-      /// The code provided by the user. Empty if user closed the dialog or some
-      /// other error occurred.
-      String? userInput})
-      : _wrapped = $js.PinResponseDetails(userInput: userInput);
+  PinResponseDetails({
+    /// The code provided by the user. Empty if user closed the dialog or some
+    /// other error occurred.
+    String? userInput,
+  }) : _wrapped = $js.PinResponseDetails(userInput: userInput);
 
   final $js.PinResponseDetails _wrapped;
 

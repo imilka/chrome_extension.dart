@@ -24,61 +24,62 @@ class ChromeBookmarks {
   /// Retrieves the specified BookmarkTreeNode(s).
   /// [idOrIdList] A single string-valued id, or an array of string-valued ids
   Future<List<BookmarkTreeNode>> get(Object idOrIdList) async {
-    var $res = await $js.chrome.bookmarks
-        .get(switch (idOrIdList) {
+    var $res =
+        await $js.chrome.bookmarks.get(switch (idOrIdList) {
           String() => idOrIdList.jsify()!,
           List() => idOrIdList.toJSArrayString(),
-          _ => throw UnsupportedError(
-              'Received type: ${idOrIdList.runtimeType}. Supported types are: String, List<String>')
-        })
-        .toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.BookmarkTreeNode>()
-        .map((e) => BookmarkTreeNode.fromJS(e))
-        .toList();
+          _ =>
+            throw UnsupportedError(
+              'Received type: ${idOrIdList.runtimeType}. Supported types are: String, List<String>',
+            ),
+        }).toDart;
+    return ($res as JSArray?)?.toDart
+            .cast<$js.BookmarkTreeNode>()
+            .map((e) => BookmarkTreeNode.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Retrieves the children of the specified BookmarkTreeNode id.
   Future<List<BookmarkTreeNode>> getChildren(String id) async {
     var $res = await $js.chrome.bookmarks.getChildren(id).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.BookmarkTreeNode>()
-        .map((e) => BookmarkTreeNode.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.BookmarkTreeNode>()
+            .map((e) => BookmarkTreeNode.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Retrieves the recently added bookmarks.
   /// [numberOfItems] The maximum number of items to return.
   Future<List<BookmarkTreeNode>> getRecent(int numberOfItems) async {
     var $res = await $js.chrome.bookmarks.getRecent(numberOfItems).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.BookmarkTreeNode>()
-        .map((e) => BookmarkTreeNode.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.BookmarkTreeNode>()
+            .map((e) => BookmarkTreeNode.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Retrieves the entire Bookmarks hierarchy.
   Future<List<BookmarkTreeNode>> getTree() async {
     var $res = await $js.chrome.bookmarks.getTree().toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.BookmarkTreeNode>()
-        .map((e) => BookmarkTreeNode.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.BookmarkTreeNode>()
+            .map((e) => BookmarkTreeNode.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Retrieves part of the Bookmarks hierarchy, starting at the specified node.
   /// [id] The ID of the root of the subtree to retrieve.
   Future<List<BookmarkTreeNode>> getSubTree(String id) async {
     var $res = await $js.chrome.bookmarks.getSubTree(id).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.BookmarkTreeNode>()
-        .map((e) => BookmarkTreeNode.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.BookmarkTreeNode>()
+            .map((e) => BookmarkTreeNode.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Searches for BookmarkTreeNodes matching the given query. Queries specified
@@ -89,56 +90,41 @@ class ChromeBookmarks {
   /// properties `query`, `url`, and `title` may be specified and bookmarks
   /// matching all specified properties will be produced.
   Future<List<BookmarkTreeNode>> search(Object query) async {
-    var $res = await $js.chrome.bookmarks
-        .search(switch (query) {
+    var $res =
+        await $js.chrome.bookmarks.search(switch (query) {
           String() => query.jsify()!,
           SearchQuery() => (query.toJS as JSAny),
-          _ => throw UnsupportedError(
-              'Received type: ${query.runtimeType}. Supported types are: String, SearchQuery')
-        })
-        .toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.BookmarkTreeNode>()
-        .map((e) => BookmarkTreeNode.fromJS(e))
-        .toList();
+          _ =>
+            throw UnsupportedError(
+              'Received type: ${query.runtimeType}. Supported types are: String, SearchQuery',
+            ),
+        }).toDart;
+    return ($res as JSArray?)?.toDart
+            .cast<$js.BookmarkTreeNode>()
+            .map((e) => BookmarkTreeNode.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Creates a bookmark or folder under the specified parentId.  If url is NULL
   /// or missing, it will be a folder.
   Future<BookmarkTreeNode> create(CreateDetails bookmark) async {
     var $res = await $js.chrome.bookmarks.create(bookmark.toJS).toDart;
-    return BookmarkTreeNode.fromJS($res as $js.BookmarkTreeNode);
+    return BookmarkTreeNode.fromJS($res! as $js.BookmarkTreeNode);
   }
 
   /// Moves the specified BookmarkTreeNode to the provided location.
-  Future<BookmarkTreeNode> move(
-    String id,
-    MoveDestination destination,
-  ) async {
-    var $res = await $js.chrome.bookmarks
-        .move(
-          id,
-          destination.toJS,
-        )
-        .toDart;
-    return BookmarkTreeNode.fromJS($res as $js.BookmarkTreeNode);
+  Future<BookmarkTreeNode> move(String id, MoveDestination destination) async {
+    var $res = await $js.chrome.bookmarks.move(id, destination.toJS).toDart;
+    return BookmarkTreeNode.fromJS($res! as $js.BookmarkTreeNode);
   }
 
   /// Updates the properties of a bookmark or folder. Specify only the
   /// properties that you want to change; unspecified properties will be left
   /// unchanged.  **Note:** Currently, only 'title' and 'url' are supported.
-  Future<BookmarkTreeNode> update(
-    String id,
-    UpdateChanges changes,
-  ) async {
-    var $res = await $js.chrome.bookmarks
-        .update(
-          id,
-          changes.toJS,
-        )
-        .toDart;
-    return BookmarkTreeNode.fromJS($res as $js.BookmarkTreeNode);
+  Future<BookmarkTreeNode> update(String id, UpdateChanges changes) async {
+    var $res = await $js.chrome.bookmarks.update(id, changes.toJS).toDart;
+    return BookmarkTreeNode.fromJS($res! as $js.BookmarkTreeNode);
   }
 
   /// Removes a bookmark or an empty bookmark folder.
@@ -159,81 +145,99 @@ class ChromeBookmarks {
 
   /// Fired when a bookmark or folder is created.
   EventStream<OnCreatedEvent> get onCreated =>
-      $js.chrome.bookmarks.onCreated.asStream(($c) => (
-            String id,
-            $js.BookmarkTreeNode bookmark,
-          ) {
-            return $c(OnCreatedEvent(
-              id: id,
-              bookmark: BookmarkTreeNode.fromJS(bookmark),
-            ));
-          }.toJS);
+      $js.chrome.bookmarks.onCreated.asStream(
+        ($c) =>
+            (String id, $js.BookmarkTreeNode bookmark) {
+              return $c(
+                OnCreatedEvent(
+                  id: id,
+                  bookmark: BookmarkTreeNode.fromJS(bookmark),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a bookmark or folder is removed.  When a folder is removed
   /// recursively, a single notification is fired for the folder, and none for
   /// its contents.
   EventStream<OnRemovedEvent> get onRemoved =>
-      $js.chrome.bookmarks.onRemoved.asStream(($c) => (
-            String id,
-            $js.OnRemovedRemoveInfo removeInfo,
-          ) {
-            return $c(OnRemovedEvent(
-              id: id,
-              removeInfo: OnRemovedRemoveInfo.fromJS(removeInfo),
-            ));
-          }.toJS);
+      $js.chrome.bookmarks.onRemoved.asStream(
+        ($c) =>
+            (String id, $js.OnRemovedRemoveInfo removeInfo) {
+              return $c(
+                OnRemovedEvent(
+                  id: id,
+                  removeInfo: OnRemovedRemoveInfo.fromJS(removeInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a bookmark or folder changes.  **Note:** Currently, only title
   /// and url changes trigger this.
   EventStream<OnChangedEvent> get onChanged =>
-      $js.chrome.bookmarks.onChanged.asStream(($c) => (
-            String id,
-            $js.OnChangedChangeInfo changeInfo,
-          ) {
-            return $c(OnChangedEvent(
-              id: id,
-              changeInfo: OnChangedChangeInfo.fromJS(changeInfo),
-            ));
-          }.toJS);
+      $js.chrome.bookmarks.onChanged.asStream(
+        ($c) =>
+            (String id, $js.OnChangedChangeInfo changeInfo) {
+              return $c(
+                OnChangedEvent(
+                  id: id,
+                  changeInfo: OnChangedChangeInfo.fromJS(changeInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a bookmark or folder is moved to a different parent folder.
   EventStream<OnMovedEvent> get onMoved =>
-      $js.chrome.bookmarks.onMoved.asStream(($c) => (
-            String id,
-            $js.OnMovedMoveInfo moveInfo,
-          ) {
-            return $c(OnMovedEvent(
-              id: id,
-              moveInfo: OnMovedMoveInfo.fromJS(moveInfo),
-            ));
-          }.toJS);
+      $js.chrome.bookmarks.onMoved.asStream(
+        ($c) =>
+            (String id, $js.OnMovedMoveInfo moveInfo) {
+              return $c(
+                OnMovedEvent(
+                  id: id,
+                  moveInfo: OnMovedMoveInfo.fromJS(moveInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when the children of a folder have changed their order due to the
   /// order being sorted in the UI.  This is not called as a result of a move().
   EventStream<OnChildrenReorderedEvent> get onChildrenReordered =>
-      $js.chrome.bookmarks.onChildrenReordered.asStream(($c) => (
-            String id,
-            $js.OnChildrenReorderedReorderInfo reorderInfo,
-          ) {
-            return $c(OnChildrenReorderedEvent(
-              id: id,
-              reorderInfo: OnChildrenReorderedReorderInfo.fromJS(reorderInfo),
-            ));
-          }.toJS);
+      $js.chrome.bookmarks.onChildrenReordered.asStream(
+        ($c) =>
+            (String id, $js.OnChildrenReorderedReorderInfo reorderInfo) {
+              return $c(
+                OnChildrenReorderedEvent(
+                  id: id,
+                  reorderInfo: OnChildrenReorderedReorderInfo.fromJS(
+                    reorderInfo,
+                  ),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a bookmark import session is begun.  Expensive observers should
   /// ignore onCreated updates until onImportEnded is fired.  Observers should
   /// still handle other notifications immediately.
   EventStream<void> get onImportBegan =>
-      $js.chrome.bookmarks.onImportBegan.asStream(($c) => () {
-            return $c(null);
-          }.toJS);
+      $js.chrome.bookmarks.onImportBegan.asStream(
+        ($c) =>
+            () {
+              return $c(null);
+            }.toJS,
+      );
 
   /// Fired when a bookmark import session is ended.
   EventStream<void> get onImportEnded =>
-      $js.chrome.bookmarks.onImportEnded.asStream(($c) => () {
-            return $c(null);
-          }.toJS);
+      $js.chrome.bookmarks.onImportEnded.asStream(
+        ($c) =>
+            () {
+              return $c(null);
+            }.toJS,
+      );
 }
 
 /// Indicates the reason why this node is unmodifiable. The [managed] value
@@ -295,17 +299,17 @@ class BookmarkTreeNode {
     /// An ordered list of children of this node.
     List<BookmarkTreeNode>? children,
   }) : _wrapped = $js.BookmarkTreeNode(
-          id: id,
-          parentId: parentId,
-          index: index,
-          url: url,
-          title: title,
-          dateAdded: dateAdded,
-          dateLastUsed: dateLastUsed,
-          dateGroupModified: dateGroupModified,
-          unmodifiable: unmodifiable?.toJS,
-          children: children?.toJSArray((e) => e.toJS),
-        );
+         id: id,
+         parentId: parentId,
+         index: index,
+         url: url,
+         title: title,
+         dateAdded: dateAdded,
+         dateLastUsed: dateLastUsed,
+         dateGroupModified: dateGroupModified,
+         unmodifiable: unmodifiable?.toJS,
+         children: children?.toJSArray((e) => e.toJS),
+       );
 
   final $js.BookmarkTreeNode _wrapped;
 
@@ -383,10 +387,11 @@ class BookmarkTreeNode {
   }
 
   /// An ordered list of children of this node.
-  List<BookmarkTreeNode>? get children => _wrapped.children?.toDart
-      .cast<$js.BookmarkTreeNode>()
-      .map((e) => BookmarkTreeNode.fromJS(e))
-      .toList();
+  List<BookmarkTreeNode>? get children =>
+      _wrapped.children?.toDart
+          .cast<$js.BookmarkTreeNode>()
+          .map((e) => BookmarkTreeNode.fromJS(e))
+          .toList();
 
   set children(List<BookmarkTreeNode>? v) {
     _wrapped.children = v?.toJSArray((e) => e.toJS);
@@ -403,11 +408,11 @@ class CreateDetails {
     String? title,
     String? url,
   }) : _wrapped = $js.CreateDetails(
-          parentId: parentId,
-          index: index,
-          title: title,
-          url: url,
-        );
+         parentId: parentId,
+         index: index,
+         title: title,
+         url: url,
+       );
 
   final $js.CreateDetails _wrapped;
 
@@ -447,10 +452,10 @@ class OnRemovedRemoveInfo {
     required int index,
     required BookmarkTreeNode node,
   }) : _wrapped = $js.OnRemovedRemoveInfo(
-          parentId: parentId,
-          index: index,
-          node: node.toJS,
-        );
+         parentId: parentId,
+         index: index,
+         node: node.toJS,
+       );
 
   final $js.OnRemovedRemoveInfo _wrapped;
 
@@ -478,13 +483,8 @@ class OnRemovedRemoveInfo {
 class OnChangedChangeInfo {
   OnChangedChangeInfo.fromJS(this._wrapped);
 
-  OnChangedChangeInfo({
-    required String title,
-    String? url,
-  }) : _wrapped = $js.OnChangedChangeInfo(
-          title: title,
-          url: url,
-        );
+  OnChangedChangeInfo({required String title, String? url})
+    : _wrapped = $js.OnChangedChangeInfo(title: title, url: url);
 
   final $js.OnChangedChangeInfo _wrapped;
 
@@ -512,11 +512,11 @@ class OnMovedMoveInfo {
     required String oldParentId,
     required int oldIndex,
   }) : _wrapped = $js.OnMovedMoveInfo(
-          parentId: parentId,
-          index: index,
-          oldParentId: oldParentId,
-          oldIndex: oldIndex,
-        );
+         parentId: parentId,
+         index: index,
+         oldParentId: oldParentId,
+         oldIndex: oldIndex,
+       );
 
   final $js.OnMovedMoveInfo _wrapped;
 
@@ -551,8 +551,9 @@ class OnChildrenReorderedReorderInfo {
   OnChildrenReorderedReorderInfo.fromJS(this._wrapped);
 
   OnChildrenReorderedReorderInfo({required List<String> childIds})
-      : _wrapped = $js.OnChildrenReorderedReorderInfo(
-            childIds: childIds.toJSArray((e) => e));
+    : _wrapped = $js.OnChildrenReorderedReorderInfo(
+        childIds: childIds.toJSArray((e) => e),
+      );
 
   final $js.OnChildrenReorderedReorderInfo _wrapped;
 
@@ -580,11 +581,7 @@ class SearchQuery {
 
     /// The title of the bookmark; matches verbatim.
     String? title,
-  }) : _wrapped = $js.SearchQuery(
-          query: query,
-          url: url,
-          title: title,
-        );
+  }) : _wrapped = $js.SearchQuery(query: query, url: url, title: title);
 
   final $js.SearchQuery _wrapped;
 
@@ -616,13 +613,8 @@ class SearchQuery {
 class MoveDestination {
   MoveDestination.fromJS(this._wrapped);
 
-  MoveDestination({
-    String? parentId,
-    int? index,
-  }) : _wrapped = $js.MoveDestination(
-          parentId: parentId,
-          index: index,
-        );
+  MoveDestination({String? parentId, int? index})
+    : _wrapped = $js.MoveDestination(parentId: parentId, index: index);
 
   final $js.MoveDestination _wrapped;
 
@@ -644,13 +636,8 @@ class MoveDestination {
 class UpdateChanges {
   UpdateChanges.fromJS(this._wrapped);
 
-  UpdateChanges({
-    String? title,
-    String? url,
-  }) : _wrapped = $js.UpdateChanges(
-          title: title,
-          url: url,
-        );
+  UpdateChanges({String? title, String? url})
+    : _wrapped = $js.UpdateChanges(title: title, url: url);
 
   final $js.UpdateChanges _wrapped;
 
@@ -670,10 +657,7 @@ class UpdateChanges {
 }
 
 class OnCreatedEvent {
-  OnCreatedEvent({
-    required this.id,
-    required this.bookmark,
-  });
+  OnCreatedEvent({required this.id, required this.bookmark});
 
   final String id;
 
@@ -681,10 +665,7 @@ class OnCreatedEvent {
 }
 
 class OnRemovedEvent {
-  OnRemovedEvent({
-    required this.id,
-    required this.removeInfo,
-  });
+  OnRemovedEvent({required this.id, required this.removeInfo});
 
   final String id;
 
@@ -692,10 +673,7 @@ class OnRemovedEvent {
 }
 
 class OnChangedEvent {
-  OnChangedEvent({
-    required this.id,
-    required this.changeInfo,
-  });
+  OnChangedEvent({required this.id, required this.changeInfo});
 
   final String id;
 
@@ -703,10 +681,7 @@ class OnChangedEvent {
 }
 
 class OnMovedEvent {
-  OnMovedEvent({
-    required this.id,
-    required this.moveInfo,
-  });
+  OnMovedEvent({required this.id, required this.moveInfo});
 
   final String id;
 
@@ -714,10 +689,7 @@ class OnMovedEvent {
 }
 
 class OnChildrenReorderedEvent {
-  OnChildrenReorderedEvent({
-    required this.id,
-    required this.reorderInfo,
-  });
+  OnChildrenReorderedEvent({required this.id, required this.reorderInfo});
 
   final String id;
 

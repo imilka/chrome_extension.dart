@@ -24,18 +24,17 @@ class ChromePageCapture {
   /// [returns] Called when the MHTML has been generated.
   Future<ByteBuffer?> saveAsMHTML(SaveAsMhtmlDetails details) async {
     var $res = await $js.chrome.pageCapture.saveAsMHTML(details.toJS).toDart;
-    return ($res as JSArrayBuffer?)?.toDart;
+    return $res?.dartify() as ByteBuffer?;
   }
 }
 
 class SaveAsMhtmlDetails {
   SaveAsMhtmlDetails.fromJS(this._wrapped);
 
-  SaveAsMhtmlDetails(
-      {
-      /// The id of the tab to save as MHTML.
-      required int tabId})
-      : _wrapped = $js.SaveAsMhtmlDetails(tabId: tabId);
+  SaveAsMhtmlDetails({
+    /// The id of the tab to save as MHTML.
+    required int tabId,
+  }) : _wrapped = $js.SaveAsMhtmlDetails(tabId: tabId);
 
   final $js.SaveAsMhtmlDetails _wrapped;
 

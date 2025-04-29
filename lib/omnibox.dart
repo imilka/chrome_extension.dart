@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/omnibox.dart' as $js;
 

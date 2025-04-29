@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/offscreen.dart' as $js;
 
@@ -43,7 +42,7 @@ class ChromeOffscreen {
   /// active offscreen document.
   Future<bool> hasDocument() async {
     var $res = await $js.chrome.offscreen.hasDocument().toDart;
-    return $res as bool;
+    return ($res).dartify() as bool? ?? false;
   }
 }
 

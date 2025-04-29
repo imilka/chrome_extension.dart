@@ -8,7 +8,6 @@ import 'src/internal_helpers.dart';
 import 'src/js/tabs.dart' as $js;
 import 'src/js/windows.dart' as $js_windows;
 import 'windows.dart';
-import 'dart:js_interop';
 
 export 'src/chrome.dart' show chrome, EventStream;
 
@@ -28,7 +27,7 @@ class ChromeTabs {
   /// Retrieves details about the specified tab.
   Future<Tab> get(int tabId) async {
     var $res = await $js.chrome.tabs.get(tabId).toDart;
-    return Tab.fromJS($res as $js.Tab);
+    return Tab.fromJS($res! as $js.Tab);
   }
 
   /// Gets the tab that this script call is being made from. Returns `undefined`
@@ -46,14 +45,8 @@ class ChromeTabs {
   /// [returns] A port that can be used to communicate with the content
   /// scripts running in the specified tab. The port's [runtime.Port] event is
   /// fired if the tab closes or does not exist.
-  Port connect(
-    int tabId,
-    ConnectInfo? connectInfo,
-  ) {
-    return Port.fromJS($js.chrome.tabs.connect(
-      tabId,
-      connectInfo?.toJS,
-    ));
+  Port connect(int tabId, ConnectInfo? connectInfo) {
+    return Port.fromJS($js.chrome.tabs.connect(tabId, connectInfo?.toJS));
   }
 
   /// Sends a single request to the content script(s) in the specified tab, with
@@ -61,17 +54,10 @@ class ChromeTabs {
   /// [extension.onRequest] event is fired in each content script running in the
   /// specified tab for the current extension.
   @Deprecated(r'Please use $(ref:runtime.sendMessage).')
-  Future<Object> sendRequest(
-    int tabId,
-    Object request,
-  ) async {
-    var $res = await $js.chrome.tabs
-        .sendRequest(
-          tabId,
-          request.jsify()!,
-        )
-        .toDart;
-    return ($res as JSAny).dartify()!;
+  Future<Object> sendRequest(int tabId, Object request) async {
+    var $res =
+        await $js.chrome.tabs.sendRequest(tabId, request.jsify()!).toDart;
+    return ($res).dartify()!;
   }
 
   /// Sends a single message to the content script(s) in the specified tab, with
@@ -85,14 +71,11 @@ class ChromeTabs {
     Object message,
     SendMessageOptions? options,
   ) async {
-    var $res = await $js.chrome.tabs
-        .sendMessage(
-          tabId,
-          message.jsify()!,
-          options?.toJS,
-        )
-        .toDart;
-    return ($res as JSAny).dartify()!;
+    var $res =
+        await $js.chrome.tabs
+            .sendMessage(tabId, message.jsify()!, options?.toJS)
+            .toDart;
+    return ($res).dartify()!;
   }
 
   /// Gets the tab that is selected in the specified window.
@@ -100,26 +83,27 @@ class ChromeTabs {
   @Deprecated(r'Please use $(ref:tabs.query) <code>{active: true}</code>.')
   Future<Tab> getSelected(int? windowId) async {
     var $res = await $js.chrome.tabs.getSelected(windowId).toDart;
-    return Tab.fromJS($res as $js.Tab);
+    return Tab.fromJS($res! as $js.Tab);
   }
 
   /// Gets details about all tabs in the specified window.
   /// [windowId] Defaults to the [current window](windows#current-window).
   @Deprecated(
-      r'Please use $(ref:tabs.query) <code>{windowId: windowId}</code>.')
+    r'Please use $(ref:tabs.query) <code>{windowId: windowId}</code>.',
+  )
   Future<List<Tab>> getAllInWindow(int? windowId) async {
     var $res = await $js.chrome.tabs.getAllInWindow(windowId).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.Tab>()
-        .map((e) => Tab.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.Tab>()
+            .map((e) => Tab.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Creates a new tab.
   Future<Tab> create(CreateProperties createProperties) async {
     var $res = await $js.chrome.tabs.create(createProperties.toJS).toDart;
-    return Tab.fromJS($res as $js.Tab);
+    return Tab.fromJS($res! as $js.Tab);
   }
 
   /// Duplicates a tab.
@@ -133,34 +117,27 @@ class ChromeTabs {
   /// properties are specified.
   Future<List<Tab>> query(QueryInfo queryInfo) async {
     var $res = await $js.chrome.tabs.query(queryInfo.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.Tab>()
-        .map((e) => Tab.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.Tab>()
+            .map((e) => Tab.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Highlights the given tabs and focuses on the first of group. Will appear
   /// to do nothing if the specified tab is currently active.
   Future<Window> highlight(HighlightInfo highlightInfo) async {
     var $res = await $js.chrome.tabs.highlight(highlightInfo.toJS).toDart;
-    return Window.fromJS($res as $js_windows.Window);
+    return Window.fromJS($res! as $js_windows.Window);
   }
 
   /// Modifies the properties of a tab. Properties that are not specified in
   /// [updateProperties] are not modified.
   /// [tabId] Defaults to the selected tab of the [current
   /// window](windows#current-window).
-  Future<Tab?> update(
-    int? tabId,
-    UpdateProperties updateProperties,
-  ) async {
-    var $res = await $js.chrome.tabs
-        .update(
-          tabId,
-          updateProperties.toJS,
-        )
-        .toDart;
+  Future<Tab?> update(int? tabId, UpdateProperties updateProperties) async {
+    var $res =
+        await $js.chrome.tabs.update(tabId, updateProperties.toJS).toDart;
     return ($res as $js.Tab?)?.let(Tab.fromJS);
   }
 
@@ -169,61 +146,48 @@ class ChromeTabs {
   /// (window.type === "normal") windows.
   /// [tabIds] The tab ID or list of tab IDs to move.
   /// [moveProperties] Information specifying where to move the tab(s).
-  Future<Object> move(
-    Object tabIds,
-    MoveProperties moveProperties,
-  ) async {
-    var $res = await $js.chrome.tabs
-        .move(
-          switch (tabIds) {
-            int() => tabIds.jsify()!,
-            List<int>() => tabIds.toJSArray((e) => e),
-            _ => throw UnsupportedError(
-                'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
-          },
-          moveProperties.toJS,
-        )
-        .toDart;
-    return ($res as JSAny).when(
+  Future<Object> move(Object tabIds, MoveProperties moveProperties) async {
+    var $res =
+        await $js.chrome.tabs.move(switch (tabIds) {
+          int() => tabIds.jsify()!,
+          List<int>() => tabIds.toJSArray((e) => e),
+          _ =>
+            throw UnsupportedError(
+              'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>',
+            ),
+        }, moveProperties.toJS).toDart;
+    return ($res)!.when(
       isOther: (v) => Tab.fromJS((v as $js.Tab)),
-      isArray: (v) =>
-          v.toDart.cast<$js.Tab>().map((e) => Tab.fromJS(e)).toList(),
+      isArray:
+          (v) => v.toDart.cast<$js.Tab>().map((e) => Tab.fromJS(e)).toList(),
     );
   }
 
   /// Reload a tab.
   /// [tabId] The ID of the tab to reload; defaults to the selected tab of the
   /// current window.
-  Future<void> reload(
-    int? tabId,
-    ReloadProperties? reloadProperties,
-  ) async {
-    await $js.chrome.tabs
-        .reload(
-          tabId,
-          reloadProperties?.toJS,
-        )
-        .toDart;
+  Future<void> reload(int? tabId, ReloadProperties? reloadProperties) async {
+    await $js.chrome.tabs.reload(tabId, reloadProperties?.toJS).toDart;
   }
 
   /// Closes one or more tabs.
   /// [tabIds] The tab ID or list of tab IDs to close.
   Future<void> remove(Object tabIds) async {
-    await $js.chrome.tabs
-        .remove(switch (tabIds) {
-          int() => tabIds.jsify()!,
-          List<int>() => tabIds.toJSArray((e) => e),
-          _ => throw UnsupportedError(
-              'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
-        })
-        .toDart;
+    await $js.chrome.tabs.remove(switch (tabIds) {
+      int() => tabIds.jsify()!,
+      List<int>() => tabIds.toJSArray((e) => e),
+      _ =>
+        throw UnsupportedError(
+          'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>',
+        ),
+    }).toDart;
   }
 
   /// Adds one or more tabs to a specified group, or if no group is specified,
   /// adds the given tabs to a newly created group.
   Future<int> group(GroupOptions options) async {
     var $res = await $js.chrome.tabs.group(options.toJS).toDart;
-    return $res as int;
+    return ($res?.dartify() as int?) ?? 0;
   }
 
   /// Removes one or more tabs from their respective groups. If any groups
@@ -231,14 +195,14 @@ class ChromeTabs {
   /// [tabIds] The tab ID or list of tab IDs to remove from their respective
   /// groups.
   Future<void> ungroup(Object tabIds) async {
-    await $js.chrome.tabs
-        .ungroup(switch (tabIds) {
-          int() => tabIds.jsify()!,
-          List<int>() => tabIds.toJSArray((e) => e),
-          _ => throw UnsupportedError(
-              'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
-        })
-        .toDart;
+    await $js.chrome.tabs.ungroup(switch (tabIds) {
+      int() => tabIds.jsify()!,
+      List<int>() => tabIds.toJSArray((e) => e),
+      _ =>
+        throw UnsupportedError(
+          'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>',
+        ),
+    }).toDart;
   }
 
   /// Detects the primary language of the content in a tab.
@@ -246,7 +210,7 @@ class ChromeTabs {
   /// window](windows#current-window).
   Future<Tab> detectLanguage(int? tabId) async {
     var $res = await $js.chrome.tabs.detectLanguage(tabId).toDart;
-    return Tab.fromJS($res as $js.Tab);
+    return Tab.fromJS($res! as $js.Tab);
   }
 
   /// Captures the visible area of the currently active tab in the specified
@@ -255,31 +219,17 @@ class ChromeTabs {
   /// the tab.
   /// [windowId] The target window. Defaults to the [current
   /// window](windows#current-window).
-  Future<String> captureVisibleTab(
-    int? windowId,
-    ImageDetails? options,
-  ) async {
-    var $res = await $js.chrome.tabs
-        .captureVisibleTab(
-          windowId,
-          options?.toJS,
-        )
-        .toDart;
-    return $res as String;
+  Future<String> captureVisibleTab(int? windowId, ImageDetails? options) async {
+    var $res =
+        await $js.chrome.tabs.captureVisibleTab(windowId, options?.toJS).toDart;
+    return ($res).dartify() as String? ?? '';
   }
 
   /// Injects CSS into a page. For details, see the [programmatic
   /// injection](content_scripts#pi) section of the content scripts doc.
-  Future<void> insertCSS(
-    int? tabId,
-    InjectDetails details,
-  ) async {
-    await $js.chrome.tabs
-        .insertCSS(
-          tabId,
-          details.toJS,
-        )
-        .toDart;
+  @Deprecated('Use scripting.insertCSS instead in Manifest V3')
+  Future<void> insertCSS(int? tabId, InjectDetails details) async {
+    await $js.chrome.tabs.insertCSS(tabId, details.toJS).toDart;
   }
 
   /// Removes from a page CSS that was previously injected by a call to
@@ -287,30 +237,16 @@ class ChromeTabs {
   /// [tabId] The ID of the tab from which to remove the CSS; defaults to the
   /// active tab of the current window.
   /// [details] Details of the CSS to remove.
-  Future<void> removeCSS(
-    int? tabId,
-    DeleteInjectionDetails details,
-  ) async {
-    await $js.chrome.tabs
-        .removeCSS(
-          tabId,
-          details.toJS,
-        )
-        .toDart;
+  @Deprecated('Use scripting.removeCSS instead in Manifest V3')
+  Future<void> removeCSS(int? tabId, DeleteInjectionDetails details) async {
+    await $js.chrome.tabs.removeCSS(tabId, details.toJS).toDart;
   }
 
   /// Executes script in a specific tab.
-  Future<List<Object>> executeScript(
-    int? tabId,
-    InjectDetails details,
-  ) async {
-    var $res = await $js.chrome.tabs
-        .executeScript(
-          tabId,
-          details.toJS,
-        )
-        .toDart;
-    return ($res as JSArray).toDart.map((e) => e.dartify()!).toList();
+  @Deprecated('Use scripting.executeScript instead in Manifest V3')
+  Future<List<Object>> executeScript(int? tabId, InjectDetails details) async {
+    var $res = await $js.chrome.tabs.executeScript(tabId, details.toJS).toDart;
+    return ($res as JSArray?)?.toDart.map((e) => e.dartify()!).toList() ?? [];
   }
 
   /// Zooms a specified tab.
@@ -320,16 +256,8 @@ class ChromeTabs {
   /// default zoom factor. Values greater than 0 specify a (possibly
   /// non-default) zoom factor for the tab.
   /// [returns] Called after the zoom factor has been changed.
-  Future<void> setZoom(
-    int? tabId,
-    double zoomFactor,
-  ) async {
-    await $js.chrome.tabs
-        .setZoom(
-          tabId,
-          zoomFactor,
-        )
-        .toDart;
+  Future<void> setZoom(int? tabId, double zoomFactor) async {
+    await $js.chrome.tabs.setZoom(tabId, zoomFactor).toDart;
   }
 
   /// Gets the current zoom factor of a specified tab.
@@ -339,7 +267,7 @@ class ChromeTabs {
   /// fetched.
   Future<double> getZoom(int? tabId) async {
     var $res = await $js.chrome.tabs.getZoom(tabId).toDart;
-    return $res as double;
+    return ($res).dartify() as double? ?? 0;
   }
 
   /// Sets the zoom settings for a specified tab, which define how zoom changes
@@ -348,16 +276,8 @@ class ChromeTabs {
   /// active tab of the current window.
   /// [zoomSettings] Defines how zoom changes are handled and at what scope.
   /// [returns] Called after the zoom settings are changed.
-  Future<void> setZoomSettings(
-    int? tabId,
-    ZoomSettings zoomSettings,
-  ) async {
-    await $js.chrome.tabs
-        .setZoomSettings(
-          tabId,
-          zoomSettings.toJS,
-        )
-        .toDart;
+  Future<void> setZoomSettings(int? tabId, ZoomSettings zoomSettings) async {
+    await $js.chrome.tabs.setZoomSettings(tabId, zoomSettings.toJS).toDart;
   }
 
   /// Gets the current zoom settings of a specified tab.
@@ -366,7 +286,7 @@ class ChromeTabs {
   /// [returns] Called with the tab's current zoom settings.
   Future<ZoomSettings> getZoomSettings(int? tabId) async {
     var $res = await $js.chrome.tabs.getZoomSettings(tabId).toDart;
-    return ZoomSettings.fromJS($res as $js.ZoomSettings);
+    return ZoomSettings.fromJS($res! as $js.ZoomSettings);
   }
 
   /// Discards a tab from memory. Discarded tabs are still visible on the tab
@@ -408,147 +328,171 @@ class ChromeTabs {
   /// membership may not be set at the time this event is fired, but you can
   /// listen to onUpdated events so as to be notified when a URL is set or the
   /// tab is added to a tab group.
-  EventStream<Tab> get onCreated =>
-      $js.chrome.tabs.onCreated.asStream(($c) => ($js.Tab tab) {
-            return $c(Tab.fromJS(tab));
-          }.toJS);
+  EventStream<Tab> get onCreated => $js.chrome.tabs.onCreated.asStream(
+    ($c) =>
+        ($js.Tab tab) {
+          return $c(Tab.fromJS(tab));
+        }.toJS,
+  );
 
   /// Fired when a tab is updated.
   EventStream<OnUpdatedEvent> get onUpdated =>
-      $js.chrome.tabs.onUpdated.asStream(($c) => (
-            int tabId,
-            $js.OnUpdatedChangeInfo changeInfo,
-            $js.Tab tab,
-          ) {
-            return $c(OnUpdatedEvent(
-              tabId: tabId,
-              changeInfo: OnUpdatedChangeInfo.fromJS(changeInfo),
-              tab: Tab.fromJS(tab),
-            ));
-          }.toJS);
+      $js.chrome.tabs.onUpdated.asStream(
+        ($c) =>
+            (int tabId, $js.OnUpdatedChangeInfo changeInfo, $js.Tab tab) {
+              return $c(
+                OnUpdatedEvent(
+                  tabId: tabId,
+                  changeInfo: OnUpdatedChangeInfo.fromJS(changeInfo),
+                  tab: Tab.fromJS(tab),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a tab is moved within a window. Only one move event is fired,
   /// representing the tab the user directly moved. Move events are not fired
   /// for the other tabs that must move in response to the manually-moved tab.
   /// This event is not fired when a tab is moved between windows; for details,
   /// see [tabs.onDetached].
-  EventStream<OnMovedEvent> get onMoved =>
-      $js.chrome.tabs.onMoved.asStream(($c) => (
-            int tabId,
-            $js.OnMovedMoveInfo moveInfo,
-          ) {
-            return $c(OnMovedEvent(
+  EventStream<OnMovedEvent> get onMoved => $js.chrome.tabs.onMoved.asStream(
+    ($c) =>
+        (int tabId, $js.OnMovedMoveInfo moveInfo) {
+          return $c(
+            OnMovedEvent(
               tabId: tabId,
               moveInfo: OnMovedMoveInfo.fromJS(moveInfo),
-            ));
-          }.toJS);
+            ),
+          );
+        }.toJS,
+  );
 
   /// Fires when the selected tab in a window changes.
   EventStream<OnSelectionChangedEvent> get onSelectionChanged =>
-      $js.chrome.tabs.onSelectionChanged.asStream(($c) => (
-            int tabId,
-            $js.OnSelectionChangedSelectInfo selectInfo,
-          ) {
-            return $c(OnSelectionChangedEvent(
-              tabId: tabId,
-              selectInfo: OnSelectionChangedSelectInfo.fromJS(selectInfo),
-            ));
-          }.toJS);
+      $js.chrome.tabs.onSelectionChanged.asStream(
+        ($c) =>
+            (int tabId, $js.OnSelectionChangedSelectInfo selectInfo) {
+              return $c(
+                OnSelectionChangedEvent(
+                  tabId: tabId,
+                  selectInfo: OnSelectionChangedSelectInfo.fromJS(selectInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fires when the selected tab in a window changes. Note that the tab's URL
   /// may not be set at the time this event fired, but you can listen to
   /// [tabs.onUpdated] events so as to be notified when a URL is set.
   EventStream<OnActiveChangedEvent> get onActiveChanged =>
-      $js.chrome.tabs.onActiveChanged.asStream(($c) => (
-            int tabId,
-            $js.OnActiveChangedSelectInfo selectInfo,
-          ) {
-            return $c(OnActiveChangedEvent(
-              tabId: tabId,
-              selectInfo: OnActiveChangedSelectInfo.fromJS(selectInfo),
-            ));
-          }.toJS);
+      $js.chrome.tabs.onActiveChanged.asStream(
+        ($c) =>
+            (int tabId, $js.OnActiveChangedSelectInfo selectInfo) {
+              return $c(
+                OnActiveChangedEvent(
+                  tabId: tabId,
+                  selectInfo: OnActiveChangedSelectInfo.fromJS(selectInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fires when the active tab in a window changes. Note that the tab's URL may
   /// not be set at the time this event fired, but you can listen to onUpdated
   /// events so as to be notified when a URL is set.
   EventStream<OnActivatedActiveInfo> get onActivated =>
-      $js.chrome.tabs.onActivated
-          .asStream(($c) => ($js.OnActivatedActiveInfo activeInfo) {
-                return $c(OnActivatedActiveInfo.fromJS(activeInfo));
-              }.toJS);
+      $js.chrome.tabs.onActivated.asStream(
+        ($c) =>
+            ($js.OnActivatedActiveInfo activeInfo) {
+              return $c(OnActivatedActiveInfo.fromJS(activeInfo));
+            }.toJS,
+      );
 
   /// Fired when the highlighted or selected tabs in a window changes.
   EventStream<OnHighlightChangedSelectInfo> get onHighlightChanged =>
-      $js.chrome.tabs.onHighlightChanged
-          .asStream(($c) => ($js.OnHighlightChangedSelectInfo selectInfo) {
-                return $c(OnHighlightChangedSelectInfo.fromJS(selectInfo));
-              }.toJS);
+      $js.chrome.tabs.onHighlightChanged.asStream(
+        ($c) =>
+            ($js.OnHighlightChangedSelectInfo selectInfo) {
+              return $c(OnHighlightChangedSelectInfo.fromJS(selectInfo));
+            }.toJS,
+      );
 
   /// Fired when the highlighted or selected tabs in a window changes.
   EventStream<OnHighlightedHighlightInfo> get onHighlighted =>
-      $js.chrome.tabs.onHighlighted
-          .asStream(($c) => ($js.OnHighlightedHighlightInfo highlightInfo) {
-                return $c(OnHighlightedHighlightInfo.fromJS(highlightInfo));
-              }.toJS);
+      $js.chrome.tabs.onHighlighted.asStream(
+        ($c) =>
+            ($js.OnHighlightedHighlightInfo highlightInfo) {
+              return $c(OnHighlightedHighlightInfo.fromJS(highlightInfo));
+            }.toJS,
+      );
 
   /// Fired when a tab is detached from a window; for example, because it was
   /// moved between windows.
   EventStream<OnDetachedEvent> get onDetached =>
-      $js.chrome.tabs.onDetached.asStream(($c) => (
-            int tabId,
-            $js.OnDetachedDetachInfo detachInfo,
-          ) {
-            return $c(OnDetachedEvent(
-              tabId: tabId,
-              detachInfo: OnDetachedDetachInfo.fromJS(detachInfo),
-            ));
-          }.toJS);
+      $js.chrome.tabs.onDetached.asStream(
+        ($c) =>
+            (int tabId, $js.OnDetachedDetachInfo detachInfo) {
+              return $c(
+                OnDetachedEvent(
+                  tabId: tabId,
+                  detachInfo: OnDetachedDetachInfo.fromJS(detachInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a tab is attached to a window; for example, because it was
   /// moved between windows.
   EventStream<OnAttachedEvent> get onAttached =>
-      $js.chrome.tabs.onAttached.asStream(($c) => (
-            int tabId,
-            $js.OnAttachedAttachInfo attachInfo,
-          ) {
-            return $c(OnAttachedEvent(
-              tabId: tabId,
-              attachInfo: OnAttachedAttachInfo.fromJS(attachInfo),
-            ));
-          }.toJS);
+      $js.chrome.tabs.onAttached.asStream(
+        ($c) =>
+            (int tabId, $js.OnAttachedAttachInfo attachInfo) {
+              return $c(
+                OnAttachedEvent(
+                  tabId: tabId,
+                  attachInfo: OnAttachedAttachInfo.fromJS(attachInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a tab is closed.
   EventStream<OnRemovedEvent> get onRemoved =>
-      $js.chrome.tabs.onRemoved.asStream(($c) => (
-            int tabId,
-            $js.OnRemovedRemoveInfo removeInfo,
-          ) {
-            return $c(OnRemovedEvent(
-              tabId: tabId,
-              removeInfo: OnRemovedRemoveInfo.fromJS(removeInfo),
-            ));
-          }.toJS);
+      $js.chrome.tabs.onRemoved.asStream(
+        ($c) =>
+            (int tabId, $js.OnRemovedRemoveInfo removeInfo) {
+              return $c(
+                OnRemovedEvent(
+                  tabId: tabId,
+                  removeInfo: OnRemovedRemoveInfo.fromJS(removeInfo),
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a tab is replaced with another tab due to prerendering or
   /// instant.
   EventStream<OnReplacedEvent> get onReplaced =>
-      $js.chrome.tabs.onReplaced.asStream(($c) => (
-            int addedTabId,
-            int removedTabId,
-          ) {
-            return $c(OnReplacedEvent(
-              addedTabId: addedTabId,
-              removedTabId: removedTabId,
-            ));
-          }.toJS);
+      $js.chrome.tabs.onReplaced.asStream(
+        ($c) =>
+            (int addedTabId, int removedTabId) {
+              return $c(
+                OnReplacedEvent(
+                  addedTabId: addedTabId,
+                  removedTabId: removedTabId,
+                ),
+              );
+            }.toJS,
+      );
 
   /// Fired when a tab is zoomed.
   EventStream<OnZoomChangeZoomChangeInfo> get onZoomChange =>
-      $js.chrome.tabs.onZoomChange
-          .asStream(($c) => ($js.OnZoomChangeZoomChangeInfo zoomChangeInfo) {
-                return $c(OnZoomChangeZoomChangeInfo.fromJS(zoomChangeInfo));
-              }.toJS);
+      $js.chrome.tabs.onZoomChange.asStream(
+        ($c) =>
+            ($js.OnZoomChangeZoomChangeInfo zoomChangeInfo) {
+              return $c(OnZoomChangeZoomChangeInfo.fromJS(zoomChangeInfo));
+            }.toJS,
+      );
 }
 
 /// The tab's loading status.
@@ -682,10 +626,10 @@ class MutedInfo {
     /// extension was not the reason the muted state last changed.
     String? extensionId,
   }) : _wrapped = $js.MutedInfo(
-          muted: muted,
-          reason: reason?.toJS,
-          extensionId: extensionId,
-        );
+         muted: muted,
+         reason: reason?.toJS,
+         extensionId: extensionId,
+       );
 
   final $js.MutedInfo _wrapped;
 
@@ -811,30 +755,30 @@ class Tab {
     /// [sessions] API.
     String? sessionId,
   }) : _wrapped = $js.Tab(
-          id: id,
-          index: index,
-          groupId: groupId,
-          windowId: windowId,
-          openerTabId: openerTabId,
-          selected: selected,
-          lastAccessed: lastAccessed,
-          highlighted: highlighted,
-          active: active,
-          pinned: pinned,
-          audible: audible,
-          discarded: discarded,
-          autoDiscardable: autoDiscardable,
-          mutedInfo: mutedInfo?.toJS,
-          url: url,
-          pendingUrl: pendingUrl,
-          title: title,
-          favIconUrl: favIconUrl,
-          status: status?.toJS,
-          incognito: incognito,
-          width: width,
-          height: height,
-          sessionId: sessionId,
-        );
+         id: id,
+         index: index,
+         groupId: groupId,
+         windowId: windowId,
+         openerTabId: openerTabId,
+         selected: selected,
+         lastAccessed: lastAccessed,
+         highlighted: highlighted,
+         active: active,
+         pinned: pinned,
+         audible: audible,
+         discarded: discarded,
+         autoDiscardable: autoDiscardable,
+         mutedInfo: mutedInfo?.toJS,
+         url: url,
+         pendingUrl: pendingUrl,
+         title: title,
+         favIconUrl: favIconUrl,
+         status: status?.toJS,
+         incognito: incognito,
+         width: width,
+         height: height,
+         sessionId: sessionId,
+       );
 
   final $js.Tab _wrapped;
 
@@ -1040,10 +984,10 @@ class ZoomSettings {
     /// tabs.getZoomSettings.
     double? defaultZoomFactor,
   }) : _wrapped = $js.ZoomSettings(
-          mode: mode?.toJS,
-          scope: scope?.toJS,
-          defaultZoomFactor: defaultZoomFactor,
-        );
+         mode: mode?.toJS,
+         scope: scope?.toJS,
+         defaultZoomFactor: defaultZoomFactor,
+       );
 
   final $js.ZoomSettings _wrapped;
 
@@ -1109,17 +1053,17 @@ class OnUpdatedChangeInfo {
     /// The tab's new title.
     String? title,
   }) : _wrapped = $js.OnUpdatedChangeInfo(
-          status: status?.toJS,
-          url: url,
-          groupId: groupId,
-          pinned: pinned,
-          audible: audible,
-          discarded: discarded,
-          autoDiscardable: autoDiscardable,
-          mutedInfo: mutedInfo?.toJS,
-          favIconUrl: favIconUrl,
-          title: title,
-        );
+         status: status?.toJS,
+         url: url,
+         groupId: groupId,
+         pinned: pinned,
+         audible: audible,
+         discarded: discarded,
+         autoDiscardable: autoDiscardable,
+         mutedInfo: mutedInfo?.toJS,
+         favIconUrl: favIconUrl,
+         title: title,
+       );
 
   final $js.OnUpdatedChangeInfo _wrapped;
 
@@ -1204,10 +1148,10 @@ class OnMovedMoveInfo {
     required int fromIndex,
     required int toIndex,
   }) : _wrapped = $js.OnMovedMoveInfo(
-          windowId: windowId,
-          fromIndex: fromIndex,
-          toIndex: toIndex,
-        );
+         windowId: windowId,
+         fromIndex: fromIndex,
+         toIndex: toIndex,
+       );
 
   final $js.OnMovedMoveInfo _wrapped;
 
@@ -1235,11 +1179,10 @@ class OnMovedMoveInfo {
 class OnSelectionChangedSelectInfo {
   OnSelectionChangedSelectInfo.fromJS(this._wrapped);
 
-  OnSelectionChangedSelectInfo(
-      {
-      /// The ID of the window the selected tab changed inside of.
-      required int windowId})
-      : _wrapped = $js.OnSelectionChangedSelectInfo(windowId: windowId);
+  OnSelectionChangedSelectInfo({
+    /// The ID of the window the selected tab changed inside of.
+    required int windowId,
+  }) : _wrapped = $js.OnSelectionChangedSelectInfo(windowId: windowId);
 
   final $js.OnSelectionChangedSelectInfo _wrapped;
 
@@ -1256,11 +1199,10 @@ class OnSelectionChangedSelectInfo {
 class OnActiveChangedSelectInfo {
   OnActiveChangedSelectInfo.fromJS(this._wrapped);
 
-  OnActiveChangedSelectInfo(
-      {
-      /// The ID of the window the selected tab changed inside of.
-      required int windowId})
-      : _wrapped = $js.OnActiveChangedSelectInfo(windowId: windowId);
+  OnActiveChangedSelectInfo({
+    /// The ID of the window the selected tab changed inside of.
+    required int windowId,
+  }) : _wrapped = $js.OnActiveChangedSelectInfo(windowId: windowId);
 
   final $js.OnActiveChangedSelectInfo _wrapped;
 
@@ -1283,10 +1225,7 @@ class OnActivatedActiveInfo {
 
     /// The ID of the window the active tab changed inside of.
     required int windowId,
-  }) : _wrapped = $js.OnActivatedActiveInfo(
-          tabId: tabId,
-          windowId: windowId,
-        );
+  }) : _wrapped = $js.OnActivatedActiveInfo(tabId: tabId, windowId: windowId);
 
   final $js.OnActivatedActiveInfo _wrapped;
 
@@ -1317,9 +1256,9 @@ class OnHighlightChangedSelectInfo {
     /// All highlighted tabs in the window.
     required List<int> tabIds,
   }) : _wrapped = $js.OnHighlightChangedSelectInfo(
-          windowId: windowId,
-          tabIds: tabIds.toJSArray((e) => e),
-        );
+         windowId: windowId,
+         tabIds: tabIds.toJSArray((e) => e),
+       );
 
   final $js.OnHighlightChangedSelectInfo _wrapped;
 
@@ -1351,9 +1290,9 @@ class OnHighlightedHighlightInfo {
     /// All highlighted tabs in the window.
     required List<int> tabIds,
   }) : _wrapped = $js.OnHighlightedHighlightInfo(
-          windowId: windowId,
-          tabIds: tabIds.toJSArray((e) => e),
-        );
+         windowId: windowId,
+         tabIds: tabIds.toJSArray((e) => e),
+       );
 
   final $js.OnHighlightedHighlightInfo _wrapped;
 
@@ -1378,13 +1317,11 @@ class OnHighlightedHighlightInfo {
 class OnDetachedDetachInfo {
   OnDetachedDetachInfo.fromJS(this._wrapped);
 
-  OnDetachedDetachInfo({
-    required int oldWindowId,
-    required int oldPosition,
-  }) : _wrapped = $js.OnDetachedDetachInfo(
-          oldWindowId: oldWindowId,
-          oldPosition: oldPosition,
-        );
+  OnDetachedDetachInfo({required int oldWindowId, required int oldPosition})
+    : _wrapped = $js.OnDetachedDetachInfo(
+        oldWindowId: oldWindowId,
+        oldPosition: oldPosition,
+      );
 
   final $js.OnDetachedDetachInfo _wrapped;
 
@@ -1406,13 +1343,11 @@ class OnDetachedDetachInfo {
 class OnAttachedAttachInfo {
   OnAttachedAttachInfo.fromJS(this._wrapped);
 
-  OnAttachedAttachInfo({
-    required int newWindowId,
-    required int newPosition,
-  }) : _wrapped = $js.OnAttachedAttachInfo(
-          newWindowId: newWindowId,
-          newPosition: newPosition,
-        );
+  OnAttachedAttachInfo({required int newWindowId, required int newPosition})
+    : _wrapped = $js.OnAttachedAttachInfo(
+        newWindowId: newWindowId,
+        newPosition: newPosition,
+      );
 
   final $js.OnAttachedAttachInfo _wrapped;
 
@@ -1441,9 +1376,9 @@ class OnRemovedRemoveInfo {
     /// True when the tab was closed because its parent window was closed.
     required bool isWindowClosing,
   }) : _wrapped = $js.OnRemovedRemoveInfo(
-          windowId: windowId,
-          isWindowClosing: isWindowClosing,
-        );
+         windowId: windowId,
+         isWindowClosing: isWindowClosing,
+       );
 
   final $js.OnRemovedRemoveInfo _wrapped;
 
@@ -1473,11 +1408,11 @@ class OnZoomChangeZoomChangeInfo {
     required double newZoomFactor,
     required ZoomSettings zoomSettings,
   }) : _wrapped = $js.OnZoomChangeZoomChangeInfo(
-          tabId: tabId,
-          oldZoomFactor: oldZoomFactor,
-          newZoomFactor: newZoomFactor,
-          zoomSettings: zoomSettings.toJS,
-        );
+         tabId: tabId,
+         oldZoomFactor: oldZoomFactor,
+         newZoomFactor: newZoomFactor,
+         zoomSettings: zoomSettings.toJS,
+       );
 
   final $js.OnZoomChangeZoomChangeInfo _wrapped;
 
@@ -1524,10 +1459,10 @@ class ConnectInfo {
     /// identified by `documentId` instead of all frames in the tab.
     String? documentId,
   }) : _wrapped = $js.ConnectInfo(
-          name: name,
-          frameId: frameId,
-          documentId: documentId,
-        );
+         name: name,
+         frameId: frameId,
+         documentId: documentId,
+       );
 
   final $js.ConnectInfo _wrapped;
 
@@ -1570,9 +1505,9 @@ class SendMessageOptions {
     /// identified by `documentId` instead of all frames in the tab.
     String? documentId,
   }) : _wrapped = $js.SendMessageOptions(
-          frameId: frameId,
-          documentId: documentId,
-        );
+         frameId: frameId,
+         documentId: documentId,
+       );
 
   final $js.SendMessageOptions _wrapped;
 
@@ -1629,14 +1564,14 @@ class CreateProperties {
     /// must be in the same window as the newly created tab.
     int? openerTabId,
   }) : _wrapped = $js.CreateProperties(
-          windowId: windowId,
-          index: index,
-          url: url,
-          active: active,
-          selected: selected,
-          pinned: pinned,
-          openerTabId: openerTabId,
-        );
+         windowId: windowId,
+         index: index,
+         url: url,
+         active: active,
+         selected: selected,
+         pinned: pinned,
+         openerTabId: openerTabId,
+       );
 
   final $js.CreateProperties _wrapped;
 
@@ -1761,29 +1696,31 @@ class QueryInfo {
     /// The position of the tabs within their windows.
     int? index,
   }) : _wrapped = $js.QueryInfo(
-          active: active,
-          pinned: pinned,
-          audible: audible,
-          muted: muted,
-          highlighted: highlighted,
-          discarded: discarded,
-          autoDiscardable: autoDiscardable,
-          currentWindow: currentWindow,
-          lastFocusedWindow: lastFocusedWindow,
-          status: status?.toJS,
-          title: title,
-          url: switch (url) {
-            String() => url.jsify()!,
-            List() => url.toJSArrayString(),
-            null => null,
-            _ => throw UnsupportedError(
-                'Received type: ${url.runtimeType}. Supported types are: String, List<String>')
-          },
-          groupId: groupId,
-          windowId: windowId,
-          windowType: windowType?.toJS,
-          index: index,
-        );
+         active: active,
+         pinned: pinned,
+         audible: audible,
+         muted: muted,
+         highlighted: highlighted,
+         discarded: discarded,
+         autoDiscardable: autoDiscardable,
+         currentWindow: currentWindow,
+         lastFocusedWindow: lastFocusedWindow,
+         status: status?.toJS,
+         title: title,
+         url: switch (url) {
+           String() => url.jsify()!,
+           List() => url.toJSArrayString(),
+           null => null,
+           _ =>
+             throw UnsupportedError(
+               'Received type: ${url.runtimeType}. Supported types are: String, List<String>',
+             ),
+         },
+         groupId: groupId,
+         windowId: windowId,
+         windowType: windowType?.toJS,
+         index: index,
+       );
 
   final $js.QueryInfo _wrapped;
 
@@ -1874,17 +1811,19 @@ class QueryInfo {
   /// identifiers are not matched. This property is ignored if the extension
   /// does not have the `"tabs"` permission.
   Object? get url => _wrapped.url?.when(
-        isString: (v) => v,
-        isArray: (v) => v.toDart.cast<String>().map((e) => e).toList(),
-      );
+    isString: (v) => v,
+    isArray: (v) => v.toDart.cast<String>().map((e) => e).toList(),
+  );
 
   set url(Object? v) {
     _wrapped.url = switch (v) {
       String() => v.jsify()!,
       List() => v.toJSArrayString(),
       null => null,
-      _ => throw UnsupportedError(
-          'Received type: ${v.runtimeType}. Supported types are: String, List<String>')
+      _ =>
+        throw UnsupportedError(
+          'Received type: ${v.runtimeType}. Supported types are: String, List<String>',
+        ),
     };
   }
 
@@ -1929,14 +1868,16 @@ class HighlightInfo {
     /// One or more tab indices to highlight.
     required Object tabs,
   }) : _wrapped = $js.HighlightInfo(
-          windowId: windowId,
-          tabs: switch (tabs) {
-            List<int>() => tabs.toJSArray((e) => e),
-            int() => tabs.jsify()!,
-            _ => throw UnsupportedError(
-                'Received type: ${tabs.runtimeType}. Supported types are: List<int>, int')
-          },
-        );
+         windowId: windowId,
+         tabs: switch (tabs) {
+           List<int>() => tabs.toJSArray((e) => e),
+           int() => tabs.jsify()!,
+           _ =>
+             throw UnsupportedError(
+               'Received type: ${tabs.runtimeType}. Supported types are: List<int>, int',
+             ),
+         },
+       );
 
   final $js.HighlightInfo _wrapped;
 
@@ -1951,16 +1892,18 @@ class HighlightInfo {
 
   /// One or more tab indices to highlight.
   Object get tabs => _wrapped.tabs.when(
-        isArray: (v) => v.toDart.cast<int>().map((e) => e).toList(),
-        isInt: (v) => v,
-      );
+    isArray: (v) => v.toDart.cast<int>().map((e) => e).toList(),
+    isInt: (v) => v,
+  );
 
   set tabs(Object v) {
     _wrapped.tabs = switch (v) {
       List<int>() => v.toJSArray((e) => e),
       int() => v.jsify()!,
-      _ => throw UnsupportedError(
-          'Received type: ${v.runtimeType}. Supported types are: List<int>, int')
+      _ =>
+        throw UnsupportedError(
+          'Received type: ${v.runtimeType}. Supported types are: List<int>, int',
+        ),
     };
   }
 }
@@ -1997,15 +1940,15 @@ class UpdateProperties {
     /// resources are low.
     bool? autoDiscardable,
   }) : _wrapped = $js.UpdateProperties(
-          url: url,
-          active: active,
-          highlighted: highlighted,
-          selected: selected,
-          pinned: pinned,
-          muted: muted,
-          openerTabId: openerTabId,
-          autoDiscardable: autoDiscardable,
-        );
+         url: url,
+         active: active,
+         highlighted: highlighted,
+         selected: selected,
+         pinned: pinned,
+         muted: muted,
+         openerTabId: openerTabId,
+         autoDiscardable: autoDiscardable,
+       );
 
   final $js.UpdateProperties _wrapped;
 
@@ -2082,10 +2025,7 @@ class MoveProperties {
     /// The position to move the window to. Use `-1` to place the tab at the end
     /// of the window.
     required int index,
-  }) : _wrapped = $js.MoveProperties(
-          windowId: windowId,
-          index: index,
-        );
+  }) : _wrapped = $js.MoveProperties(windowId: windowId, index: index);
 
   final $js.MoveProperties _wrapped;
 
@@ -2110,11 +2050,10 @@ class MoveProperties {
 class ReloadProperties {
   ReloadProperties.fromJS(this._wrapped);
 
-  ReloadProperties(
-      {
-      /// Whether to bypass local caching. Defaults to `false`.
-      bool? bypassCache})
-      : _wrapped = $js.ReloadProperties(bypassCache: bypassCache);
+  ReloadProperties({
+    /// Whether to bypass local caching. Defaults to `false`.
+    bool? bypassCache,
+  }) : _wrapped = $js.ReloadProperties(bypassCache: bypassCache);
 
   final $js.ReloadProperties _wrapped;
 
@@ -2143,15 +2082,17 @@ class GroupOptions {
     /// already specified.
     GroupOptionsCreateProperties? createProperties,
   }) : _wrapped = $js.GroupOptions(
-          tabIds: switch (tabIds) {
-            int() => tabIds.jsify()!,
-            List<int>() => tabIds.toJSArray((e) => e),
-            _ => throw UnsupportedError(
-                'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>')
-          },
-          groupId: groupId,
-          createProperties: createProperties?.toJS,
-        );
+         tabIds: switch (tabIds) {
+           int() => tabIds.jsify()!,
+           List<int>() => tabIds.toJSArray((e) => e),
+           _ =>
+             throw UnsupportedError(
+               'Received type: ${tabIds.runtimeType}. Supported types are: int, List<int>',
+             ),
+         },
+         groupId: groupId,
+         createProperties: createProperties?.toJS,
+       );
 
   final $js.GroupOptions _wrapped;
 
@@ -2159,16 +2100,18 @@ class GroupOptions {
 
   /// The tab ID or list of tab IDs to add to the specified group.
   Object get tabIds => _wrapped.tabIds.when(
-        isInt: (v) => v,
-        isArray: (v) => v.toDart.cast<int>().map((e) => e).toList(),
-      );
+    isInt: (v) => v,
+    isArray: (v) => v.toDart.cast<int>().map((e) => e).toList(),
+  );
 
   set tabIds(Object v) {
     _wrapped.tabIds = switch (v) {
       int() => v.jsify()!,
       List<int>() => v.toJSArray((e) => e),
-      _ => throw UnsupportedError(
-          'Received type: ${v.runtimeType}. Supported types are: int, List<int>')
+      _ =>
+        throw UnsupportedError(
+          'Received type: ${v.runtimeType}. Supported types are: int, List<int>',
+        ),
     };
   }
 
@@ -2193,11 +2136,10 @@ class GroupOptions {
 class GroupOptionsCreateProperties {
   GroupOptionsCreateProperties.fromJS(this._wrapped);
 
-  GroupOptionsCreateProperties(
-      {
-      /// The window of the new group. Defaults to the current window.
-      int? windowId})
-      : _wrapped = $js.GroupOptionsCreateProperties(windowId: windowId);
+  GroupOptionsCreateProperties({
+    /// The window of the new group. Defaults to the current window.
+    int? windowId,
+  }) : _wrapped = $js.GroupOptionsCreateProperties(windowId: windowId);
 
   final $js.GroupOptionsCreateProperties _wrapped;
 
@@ -2228,10 +2170,7 @@ class OnUpdatedEvent {
 }
 
 class OnMovedEvent {
-  OnMovedEvent({
-    required this.tabId,
-    required this.moveInfo,
-  });
+  OnMovedEvent({required this.tabId, required this.moveInfo});
 
   final int tabId;
 
@@ -2239,10 +2178,7 @@ class OnMovedEvent {
 }
 
 class OnSelectionChangedEvent {
-  OnSelectionChangedEvent({
-    required this.tabId,
-    required this.selectInfo,
-  });
+  OnSelectionChangedEvent({required this.tabId, required this.selectInfo});
 
   /// The ID of the tab that has become active.
   final int tabId;
@@ -2251,10 +2187,7 @@ class OnSelectionChangedEvent {
 }
 
 class OnActiveChangedEvent {
-  OnActiveChangedEvent({
-    required this.tabId,
-    required this.selectInfo,
-  });
+  OnActiveChangedEvent({required this.tabId, required this.selectInfo});
 
   /// The ID of the tab that has become active.
   final int tabId;
@@ -2263,10 +2196,7 @@ class OnActiveChangedEvent {
 }
 
 class OnDetachedEvent {
-  OnDetachedEvent({
-    required this.tabId,
-    required this.detachInfo,
-  });
+  OnDetachedEvent({required this.tabId, required this.detachInfo});
 
   final int tabId;
 
@@ -2274,10 +2204,7 @@ class OnDetachedEvent {
 }
 
 class OnAttachedEvent {
-  OnAttachedEvent({
-    required this.tabId,
-    required this.attachInfo,
-  });
+  OnAttachedEvent({required this.tabId, required this.attachInfo});
 
   final int tabId;
 
@@ -2285,10 +2212,7 @@ class OnAttachedEvent {
 }
 
 class OnRemovedEvent {
-  OnRemovedEvent({
-    required this.tabId,
-    required this.removeInfo,
-  });
+  OnRemovedEvent({required this.tabId, required this.removeInfo});
 
   final int tabId;
 
@@ -2296,10 +2220,7 @@ class OnRemovedEvent {
 }
 
 class OnReplacedEvent {
-  OnReplacedEvent({
-    required this.addedTabId,
-    required this.removedTabId,
-  });
+  OnReplacedEvent({required this.addedTabId, required this.removedTabId});
 
   final int addedTabId;
 

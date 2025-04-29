@@ -23,22 +23,24 @@ class ChromeLoginState {
   /// Gets the type of the profile the extension is in.
   Future<ProfileType> getProfileType() async {
     var $res = await $js.chrome.loginState.getProfileType().toDart;
-    return ProfileType.fromJS($res as $js.ProfileType);
+    return ProfileType.fromJS($res! as $js.ProfileType);
   }
 
   /// Gets the current session state.
   Future<SessionState> getSessionState() async {
     var $res = await $js.chrome.loginState.getSessionState().toDart;
-    return SessionState.fromJS($res as $js.SessionState);
+    return SessionState.fromJS($res! as $js.SessionState);
   }
 
   /// Dispatched when the session state changes. `sessionState`
   /// is the new session state.
   EventStream<SessionState> get onSessionStateChanged =>
-      $js.chrome.loginState.onSessionStateChanged
-          .asStream(($c) => ($js.SessionState sessionState) {
-                return $c(SessionState.fromJS(sessionState));
-              }.toJS);
+      $js.chrome.loginState.onSessionStateChanged.asStream(
+        ($c) =>
+            ($js.SessionState sessionState) {
+              return $c(SessionState.fromJS(sessionState));
+            }.toJS,
+      );
 }
 
 enum ProfileType {

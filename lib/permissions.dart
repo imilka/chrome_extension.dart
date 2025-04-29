@@ -25,13 +25,13 @@ class ChromePermissions {
   /// Gets the extension's current set of permissions.
   Future<Permissions> getAll() async {
     var $res = await $js.chrome.permissions.getAll().toDart;
-    return Permissions.fromJS($res as $js.Permissions);
+    return Permissions.fromJS($res! as $js.Permissions);
   }
 
   /// Checks if the extension has the specified permissions.
   Future<bool> contains(Permissions permissions) async {
     var $res = await $js.chrome.permissions.contains(permissions.toJS).toDart;
-    return $res as bool;
+    return ($res).dartify() as bool? ?? false;
   }
 
   /// Requests access to the specified permissions, displaying a prompt to the
@@ -44,27 +44,33 @@ class ChromePermissions {
   /// requesting the permissions, [runtime.lastError] will be set.
   Future<bool> request(Permissions permissions) async {
     var $res = await $js.chrome.permissions.request(permissions.toJS).toDart;
-    return $res as bool;
+    return ($res).dartify() as bool? ?? false;
   }
 
   /// Removes access to the specified permissions. If there are any problems
   /// removing the permissions, [runtime.lastError] will be set.
   Future<bool> remove(Permissions permissions) async {
     var $res = await $js.chrome.permissions.remove(permissions.toJS).toDart;
-    return $res as bool;
+    return ($res).dartify() as bool? ?? false;
   }
 
   /// Fired when the extension acquires new permissions.
-  EventStream<Permissions> get onAdded => $js.chrome.permissions.onAdded
-      .asStream(($c) => ($js.Permissions permissions) {
-            return $c(Permissions.fromJS(permissions));
-          }.toJS);
+  EventStream<Permissions> get onAdded =>
+      $js.chrome.permissions.onAdded.asStream(
+        ($c) =>
+            ($js.Permissions permissions) {
+              return $c(Permissions.fromJS(permissions));
+            }.toJS,
+      );
 
   /// Fired when access to permissions has been removed from the extension.
-  EventStream<Permissions> get onRemoved => $js.chrome.permissions.onRemoved
-      .asStream(($c) => ($js.Permissions permissions) {
-            return $c(Permissions.fromJS(permissions));
-          }.toJS);
+  EventStream<Permissions> get onRemoved =>
+      $js.chrome.permissions.onRemoved.asStream(
+        ($c) =>
+            ($js.Permissions permissions) {
+              return $c(Permissions.fromJS(permissions));
+            }.toJS,
+      );
 }
 
 class Permissions {
@@ -79,9 +85,9 @@ class Permissions {
     /// associated with [Content Scripts](content_scripts).
     List<String>? origins,
   }) : _wrapped = $js.Permissions(
-          permissions: permissions?.toJSArray((e) => e),
-          origins: origins?.toJSArray((e) => e),
-        );
+         permissions: permissions?.toJSArray((e) => e),
+         origins: origins?.toJSArray((e) => e),
+       );
 
   final $js.Permissions _wrapped;
 

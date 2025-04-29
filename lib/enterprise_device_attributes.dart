@@ -37,10 +37,11 @@ class ChromeEnterpriseDeviceAttributes {
   /// |callback| : Called with the device identifier of the directory API when
   /// received.
   Future<String> getDirectoryDeviceId() async {
-    var $res = await $js.chrome.enterprise.deviceAttributes
-        .getDirectoryDeviceId()
-        .toDart;
-    return $res as String;
+    var $res =
+        await $js.chrome.enterprise.deviceAttributes
+            .getDirectoryDeviceId()
+            .toDart;
+    return $res?.dartify() as String? ?? '';
   }
 
   /// Fetches the device's serial number. Please note the purpose of this API
@@ -50,10 +51,11 @@ class ChromeEnterpriseDeviceAttributes {
   /// If the current user is not affiliated, returns an empty string.
   /// |callback| : Called with the serial number of the device.
   Future<String> getDeviceSerialNumber() async {
-    var $res = await $js.chrome.enterprise.deviceAttributes
-        .getDeviceSerialNumber()
-        .toDart;
-    return $res as String;
+    var $res =
+        await $js.chrome.enterprise.deviceAttributes
+            .getDeviceSerialNumber()
+            .toDart;
+    return $res?.dartify() as String? ?? '';
   }
 
   /// Fetches the administrator-annotated Asset Id.
@@ -63,7 +65,7 @@ class ChromeEnterpriseDeviceAttributes {
   Future<String> getDeviceAssetId() async {
     var $res =
         await $js.chrome.enterprise.deviceAttributes.getDeviceAssetId().toDart;
-    return $res as String;
+    return $res?.dartify() as String? ?? '';
   }
 
   /// Fetches the administrator-annotated Location.
@@ -71,10 +73,11 @@ class ChromeEnterpriseDeviceAttributes {
   /// set by the administrator, returns an empty string.
   /// |callback| : Called with the Annotated Location of the device.
   Future<String> getDeviceAnnotatedLocation() async {
-    var $res = await $js.chrome.enterprise.deviceAttributes
-        .getDeviceAnnotatedLocation()
-        .toDart;
-    return $res as String;
+    var $res =
+        await $js.chrome.enterprise.deviceAttributes
+            .getDeviceAnnotatedLocation()
+            .toDart;
+    return $res?.dartify() as String? ?? '';
   }
 
   /// Fetches the device's hostname as set by DeviceHostnameTemplate policy.
@@ -84,6 +87,6 @@ class ChromeEnterpriseDeviceAttributes {
   Future<String> getDeviceHostname() async {
     var $res =
         await $js.chrome.enterprise.deviceAttributes.getDeviceHostname().toDart;
-    return $res as String;
+    return $res?.dartify() as String? ?? '';
   }
 }

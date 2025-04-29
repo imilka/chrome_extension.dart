@@ -26,21 +26,15 @@ class ChromeBrowsingData {
   /// one data type listed here.
   Future<SettingsCallbackResult> settings() async {
     var $res = await $js.chrome.browsingData.settings().toDart;
-    return SettingsCallbackResult.fromJS($res as $js.SettingsCallbackResult);
+    return SettingsCallbackResult.fromJS($res! as $js.SettingsCallbackResult);
   }
 
   /// Clears various types of browsing data stored in a user's profile.
   /// [dataToRemove] The set of data types to remove.
   /// [returns] Called when deletion has completed.
-  Future<void> remove(
-    RemovalOptions options,
-    DataTypeSet dataToRemove,
-  ) async {
+  Future<void> remove(RemovalOptions options, DataTypeSet dataToRemove) async {
     await $js.chrome.browsingData
-        .remove(
-          options.toJS,
-          dataToRemove.toJS,
-        )
+        .remove(options.toJS, dataToRemove.toJS)
         .toDart;
   }
 
@@ -111,7 +105,8 @@ class ChromeBrowsingData {
   /// Clears plugins' data.
   /// [returns] Called when plugins' data has been cleared.
   @Deprecated(
-      r'Support for Flash has been removed. This function has no effect.')
+    r'Support for Flash has been removed. This function has no effect.',
+  )
   Future<void> removePluginData(RemovalOptions options) async {
     await $js.chrome.browsingData.removePluginData(options.toJS).toDart;
   }
@@ -162,11 +157,11 @@ class RemovalOptions {
     /// domain.
     List<String>? excludeOrigins,
   }) : _wrapped = $js.RemovalOptions(
-          since: since,
-          originTypes: originTypes?.toJS,
-          origins: origins?.toJSArray((e) => e),
-          excludeOrigins: excludeOrigins?.toJSArray((e) => e),
-        );
+         since: since,
+         originTypes: originTypes?.toJS,
+         origins: origins?.toJSArray((e) => e),
+         excludeOrigins: excludeOrigins?.toJSArray((e) => e),
+       );
 
   final $js.RemovalOptions _wrapped;
 
@@ -263,22 +258,22 @@ class DataTypeSet {
     /// Websites' WebSQL data.
     bool? webSql,
   }) : _wrapped = $js.DataTypeSet(
-          appcache: appcache,
-          cache: cache,
-          cacheStorage: cacheStorage,
-          cookies: cookies,
-          downloads: downloads,
-          fileSystems: fileSystems,
-          formData: formData,
-          history: history,
-          indexedDB: indexedDb,
-          localStorage: localStorage,
-          serverBoundCertificates: serverBoundCertificates,
-          passwords: passwords,
-          pluginData: pluginData,
-          serviceWorkers: serviceWorkers,
-          webSQL: webSql,
-        );
+         appcache: appcache,
+         cache: cache,
+         cacheStorage: cacheStorage,
+         cookies: cookies,
+         downloads: downloads,
+         fileSystems: fileSystems,
+         formData: formData,
+         history: history,
+         indexedDB: indexedDb,
+         localStorage: localStorage,
+         serverBoundCertificates: serverBoundCertificates,
+         passwords: passwords,
+         pluginData: pluginData,
+         serviceWorkers: serviceWorkers,
+         webSQL: webSql,
+       );
 
   final $js.DataTypeSet _wrapped;
 
@@ -406,10 +401,10 @@ class SettingsCallbackResult {
     /// `false` if not.
     required DataTypeSet dataRemovalPermitted,
   }) : _wrapped = $js.SettingsCallbackResult(
-          options: options.toJS,
-          dataToRemove: dataToRemove.toJS,
-          dataRemovalPermitted: dataRemovalPermitted.toJS,
-        );
+         options: options.toJS,
+         dataToRemove: dataToRemove.toJS,
+         dataRemovalPermitted: dataRemovalPermitted.toJS,
+       );
 
   final $js.SettingsCallbackResult _wrapped;
 
@@ -455,10 +450,10 @@ class RemovalOptionsOriginTypes {
     /// careful!).
     bool? extension,
   }) : _wrapped = $js.RemovalOptionsOriginTypes(
-          unprotectedWeb: unprotectedWeb,
-          protectedWeb: protectedWeb,
-          extension: extension,
-        );
+         unprotectedWeb: unprotectedWeb,
+         protectedWeb: protectedWeb,
+         extension: extension,
+       );
 
   final $js.RemovalOptionsOriginTypes _wrapped;
 

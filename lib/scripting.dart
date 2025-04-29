@@ -31,11 +31,11 @@ class ChromeScripting {
   /// injection succeeded.
   Future<List<InjectionResult>> executeScript(ScriptInjection injection) async {
     var $res = await $js.chrome.scripting.executeScript(injection.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.InjectionResult>()
-        .map((e) => InjectionResult.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.InjectionResult>()
+            .map((e) => InjectionResult.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Inserts a CSS stylesheet into a target context.
@@ -64,7 +64,8 @@ class ChromeScripting {
   /// |callback|: A callback to be invoked once scripts have been fully
   /// registered or if an error has occurred.
   Future<void> registerContentScripts(
-      List<RegisteredContentScript> scripts) async {
+    List<RegisteredContentScript> scripts,
+  ) async {
     await $js.chrome.scripting
         .registerContentScripts(scripts.toJSArray((e) => e.toJS))
         .toDart;
@@ -75,15 +76,17 @@ class ChromeScripting {
   /// |filter|: An object to filter the extension's dynamically registered
   /// scripts.
   Future<List<RegisteredContentScript>> getRegisteredContentScripts(
-      ContentScriptFilter? filter) async {
-    var $res = await $js.chrome.scripting
-        .getRegisteredContentScripts(filter?.toJS)
-        .toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.RegisteredContentScript>()
-        .map((e) => RegisteredContentScript.fromJS(e))
-        .toList();
+    ContentScriptFilter? filter,
+  ) async {
+    var $res =
+        await $js.chrome.scripting
+            .getRegisteredContentScripts(filter?.toJS)
+            .toDart;
+    return ($res as JSArray?)?.toDart
+            .cast<$js.RegisteredContentScript>()
+            .map((e) => RegisteredContentScript.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Unregisters content scripts for this extension.
@@ -105,7 +108,8 @@ class ChromeScripting {
   /// |callback|: A callback to be invoked once scripts have been updated or
   /// if an error has occurred.
   Future<void> updateContentScripts(
-      List<RegisteredContentScript> scripts) async {
+    List<RegisteredContentScript> scripts,
+  ) async {
     await $js.chrome.scripting
         .updateContentScripts(scripts.toJSArray((e) => e.toJS))
         .toDart;
@@ -183,11 +187,11 @@ class InjectionTarget {
     /// This must not be true if `frameIds` is specified.
     bool? allFrames,
   }) : _wrapped = $js.InjectionTarget(
-          tabId: tabId,
-          frameIds: frameIds?.toJSArray((e) => e),
-          documentIds: documentIds?.toJSArray((e) => e),
-          allFrames: allFrames,
-        );
+         tabId: tabId,
+         frameIds: frameIds?.toJSArray((e) => e),
+         documentIds: documentIds?.toJSArray((e) => e),
+         allFrames: allFrames,
+       );
 
   final $js.InjectionTarget _wrapped;
 
@@ -272,14 +276,14 @@ class ScriptInjection {
     /// script reaches the target.
     bool? injectImmediately,
   }) : _wrapped = $js.ScriptInjection(
-          func: func,
-          args: args?.toJSArray((e) => e.jsify()!),
-          function: function,
-          files: files?.toJSArray((e) => e),
-          target: target.toJS,
-          world: world?.toJS,
-          injectImmediately: injectImmediately,
-        );
+         func: func,
+         args: args?.toJSArray((e) => e.jsify()!),
+         function: function,
+         files: files?.toJSArray((e) => e),
+         target: target.toJS,
+         world: world?.toJS,
+         injectImmediately: injectImmediately,
+       );
 
   final $js.ScriptInjection _wrapped;
 
@@ -375,11 +379,11 @@ class CSSInjection {
     /// The style origin for the injection. Defaults to `'AUTHOR'`.
     StyleOrigin? origin,
   }) : _wrapped = $js.CSSInjection(
-          target: target.toJS,
-          css: css,
-          files: files?.toJSArray((e) => e),
-          origin: origin?.toJS,
-        );
+         target: target.toJS,
+         css: css,
+         files: files?.toJSArray((e) => e),
+         origin: origin?.toJS,
+       );
 
   final $js.CSSInjection _wrapped;
 
@@ -433,10 +437,10 @@ class InjectionResult {
     /// The document associated with the injection.
     required String documentId,
   }) : _wrapped = $js.InjectionResult(
-          result: result?.jsify(),
-          frameId: frameId,
-          documentId: documentId,
-        );
+         result: result?.jsify(),
+         frameId: frameId,
+         documentId: documentId,
+       );
 
   final $js.InjectionResult _wrapped;
 
@@ -521,17 +525,17 @@ class RegisteredContentScript {
     /// `ISOLATED`.
     ExecutionWorld? world,
   }) : _wrapped = $js.RegisteredContentScript(
-          id: id,
-          matches: matches?.toJSArray((e) => e),
-          excludeMatches: excludeMatches?.toJSArray((e) => e),
-          css: css?.toJSArray((e) => e),
-          js: js?.toJSArray((e) => e),
-          allFrames: allFrames,
-          matchOriginAsFallback: matchOriginAsFallback,
-          runAt: runAt?.toJS,
-          persistAcrossSessions: persistAcrossSessions,
-          world: world?.toJS,
-        );
+         id: id,
+         matches: matches?.toJSArray((e) => e),
+         excludeMatches: excludeMatches?.toJSArray((e) => e),
+         css: css?.toJSArray((e) => e),
+         js: js?.toJSArray((e) => e),
+         allFrames: allFrames,
+         matchOriginAsFallback: matchOriginAsFallback,
+         runAt: runAt?.toJS,
+         persistAcrossSessions: persistAcrossSessions,
+         world: world?.toJS,
+       );
 
   final $js.RegisteredContentScript _wrapped;
 
@@ -637,12 +641,11 @@ class RegisteredContentScript {
 class ContentScriptFilter {
   ContentScriptFilter.fromJS(this._wrapped);
 
-  ContentScriptFilter(
-      {
-      /// If specified, [getRegisteredContentScripts] will only return scripts
-      /// with an id specified in this list.
-      List<String>? ids})
-      : _wrapped = $js.ContentScriptFilter(ids: ids?.toJSArray((e) => e));
+  ContentScriptFilter({
+    /// If specified, [getRegisteredContentScripts] will only return scripts
+    /// with an id specified in this list.
+    List<String>? ids,
+  }) : _wrapped = $js.ContentScriptFilter(ids: ids?.toJSArray((e) => e));
 
   final $js.ContentScriptFilter _wrapped;
 

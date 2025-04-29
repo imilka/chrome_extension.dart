@@ -2,7 +2,6 @@
 
 library;
 
-import 'dart:js_interop';
 import 'src/internal_helpers.dart';
 import 'src/js/system_storage.dart' as $js;
 import 'system.dart';
@@ -28,16 +27,17 @@ class ChromeSystemStorage {
   /// callback is an array of StorageUnitInfo objects.
   Future<List<StorageUnitInfo>> getInfo() async {
     var $res = await $js.chrome.system.storage.getInfo().toDart;
-    return ($res as JSArray).toDart
-        .cast<$js.StorageUnitInfo>()
-        .map((e) => StorageUnitInfo.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.StorageUnitInfo>()
+            .map((e) => StorageUnitInfo.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Ejects a removable storage device.
   Future<EjectDeviceResultCode> ejectDevice(String id) async {
     var $res = await $js.chrome.system.storage.ejectDevice(id).toDart;
-    return EjectDeviceResultCode.fromJS($res as JSString);
+    return EjectDeviceResultCode.fromJS($res! as JSString);
   }
 
   /// Get the available capacity of a specified |id| storage device. The
@@ -45,7 +45,7 @@ class ChromeSystemStorage {
   Future<StorageAvailableCapacityInfo> getAvailableCapacity(String id) async {
     var $res = await $js.chrome.system.storage.getAvailableCapacity(id).toDart;
     return StorageAvailableCapacityInfo.fromJS(
-      $res as $js.StorageAvailableCapacityInfo,
+      $res! as $js.StorageAvailableCapacityInfo,
     );
   }
 

@@ -26,21 +26,21 @@ class ChromeHistory {
   /// query.
   Future<List<HistoryItem>> search(SearchQuery query) async {
     var $res = await $js.chrome.history.search(query.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.HistoryItem>()
-        .map((e) => HistoryItem.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.HistoryItem>()
+            .map((e) => HistoryItem.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Retrieves information about visits to a URL.
   Future<List<VisitItem>> getVisits(UrlDetails details) async {
     var $res = await $js.chrome.history.getVisits(details.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.VisitItem>()
-        .map((e) => VisitItem.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.VisitItem>()
+            .map((e) => VisitItem.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Adds a URL to the history at the current time with a [transition
@@ -69,17 +69,22 @@ class ChromeHistory {
   /// Fired when a URL is visited, providing the HistoryItem data for that URL.
   /// This event fires before the page has loaded.
   EventStream<HistoryItem> get onVisited =>
-      $js.chrome.history.onVisited.asStream(($c) => ($js.HistoryItem result) {
-            return $c(HistoryItem.fromJS(result));
-          }.toJS);
+      $js.chrome.history.onVisited.asStream(
+        ($c) =>
+            ($js.HistoryItem result) {
+              return $c(HistoryItem.fromJS(result));
+            }.toJS,
+      );
 
   /// Fired when one or more URLs are removed from the history service.  When
   /// all visits have been removed the URL is purged from history.
   EventStream<OnVisitRemovedRemoved> get onVisitRemoved =>
-      $js.chrome.history.onVisitRemoved
-          .asStream(($c) => ($js.OnVisitRemovedRemoved removed) {
-                return $c(OnVisitRemovedRemoved.fromJS(removed));
-              }.toJS);
+      $js.chrome.history.onVisitRemoved.asStream(
+        ($c) =>
+            ($js.OnVisitRemovedRemoved removed) {
+              return $c(OnVisitRemovedRemoved.fromJS(removed));
+            }.toJS,
+      );
 }
 
 /// The [transition type](#transition_types) for this visit from its referrer.
@@ -131,13 +136,13 @@ class HistoryItem {
     /// address.
     int? typedCount,
   }) : _wrapped = $js.HistoryItem(
-          id: id,
-          url: url,
-          title: title,
-          lastVisitTime: lastVisitTime,
-          visitCount: visitCount,
-          typedCount: typedCount,
-        );
+         id: id,
+         url: url,
+         title: title,
+         lastVisitTime: lastVisitTime,
+         visitCount: visitCount,
+         typedCount: typedCount,
+       );
 
   final $js.HistoryItem _wrapped;
 
@@ -212,13 +217,13 @@ class VisitItem {
     /// a different device.
     required bool isLocal,
   }) : _wrapped = $js.VisitItem(
-          id: id,
-          visitId: visitId,
-          visitTime: visitTime,
-          referringVisitId: referringVisitId,
-          transition: transition.toJS,
-          isLocal: isLocal,
-        );
+         id: id,
+         visitId: visitId,
+         visitTime: visitTime,
+         referringVisitId: referringVisitId,
+         transition: transition.toJS,
+         isLocal: isLocal,
+       );
 
   final $js.VisitItem _wrapped;
 
@@ -271,12 +276,11 @@ class VisitItem {
 class UrlDetails {
   UrlDetails.fromJS(this._wrapped);
 
-  UrlDetails(
-      {
-      /// The URL for the operation. It must be in the format as returned from a
-      /// call to history.search.
-      required String url})
-      : _wrapped = $js.UrlDetails(url: url);
+  UrlDetails({
+    /// The URL for the operation. It must be in the format as returned from a
+    /// call to history.search.
+    required String url,
+  }) : _wrapped = $js.UrlDetails(url: url);
 
   final $js.UrlDetails _wrapped;
 
@@ -299,9 +303,9 @@ class OnVisitRemovedRemoved {
     required bool allHistory,
     List<String>? urls,
   }) : _wrapped = $js.OnVisitRemovedRemoved(
-          allHistory: allHistory,
-          urls: urls?.toJSArray((e) => e),
-        );
+         allHistory: allHistory,
+         urls: urls?.toJSArray((e) => e),
+       );
 
   final $js.OnVisitRemovedRemoved _wrapped;
 
@@ -342,11 +346,11 @@ class SearchQuery {
     /// The maximum number of results to retrieve.  Defaults to 100.
     int? maxResults,
   }) : _wrapped = $js.SearchQuery(
-          text: text,
-          startTime: startTime,
-          endTime: endTime,
-          maxResults: maxResults,
-        );
+         text: text,
+         startTime: startTime,
+         endTime: endTime,
+         maxResults: maxResults,
+       );
 
   final $js.SearchQuery _wrapped;
 
@@ -396,10 +400,7 @@ class DeleteRangeRange {
     /// Items added to history before this date, represented in milliseconds
     /// since the epoch.
     required double endTime,
-  }) : _wrapped = $js.DeleteRangeRange(
-          startTime: startTime,
-          endTime: endTime,
-        );
+  }) : _wrapped = $js.DeleteRangeRange(startTime: startTime, endTime: endTime);
 
   final $js.DeleteRangeRange _wrapped;
 

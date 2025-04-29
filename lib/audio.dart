@@ -29,11 +29,11 @@ class ChromeAudio {
   /// |callback|: Reports the requested list of audio devices.
   Future<List<AudioDeviceInfo>> getDevices(DeviceFilter? filter) async {
     var $res = await $js.chrome.audio.getDevices(filter?.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.AudioDeviceInfo>()
-        .map((e) => AudioDeviceInfo.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.AudioDeviceInfo>()
+            .map((e) => AudioDeviceInfo.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Sets lists of active input and/or output devices.
@@ -47,16 +47,8 @@ class ChromeAudio {
   }
 
   /// Sets the properties for the input or output device.
-  Future<void> setProperties(
-    String id,
-    DeviceProperties properties,
-  ) async {
-    await $js.chrome.audio
-        .setProperties(
-          id,
-          properties.toJS,
-        )
-        .toDart;
+  Future<void> setProperties(String id, DeviceProperties properties) async {
+    await $js.chrome.audio.setProperties(id, properties.toJS).toDart;
   }
 
   /// Gets the system-wide mute state for the specified stream type.
@@ -65,51 +57,52 @@ class ChromeAudio {
   /// stream type.
   Future<bool> getMute(StreamType streamType) async {
     var $res = await $js.chrome.audio.getMute(streamType.toJS).toDart;
-    return $res as bool;
+    return $res != null ? ($res.dartify() as bool? ?? false) : false;
   }
 
   /// Sets mute state for a stream type. The mute state will apply to all audio
   /// devices with the specified audio stream type.
   /// |streamType|: Stream type for which mute state should be set.
   /// |isMuted|: New mute value.
-  Future<void> setMute(
-    StreamType streamType,
-    bool isMuted,
-  ) async {
-    await $js.chrome.audio
-        .setMute(
-          streamType.toJS,
-          isMuted,
-        )
-        .toDart;
+  Future<void> setMute(StreamType streamType, bool isMuted) async {
+    await $js.chrome.audio.setMute(streamType.toJS, isMuted).toDart;
   }
 
   /// Fired when sound level changes for an active audio device.
   EventStream<LevelChangedEvent> get onLevelChanged =>
-      $js.chrome.audio.onLevelChanged
-          .asStream(($c) => ($js.LevelChangedEvent event) {
-                return $c(LevelChangedEvent.fromJS(event));
-              }.toJS);
+      $js.chrome.audio.onLevelChanged.asStream(
+        ($c) =>
+            ($js.LevelChangedEvent event) {
+              return $c(LevelChangedEvent.fromJS(event));
+            }.toJS,
+      );
 
   /// Fired when the mute state of the audio input or output changes.
   /// Note that mute state is system-wide and the new value applies to every
   /// audio device with specified stream type.
   EventStream<MuteChangedEvent> get onMuteChanged =>
-      $js.chrome.audio.onMuteChanged
-          .asStream(($c) => ($js.MuteChangedEvent event) {
-                return $c(MuteChangedEvent.fromJS(event));
-              }.toJS);
+      $js.chrome.audio.onMuteChanged.asStream(
+        ($c) =>
+            ($js.MuteChangedEvent event) {
+              return $c(MuteChangedEvent.fromJS(event));
+            }.toJS,
+      );
 
   /// Fired when audio devices change, either new devices being added, or
   /// existing devices being removed.
   /// |devices|: List of all present audio devices after the change.
   EventStream<List<AudioDeviceInfo>> get onDeviceListChanged =>
-      $js.chrome.audio.onDeviceListChanged.asStream(($c) => (JSArray devices) {
-            return $c(devices.toDart
-                .cast<$js.AudioDeviceInfo>()
-                .map((e) => AudioDeviceInfo.fromJS(e))
-                .toList());
-          }.toJS);
+      $js.chrome.audio.onDeviceListChanged.asStream(
+        ($c) =>
+            (JSArray devices) {
+              return $c(
+                devices.toDart
+                    .cast<$js.AudioDeviceInfo>()
+                    .map((e) => AudioDeviceInfo.fromJS(e))
+                    .toList(),
+              );
+            }.toJS,
+      );
 }
 
 /// Type of stream an audio device provides.
@@ -186,15 +179,15 @@ class AudioDeviceInfo {
     /// The stable/persisted device id string when available.
     String? stableDeviceId,
   }) : _wrapped = $js.AudioDeviceInfo(
-          id: id,
-          streamType: streamType.toJS,
-          deviceType: deviceType.toJS,
-          displayName: displayName,
-          deviceName: deviceName,
-          isActive: isActive,
-          level: level,
-          stableDeviceId: stableDeviceId,
-        );
+         id: id,
+         streamType: streamType.toJS,
+         deviceType: deviceType.toJS,
+         displayName: displayName,
+         deviceName: deviceName,
+         isActive: isActive,
+         level: level,
+         stableDeviceId: stableDeviceId,
+       );
 
   final $js.AudioDeviceInfo _wrapped;
 
@@ -269,9 +262,9 @@ class DeviceFilter {
     /// satisfy the filter.
     bool? isActive,
   }) : _wrapped = $js.DeviceFilter(
-          streamTypes: streamTypes?.toJSArray((e) => e.toJS),
-          isActive: isActive,
-        );
+         streamTypes: streamTypes?.toJSArray((e) => e.toJS),
+         isActive: isActive,
+       );
 
   final $js.DeviceFilter _wrapped;
 
@@ -279,10 +272,11 @@ class DeviceFilter {
 
   /// If set, only audio devices whose stream type is included in this list
   /// will satisfy the filter.
-  List<StreamType>? get streamTypes => _wrapped.streamTypes?.toDart
-      .cast<$js.StreamType>()
-      .map((e) => StreamType.fromJS(e))
-      .toList();
+  List<StreamType>? get streamTypes =>
+      _wrapped.streamTypes?.toDart
+          .cast<$js.StreamType>()
+          .map((e) => StreamType.fromJS(e))
+          .toList();
 
   set streamTypes(List<StreamType>? v) {
     _wrapped.streamTypes = v?.toJSArray((e) => e.toJS);
@@ -300,16 +294,15 @@ class DeviceFilter {
 class DeviceProperties {
   DeviceProperties.fromJS(this._wrapped);
 
-  DeviceProperties(
-      {
-      ///
-      ///   The audio device's desired sound level. Defaults to the device's
-      ///   current sound level.
-      ///
-      /// If used with audio input device, represents audio device gain.
-      /// If used with audio output device, represents audio device volume.
-      int? level})
-      : _wrapped = $js.DeviceProperties(level: level);
+  DeviceProperties({
+    ///
+    ///   The audio device's desired sound level. Defaults to the device's
+    ///   current sound level.
+    ///
+    /// If used with audio input device, represents audio device gain.
+    /// If used with audio output device, represents audio device volume.
+    int? level,
+  }) : _wrapped = $js.DeviceProperties(level: level);
 
   final $js.DeviceProperties _wrapped;
 
@@ -342,9 +335,9 @@ class DeviceIdLists {
     ///   unset.
     List<String>? output,
   }) : _wrapped = $js.DeviceIdLists(
-          input: input?.toJSArray((e) => e),
-          output: output?.toJSArray((e) => e),
-        );
+         input: input?.toJSArray((e) => e),
+         output: output?.toJSArray((e) => e),
+       );
 
   final $js.DeviceIdLists _wrapped;
 
@@ -383,9 +376,9 @@ class MuteChangedEvent {
     /// Whether or not the stream is now muted.
     required bool isMuted,
   }) : _wrapped = $js.MuteChangedEvent(
-          streamType: streamType.toJS,
-          isMuted: isMuted,
-        );
+         streamType: streamType.toJS,
+         isMuted: isMuted,
+       );
 
   final $js.MuteChangedEvent _wrapped;
 
@@ -416,10 +409,7 @@ class LevelChangedEvent {
 
     /// The device's new sound level.
     required int level,
-  }) : _wrapped = $js.LevelChangedEvent(
-          deviceId: deviceId,
-          level: level,
-        );
+  }) : _wrapped = $js.LevelChangedEvent(deviceId: deviceId, level: level);
 
   final $js.LevelChangedEvent _wrapped;
 

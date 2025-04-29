@@ -29,7 +29,7 @@ class ChromePrinting {
   /// job will be sent directly to the printer without user interaction.
   Future<String> submitJob($js.SubmitJobRequest request) async {
     var $res = await $js.chrome.printing.submitJob(request).toDart;
-    return ($res as String)!;
+    return ($res).dartify() as String? ?? '';
   }
 
   /// Cancels a previously submitted print job.
@@ -45,13 +45,13 @@ class ChromePrinting {
   /// only receive its own printers.
   Future<List<$js.Printer>> getPrinters() async {
     var $res = await $js.chrome.printing.getPrinters().toDart;
-    return ($res as JSArray).toDart.cast<$js.Printer>();
+    return ($res as JSArray?)?.toDart.cast<$js.Printer>() ?? [];
   }
 
   /// Returns the status and capabilities of a printer as a [GetPrinterInfoResponse].
   Future<$js.GetPrinterInfoResponse> getPrinterInfo(String printerId) async {
     var $res = await $js.chrome.printing.getPrinterInfo(printerId).toDart;
-    return $res as $js.GetPrinterInfoResponse;
+    return $res! as $js.GetPrinterInfoResponse;
   }
 
   /// The maximum number of times that [submitJob] can be called per
@@ -67,15 +67,17 @@ class ChromePrinting {
   /// Event fired when the status of the job is changed.
   /// This is only fired for the jobs created by this extension.
   EventStream<OnJobStatusChangedEvent> get onJobStatusChanged =>
-      $js.chrome.printing.onJobStatusChanged.asStream(($c) => (
-            String jobId,
-            $js.JobStatus status,
-          ) {
-            return $c(OnJobStatusChangedEvent(
-              jobId: jobId,
-              status: JobStatus.fromJS(status),
-            ));
-          }.toJS);
+      $js.chrome.printing.onJobStatusChanged.asStream(
+        ($c) =>
+            (String jobId, $js.JobStatus status) {
+              return $c(
+                OnJobStatusChangedEvent(
+                  jobId: jobId,
+                  status: JobStatus.fromJS(status),
+                ),
+              );
+            }.toJS,
+      );
 }
 
 /// The status of [submitJob] request.
@@ -209,9 +211,9 @@ class SubmitJobRequest {
     /// shouldn't be populated by the extension.
     String? documentBlobUuid,
   }) : _wrapped = $js.SubmitJobRequest(
-          job: job.toJS,
-          documentBlobUuid: documentBlobUuid,
-        );
+         job: job.toJS,
+         documentBlobUuid: documentBlobUuid,
+       );
 
   final $js.SubmitJobRequest _wrapped;
 
@@ -249,10 +251,7 @@ class SubmitJobResponse {
     /// The id of created print job. This is a unique identifier among all print
     /// jobs on the device. If status is not OK, jobId will be null.
     String? jobId,
-  }) : _wrapped = $js.SubmitJobResponse(
-          status: status.toJS,
-          jobId: jobId,
-        );
+  }) : _wrapped = $js.SubmitJobResponse(status: status.toJS, jobId: jobId);
 
   final $js.SubmitJobResponse _wrapped;
 
@@ -309,14 +308,14 @@ class Printer {
     /// recently. This value is guaranteed to be unique amongst printers.
     int? recentlyUsedRank,
   }) : _wrapped = $js.Printer(
-          id: id,
-          name: name,
-          description: description,
-          uri: uri,
-          source: source.toJS,
-          isDefault: isDefault,
-          recentlyUsedRank: recentlyUsedRank,
-        );
+         id: id,
+         name: name,
+         description: description,
+         uri: uri,
+         source: source.toJS,
+         isDefault: isDefault,
+         recentlyUsedRank: recentlyUsedRank,
+       );
 
   final $js.Printer _wrapped;
 
@@ -394,9 +393,9 @@ class GetPrinterInfoResponse {
     /// The status of the printer.
     required PrinterStatus status,
   }) : _wrapped = $js.GetPrinterInfoResponse(
-          capabilities: capabilities?.jsify(),
-          status: status.toJS,
-        );
+         capabilities: capabilities?.jsify(),
+         status: status.toJS,
+       );
 
   final $js.GetPrinterInfoResponse _wrapped;
 
@@ -421,10 +420,7 @@ class GetPrinterInfoResponse {
 }
 
 class OnJobStatusChangedEvent {
-  OnJobStatusChangedEvent({
-    required this.jobId,
-    required this.status,
-  });
+  OnJobStatusChangedEvent({required this.jobId, required this.status});
 
   final String jobId;
 

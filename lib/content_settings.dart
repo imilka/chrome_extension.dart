@@ -423,10 +423,7 @@ class ResourceIdentifier {
 
     /// A human readable description of the resource.
     String? description,
-  }) : _wrapped = $js.ResourceIdentifier(
-          id: id,
-          description: description,
-        );
+  }) : _wrapped = $js.ResourceIdentifier(id: id, description: description);
 
   final $js.ResourceIdentifier _wrapped;
 
@@ -464,7 +461,7 @@ class ContentSetting {
   /// Gets the current content setting for a given pair of URLs.
   Future<GetCallbackDetails> get(GetDetails details) async {
     var $res = await _wrapped.get(details.toJS).toDart;
-    return GetCallbackDetails.fromJS($res as $js.GetCallbackDetails);
+    return GetCallbackDetails.fromJS($res! as $js.GetCallbackDetails);
   }
 
   /// Applies a new content setting rule.
@@ -474,8 +471,7 @@ class ContentSetting {
 
   Future<List<ResourceIdentifier>?> getResourceIdentifiers() async {
     var $res = await _wrapped.getResourceIdentifiers().toDart;
-    return ($res as JSArray?)
-        ?.toDart
+    return ($res as JSArray?)?.toDart
         .cast<$js.ResourceIdentifier>()
         .map((e) => ResourceIdentifier.fromJS(e))
         .toList();
@@ -485,11 +481,10 @@ class ContentSetting {
 class ClearDetails {
   ClearDetails.fromJS(this._wrapped);
 
-  ClearDetails(
-      {
-      /// Where to clear the setting (default: regular).
-      Scope? scope})
-      : _wrapped = $js.ClearDetails(scope: scope?.toJS);
+  ClearDetails({
+    /// Where to clear the setting (default: regular).
+    Scope? scope,
+  }) : _wrapped = $js.ClearDetails(scope: scope?.toJS);
 
   final $js.ClearDetails _wrapped;
 
@@ -506,12 +501,11 @@ class ClearDetails {
 class GetCallbackDetails {
   GetCallbackDetails.fromJS(this._wrapped);
 
-  GetCallbackDetails(
-      {
-      /// The content setting. See the description of the individual
-      /// ContentSetting objects for the possible values.
-      required Object setting})
-      : _wrapped = $js.GetCallbackDetails(setting: setting.jsify()!);
+  GetCallbackDetails({
+    /// The content setting. See the description of the individual
+    /// ContentSetting objects for the possible values.
+    required Object setting,
+  }) : _wrapped = $js.GetCallbackDetails(setting: setting.jsify()!);
 
   final $js.GetCallbackDetails _wrapped;
 
@@ -548,11 +542,11 @@ class GetDetails {
     /// false)
     bool? incognito,
   }) : _wrapped = $js.GetDetails(
-          primaryUrl: primaryUrl,
-          secondaryUrl: secondaryUrl,
-          resourceIdentifier: resourceIdentifier?.toJS,
-          incognito: incognito,
-        );
+         primaryUrl: primaryUrl,
+         secondaryUrl: secondaryUrl,
+         resourceIdentifier: resourceIdentifier?.toJS,
+         incognito: incognito,
+       );
 
   final $js.GetDetails _wrapped;
 
@@ -616,12 +610,12 @@ class SetDetails {
     /// Where to set the setting (default: regular).
     Scope? scope,
   }) : _wrapped = $js.SetDetails(
-          primaryPattern: primaryPattern,
-          secondaryPattern: secondaryPattern,
-          resourceIdentifier: resourceIdentifier?.toJS,
-          setting: setting.jsify()!,
-          scope: scope?.toJS,
-        );
+         primaryPattern: primaryPattern,
+         secondaryPattern: secondaryPattern,
+         resourceIdentifier: resourceIdentifier?.toJS,
+         setting: setting.jsify()!,
+         scope: scope?.toJS,
+       );
 
   final $js.SetDetails _wrapped;
 

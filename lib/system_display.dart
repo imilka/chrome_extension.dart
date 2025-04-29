@@ -27,11 +27,11 @@ class ChromeSystemDisplay {
   /// |callback|: The callback to invoke with the results.
   Future<List<DisplayUnitInfo>> getInfo(GetInfoFlags? flags) async {
     var $res = await $js.chrome.system.display.getInfo(flags?.toJS).toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.DisplayUnitInfo>()
-        .map((e) => DisplayUnitInfo.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.DisplayUnitInfo>()
+            .map((e) => DisplayUnitInfo.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Requests the layout info for all displays.
@@ -39,11 +39,11 @@ class ChromeSystemDisplay {
   /// |callback|: The callback to invoke with the results.
   Future<List<DisplayLayout>> getDisplayLayout() async {
     var $res = await $js.chrome.system.display.getDisplayLayout().toDart;
-    return ($res as JSArray)
-        .toDart
-        .cast<$js.DisplayLayout>()
-        .map((e) => DisplayLayout.fromJS(e))
-        .toList();
+    return ($res as JSArray?)?.toDart
+            .cast<$js.DisplayLayout>()
+            .map((e) => DisplayLayout.fromJS(e))
+            .toList() ??
+        [];
   }
 
   /// Updates the properties for the display specified by |id|, according to
@@ -57,16 +57,8 @@ class ChromeSystemDisplay {
   /// |callback|: Empty function called when the function finishes. To find out
   ///     whether the function succeeded, [runtime.lastError] should be
   ///     queried.
-  Future<void> setDisplayProperties(
-    String id,
-    DisplayProperties info,
-  ) async {
-    await $js.chrome.system.display
-        .setDisplayProperties(
-          id,
-          info.toJS,
-        )
-        .toDart;
+  Future<void> setDisplayProperties(String id, DisplayProperties info) async {
+    await $js.chrome.system.display.setDisplayProperties(id, info.toJS).toDart;
   }
 
   /// Set the layout for all displays. Any display not included will use the
@@ -108,14 +100,8 @@ class ChromeSystemDisplay {
   /// Each Adjust call is cumulative with previous calls since Start.
   /// |id|: The display's unique identifier.
   /// |delta|: The amount to change the overscan insets.
-  void overscanCalibrationAdjust(
-    String id,
-    Insets delta,
-  ) {
-    $js.chrome.system.display.overscanCalibrationAdjust(
-      id,
-      delta.toJS,
-    );
+  void overscanCalibrationAdjust(String id, Insets delta) {
+    $js.chrome.system.display.overscanCalibrationAdjust(id, delta.toJS);
   }
 
   /// Resets the overscan insets for a display to the last saved value (i.e
@@ -144,7 +130,7 @@ class ChromeSystemDisplay {
   Future<bool> showNativeTouchCalibration(String id) async {
     var $res =
         await $js.chrome.system.display.showNativeTouchCalibration(id).toDart;
-    return $res as bool;
+    return ($res).dartify() as bool? ?? false;
   }
 
   /// Starts custom touch calibration for a display. This should be called when
@@ -196,9 +182,12 @@ class ChromeSystemDisplay {
 
   /// Fired when anything changes to the display configuration.
   EventStream<void> get onDisplayChanged =>
-      $js.chrome.system.display.onDisplayChanged.asStream(($c) => () {
-            return $c(null);
-          }.toJS);
+      $js.chrome.system.display.onDisplayChanged.asStream(
+        ($c) =>
+            () {
+              return $c(null);
+            }.toJS,
+      );
 }
 
 /// Layout position, i.e. edge of parent that the display is attached to.
@@ -282,11 +271,11 @@ class Bounds {
     /// The height of the display in pixels.
     required int height,
   }) : _wrapped = $js.Bounds(
-          left: left,
-          top: top,
-          width: width,
-          height: height,
-        );
+         left: left,
+         top: top,
+         width: width,
+         height: height,
+       );
 
   final $js.Bounds _wrapped;
 
@@ -337,11 +326,11 @@ class Insets {
     /// The y-axis distance from the bottom bound.
     required int bottom,
   }) : _wrapped = $js.Insets(
-          left: left,
-          top: top,
-          right: right,
-          bottom: bottom,
-        );
+         left: left,
+         top: top,
+         right: right,
+         bottom: bottom,
+       );
 
   final $js.Insets _wrapped;
 
@@ -385,10 +374,7 @@ class Point {
 
     /// The y-coordinate of the point.
     required int y,
-  }) : _wrapped = $js.Point(
-          x: x,
-          y: y,
-        );
+  }) : _wrapped = $js.Point(x: x, y: y);
 
   final $js.Point _wrapped;
 
@@ -419,9 +405,9 @@ class TouchCalibrationPair {
     /// The coordinates of the touch point corresponding to the display point.
     required Point touchPoint,
   }) : _wrapped = $js.TouchCalibrationPair(
-          displayPoint: displayPoint.toJS,
-          touchPoint: touchPoint.toJS,
-        );
+         displayPoint: displayPoint.toJS,
+         touchPoint: touchPoint.toJS,
+       );
 
   final $js.TouchCalibrationPair _wrapped;
 
@@ -458,11 +444,11 @@ class TouchCalibrationPairQuad {
     /// Fourth pair of touch and display point required for touch calibration.
     required TouchCalibrationPair pair4,
   }) : _wrapped = $js.TouchCalibrationPairQuad(
-          pair1: pair1.toJS,
-          pair2: pair2.toJS,
-          pair3: pair3.toJS,
-          pair4: pair4.toJS,
-        );
+         pair1: pair1.toJS,
+         pair2: pair2.toJS,
+         pair3: pair3.toJS,
+         pair4: pair4.toJS,
+       );
 
   final $js.TouchCalibrationPairQuad _wrapped;
 
@@ -531,17 +517,17 @@ class DisplayMode {
     /// True if this mode is interlaced, false if not provided.
     bool? isInterlaced,
   }) : _wrapped = $js.DisplayMode(
-          width: width,
-          height: height,
-          widthInNativePixels: widthInNativePixels,
-          heightInNativePixels: heightInNativePixels,
-          uiScale: uiScale,
-          deviceScaleFactor: deviceScaleFactor,
-          refreshRate: refreshRate,
-          isNative: isNative,
-          isSelected: isSelected,
-          isInterlaced: isInterlaced,
-        );
+         width: width,
+         height: height,
+         widthInNativePixels: widthInNativePixels,
+         heightInNativePixels: heightInNativePixels,
+         uiScale: uiScale,
+         deviceScaleFactor: deviceScaleFactor,
+         refreshRate: refreshRate,
+         isNative: isNative,
+         isSelected: isSelected,
+         isInterlaced: isInterlaced,
+       );
 
   final $js.DisplayMode _wrapped;
 
@@ -636,11 +622,11 @@ class DisplayLayout {
     /// the topmost or leftmost corners are aligned.
     required int offset,
   }) : _wrapped = $js.DisplayLayout(
-          id: id,
-          parentId: parentId,
-          position: position.toJS,
-          offset: offset,
-        );
+         id: id,
+         parentId: parentId,
+         position: position.toJS,
+         offset: offset,
+       );
 
   final $js.DisplayLayout _wrapped;
 
@@ -690,10 +676,10 @@ class Edid {
     /// Year of manufacturer, Sec. 3.4.4 page 22. Required in v1.4.
     required int yearOfManufacture,
   }) : _wrapped = $js.Edid(
-          manufacturerId: manufacturerId,
-          productId: productId,
-          yearOfManufacture: yearOfManufacture,
-        );
+         manufacturerId: manufacturerId,
+         productId: productId,
+         yearOfManufacture: yearOfManufacture,
+       );
 
   final $js.Edid _wrapped;
 
@@ -814,30 +800,31 @@ class DisplayUnitInfo {
     /// equivalent to 150% zoom.
     required double displayZoomFactor,
   }) : _wrapped = $js.DisplayUnitInfo(
-          id: id,
-          name: name,
-          edid: edid?.toJS,
-          mirroringSourceId: mirroringSourceId,
-          mirroringDestinationIds: mirroringDestinationIds.toJSArray((e) => e),
-          isPrimary: isPrimary,
-          isInternal: isInternal,
-          isEnabled: isEnabled,
-          activeState: activeState.toJS,
-          isUnified: isUnified,
-          isAutoRotationAllowed: isAutoRotationAllowed,
-          dpiX: dpiX,
-          dpiY: dpiY,
-          rotation: rotation,
-          bounds: bounds.toJS,
-          overscan: overscan.toJS,
-          workArea: workArea.toJS,
-          modes: modes.toJSArray((e) => e.toJS),
-          hasTouchSupport: hasTouchSupport,
-          hasAccelerometerSupport: hasAccelerometerSupport,
-          availableDisplayZoomFactors:
-              availableDisplayZoomFactors.toJSArray((e) => e),
-          displayZoomFactor: displayZoomFactor,
-        );
+         id: id,
+         name: name,
+         edid: edid?.toJS,
+         mirroringSourceId: mirroringSourceId,
+         mirroringDestinationIds: mirroringDestinationIds.toJSArray((e) => e),
+         isPrimary: isPrimary,
+         isInternal: isInternal,
+         isEnabled: isEnabled,
+         activeState: activeState.toJS,
+         isUnified: isUnified,
+         isAutoRotationAllowed: isAutoRotationAllowed,
+         dpiX: dpiX,
+         dpiY: dpiY,
+         rotation: rotation,
+         bounds: bounds.toJS,
+         overscan: overscan.toJS,
+         workArea: workArea.toJS,
+         modes: modes.toJSArray((e) => e.toJS),
+         hasTouchSupport: hasTouchSupport,
+         hasAccelerometerSupport: hasAccelerometerSupport,
+         availableDisplayZoomFactors: availableDisplayZoomFactors.toJSArray(
+           (e) => e,
+         ),
+         displayZoomFactor: displayZoomFactor,
+       );
 
   final $js.DisplayUnitInfo _wrapped;
 
@@ -986,10 +973,11 @@ class DisplayUnitInfo {
   /// The list of available display modes. The current mode will have
   /// isSelected=true. Only available on Chrome OS. Will be set to an empty
   /// array on other platforms.
-  List<DisplayMode> get modes => _wrapped.modes.toDart
-      .cast<$js.DisplayMode>()
-      .map((e) => DisplayMode.fromJS(e))
-      .toList();
+  List<DisplayMode> get modes =>
+      _wrapped.modes.toDart
+          .cast<$js.DisplayMode>()
+          .map((e) => DisplayMode.fromJS(e))
+          .toList();
 
   set modes(List<DisplayMode> v) {
     _wrapped.modes = v.toJSArray((e) => e.toJS);
@@ -1089,16 +1077,16 @@ class DisplayProperties {
     /// performing a pixel by pixel stretch enlargement.
     double? displayZoomFactor,
   }) : _wrapped = $js.DisplayProperties(
-          isUnified: isUnified,
-          mirroringSourceId: mirroringSourceId,
-          isPrimary: isPrimary,
-          overscan: overscan?.toJS,
-          rotation: rotation,
-          boundsOriginX: boundsOriginx,
-          boundsOriginY: boundsOriginy,
-          displayMode: displayMode?.toJS,
-          displayZoomFactor: displayZoomFactor,
-        );
+         isUnified: isUnified,
+         mirroringSourceId: mirroringSourceId,
+         isPrimary: isPrimary,
+         overscan: overscan?.toJS,
+         rotation: rotation,
+         boundsOriginX: boundsOriginx,
+         boundsOriginY: boundsOriginy,
+         displayMode: displayMode?.toJS,
+         displayZoomFactor: displayZoomFactor,
+       );
 
   final $js.DisplayProperties _wrapped;
 
@@ -1197,13 +1185,12 @@ class DisplayProperties {
 class GetInfoFlags {
   GetInfoFlags.fromJS(this._wrapped);
 
-  GetInfoFlags(
-      {
-      /// If set to true, only a single [DisplayUnitInfo] will be returned
-      /// by [getInfo] when in unified desktop mode (see
-      /// [enableUnifiedDesktop]). Defaults to false.
-      bool? singleUnified})
-      : _wrapped = $js.GetInfoFlags(singleUnified: singleUnified);
+  GetInfoFlags({
+    /// If set to true, only a single [DisplayUnitInfo] will be returned
+    /// by [getInfo] when in unified desktop mode (see
+    /// [enableUnifiedDesktop]). Defaults to false.
+    bool? singleUnified,
+  }) : _wrapped = $js.GetInfoFlags(singleUnified: singleUnified);
 
   final $js.GetInfoFlags _wrapped;
 
@@ -1233,10 +1220,10 @@ class MirrorModeInfo {
     /// 'mixed'.
     List<String>? mirroringDestinationIds,
   }) : _wrapped = $js.MirrorModeInfo(
-          mode: mode.toJS,
-          mirroringSourceId: mirroringSourceId,
-          mirroringDestinationIds: mirroringDestinationIds?.toJSArray((e) => e),
-        );
+         mode: mode.toJS,
+         mirroringSourceId: mirroringSourceId,
+         mirroringDestinationIds: mirroringDestinationIds?.toJSArray((e) => e),
+       );
 
   final $js.MirrorModeInfo _wrapped;
 
