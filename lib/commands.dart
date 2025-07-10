@@ -14,7 +14,7 @@ final _commands = ChromeCommands._();
 extension ChromeCommandsExtension on Chrome {
   /// Use the commands API to add keyboard shortcuts that trigger actions in
   /// your extension, for example, an action to open the browser action or send
-  /// a command to the extension.
+  /// a command to the e xtension.
   ChromeCommands get commands => _commands;
 }
 
@@ -29,9 +29,26 @@ class ChromeCommands {
   /// [returns] Called to return the registered commands.
   Future<List<Command>> getAll() async {
     var result = await $js.chrome.commands.getAll().toDart;
-    final dartified = result.dartify() as List? ?? [];
-    return dartified
-        .map<Command>((e) => Command.fromJS(e as $js.Command))
+    final dartified = result.dartify();
+
+    // Handle the case where dartified is a Map instead of a List
+    List<dynamic> commandsList;
+    if (dartified is List) {
+      commandsList = dartified;
+    } else if (dartified is Map) {
+      // If it's a map, try to extract values or handle as array-like object
+      commandsList = dartified.values.toList();
+    } else {
+      // Fallback: assume it's an iterable or convert to list
+      commandsList = (dartified as Iterable?)?.toList() ?? [];
+    }
+
+    return commandsList
+        .map<Command>((e) => Command.fromJS($js.Command(
+              name: e['name'] as String?,
+              description: e['description'] as String?,
+              shortcut: e['shortcut'] as String?,
+            )))
         .toList();
   }
 
