@@ -34,7 +34,14 @@ class ChromeScripting {
     final dartified = $res.dartify() as List? ?? [];
     return dartified
         .map<InjectionResult>(
-          (e) => InjectionResult.fromJS(e as $js.InjectionResult),
+          (e) {
+            final dataMap = Map<String, dynamic>.from(e);
+            return InjectionResult(
+              documentId: dataMap['documentId'] as String,
+              frameId: dataMap['frameId'] as int,
+              result: dataMap['result'],
+            );
+          }
         )
         .toList();
   }
