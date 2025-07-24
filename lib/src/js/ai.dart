@@ -87,6 +87,31 @@ extension type JSLanguageModelSession._(JSObject _) implements JSObject {
   external Event get onQuotaOverflow;
 }
 
+// ReadableStream bindings for handling streaming responses
+extension type JSReadableStream._(JSObject _) implements JSObject {
+  /// Get a reader for this ReadableStream
+  external JSReadableStreamDefaultReader getReader();
+}
+
+extension type JSReadableStreamDefaultReader._(JSObject _) implements JSObject {
+  /// Read the next chunk from the stream
+  external JSPromise read();
+
+  /// Cancel the stream
+  external JSPromise cancel([JSAny? reason]);
+
+  /// Release the lock on the stream
+  external void releaseLock();
+}
+
+extension type JSReadableStreamReadResult._(JSObject _) implements JSObject {
+  /// Whether the stream is done
+  external bool get done;
+
+  /// The value of the current chunk
+  external JSAny? get value;
+}
+
 // Data types
 extension type LanguageModelParams._(JSObject _) implements JSObject {
   external factory LanguageModelParams({

@@ -117,11 +117,48 @@ class LanguageModelSession {
     Object input, [
     LanguageModelPromptOptions? options,
   ]) {
-    var stream = _wrapped.promptStreaming(input.jsify()!, options?.toJS);
-    // Convert the ReadableStream to a Dart Stream
-    // Note: This is a simplified implementation - you may need to handle
-    // the actual ReadableStream conversion based on the specific JS API
-    return Stream.fromIterable([stream.toString()]);
+    var jsStream = _wrapped.promptStreaming(input.jsify()!, options?.toJS);
+    return _convertReadableStreamToStream(jsStream as $js.JSReadableStream);
+  }
+
+  /// Convert a JavaScript ReadableStream to a Dart Stream
+  Stream<String> _convertReadableStreamToStream($js.JSReadableStream readableStream) {
+    late StreamController<String> controller;
+    late $js.JSReadableStreamDefaultReader reader;
+    
+    controller = StreamController<String>(
+      onListen: () async {
+        reader = readableStream.getReader();
+        try {
+          while (true) {
+            final result = await reader.read().toDart as $js.JSReadableStreamReadResult;
+            
+            if (result.done) {
+              controller.close();
+              break;
+            }
+            
+            if (result.value != null) {
+              final chunk = result.value!.dartify() as String;
+              controller.add(chunk);
+            }
+          }
+        } catch (error) {
+          controller.addError(error);
+        } finally {
+          reader.releaseLock();
+        }
+      },
+      onCancel: () async {
+        try {
+          await reader.cancel().toDart;
+        } catch (_) {
+          // Ignore cancellation errors
+        }
+      },
+    );
+    
+    return controller.stream;
   }
 
   /// Clone the current session.
