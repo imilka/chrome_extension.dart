@@ -1,0 +1,189 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Chrome Built-in AI APIs for accessing on-device language models
+namespace ai {
+  enum LanguageModelAvailability {
+    "unavailable",
+    "downloadable", 
+    "downloading",
+    "available"
+  };
+
+  enum MessageRole {
+    "system",
+    "user", 
+    "assistant"
+  };
+
+  enum InputType {
+    "text",
+    "image",
+    "audio"
+  };
+
+  dictionary LanguageModelParams {
+    // Default top-K value for sampling
+    long defaultTopK;
+    // Maximum top-K value allowed
+    long maxTopK;
+    // Default temperature for sampling  
+    double defaultTemperature;
+    // Maximum temperature allowed
+    double maxTemperature;
+  };
+
+  dictionary ExpectedInput {
+    // Type of input expected
+    InputType type;
+    // Expected languages for this input type (optional)
+    DOMString[]? languages;
+  };
+
+  dictionary ExpectedOutput {
+    // Type of output expected  
+    InputType type;
+    // Expected languages for this output type (optional)
+    DOMString[]? languages;
+  };
+
+  dictionary Message {
+    // Role of the message sender
+    MessageRole role;
+    // Content of the message
+    DOMString content;
+    // Whether this is a prefix message (optional)
+    boolean? prefix;
+  };
+
+  dictionary Tool {
+    // Name of the tool
+    DOMString name;
+    // Description of what the tool does
+    DOMString description;
+    // JSON schema for input parameters
+    any inputSchema;
+  };
+
+  dictionary LanguageModelCreateOptions {
+    // Initial conversation prompts
+    Message[]? initialPrompts;
+    // Sampling temperature (0.0 to 2.0)
+    double? temperature;
+    // Top-K sampling parameter  
+    long? topK;
+    // Expected input types and languages
+    ExpectedInput[]? expectedInputs;
+    // Expected output types and languages
+    ExpectedOutput[]? expectedOutputs;
+    // Available tools for the model
+    Tool[]? tools;
+    // AbortSignal for cancellation
+    any? signal;
+    // Monitor function for download progress
+    any? monitor;
+  };
+
+  dictionary LanguageModelPromptOptions {
+    // Response constraint (JSON schema or RegExp)
+    any? responseConstraint;
+    // Whether to omit response constraint from input
+    boolean? omitResponseConstraintInput;
+    // AbortSignal for cancellation
+    any? signal;
+  };
+
+  dictionary LanguageModelCloneOptions {
+    // AbortSignal for cancellation
+    any? signal;
+  };
+
+  dictionary LanguageModelAvailabilityOptions {
+    // Expected input types and languages
+    ExpectedInput[]? expectedInputs;
+    // Expected output types and languages  
+    ExpectedOutput[]? expectedOutputs;
+    // Sampling temperature
+    double? temperature;
+    // Top-K sampling parameter
+    long? topK;
+  };
+
+  // Main LanguageModel interface
+  interface LanguageModel {
+    // Check if the language model is available
+    static void availability(
+      optional LanguageModelAvailabilityOptions options,
+      LanguageModelAvailabilityCallback callback
+    );
+
+    // Get language model parameters
+    static void params(LanguageModelParamsCallback callback);
+
+    // Create a new language model session
+    static void create(
+      optional LanguageModelCreateOptions options,
+      LanguageModelSessionCallback callback
+    );
+  };
+
+  // Language model session interface
+  interface LanguageModelSession {
+    // Send a prompt and get response
+    void prompt(
+      any input,
+      optional LanguageModelPromptOptions options,
+      LanguageModelPromptCallback callback
+    );
+
+    // Send a prompt and get streaming response
+    void promptStreaming(
+      any input,
+      optional LanguageModelPromptOptions options,
+      LanguageModelStreamCallback callback
+    );
+
+    // Clone the current session
+    void clone(
+      optional LanguageModelCloneOptions options,
+      LanguageModelSessionCallback callback
+    );
+
+    // Destroy the session
+    void destroy();
+
+    // Append messages without prompting
+    void append(
+      Message[] messages,
+      optional any signal,
+      VoidCallback callback
+    );
+
+    // Measure input usage in tokens
+    void measureInputUsage(
+      any input,
+      optional any signal,
+      LanguageModelUsageCallback callback
+    );
+
+    // Current input usage in tokens
+    readonly attribute long inputUsage;
+
+    // Maximum input quota in tokens
+    readonly attribute long inputQuota;
+  };
+
+  callback VoidCallback = void ();
+  callback LanguageModelAvailabilityCallback = void (LanguageModelAvailability availability);
+  callback LanguageModelParamsCallback = void (optional LanguageModelParams params);
+  callback LanguageModelSessionCallback = void (LanguageModelSession session);
+  callback LanguageModelPromptCallback = void (DOMString response);
+  callback LanguageModelStreamCallback = void (any stream);
+  callback LanguageModelUsageCallback = void (long usage);
+
+  interface Events {
+    // Fired when quota overflow occurs in a session
+    static void onQuotaOverflow();
+  };
+}; 

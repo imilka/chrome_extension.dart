@@ -1,6 +1,7 @@
 export 'accessibility_features.dart'
     show ChromeAccessibilityFeatures, ChromeAccessibilityFeaturesExtension;
 export 'action.dart' show ChromeAction, ChromeActionExtension;
+export 'ai.dart' show ChromeLanguageModel, ChromeAIExtension, AbortController, AbortSignal;
 export 'alarms.dart' show ChromeAlarms, ChromeAlarmsExtension;
 export 'audio.dart' show ChromeAudio, ChromeAudioExtension;
 export 'bookmarks.dart' show ChromeBookmarks, ChromeBookmarksExtension;
