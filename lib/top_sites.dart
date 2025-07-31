@@ -23,9 +23,10 @@ class ChromeTopSites {
 
   /// Gets a list of top sites.
   Future<List<MostVisitedURL>> get() async {
-    var $res = await $js.chrome.topSites.get().toDart;
-    final dartified = $res.dartify() as List? ?? [];
-    return dartified
+    final jsArray = await $js.chrome.topSites.get().toDart as JSArray;
+    final dartList = jsArray.toDart;
+
+    return dartList
         .map<MostVisitedURL>(
           (e) => MostVisitedURL.fromJS(e as $js.MostVisitedURL),
         )
